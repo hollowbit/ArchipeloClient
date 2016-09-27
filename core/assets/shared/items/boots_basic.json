@@ -1,0 +1,9 @@
+{
+	"id":"boots_basic",
+	"name":"Basic Boots",
+	"desc":"Just some basic boots.",
+	"iconX":2,
+	"minDamage":1,
+	"durability":400,
+	"wearable":true
+}

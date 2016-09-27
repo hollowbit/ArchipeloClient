@@ -1,0 +1,6 @@
+{
+	"id":"body",
+	"name":"Body",
+	"desc":"Basic plain body to be colored.",
+	"wearable":true
+}

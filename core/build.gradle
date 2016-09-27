@@ -1,0 +1,26 @@
+apply plugin: "java"
+
+sourceCompatibility = 1.6
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+
+sourceSets.main.java.srcDirs = [ "src/" ]
+
+eclipse.project {
+    name = appName + "-core"
+    linkedResource name: 'src-shared', type: '2', location: 'PARENT-1-PROJECT_LOC/src-shared/'
+    linkedResource name: 'websocket', type: '2', location: 'PARENT-1-PROJECT_LOC/gdx-websocket-fork/websocket/src/main/java/'
+    linkedResource name: 'websocket-common', type: '2', location: 'PARENT-1-PROJECT_LOC/gdx-websocket-fork/websocket-common/src/main/java/'
+}
+
+task afterEclipseImport(description: "Post processing after project generation", group: "IDE") {
+  doLast {
+    def classpath = new XmlParser().parse(file(".classpath"))
+    new Node(classpath, "classpathentry", [ kind: 'src', path: 'src-shared' ]);
+    new Node(classpath, "classpathentry", [ kind: 'src', path: 'websocket' ]);
+    new Node(classpath, "classpathentry", [ kind: 'src', path: 'websocket-common' ]);
+    def writer = new FileWriter(file(".classpath"))
+    def printer = new XmlNodePrinter(new PrintWriter(writer))
+    printer.setPreserveWhitespace(true)
+    printer.print(classpath)
+  }
+}

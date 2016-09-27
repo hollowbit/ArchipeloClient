@@ -1,0 +1,12 @@
+{
+	"id":"teleporter",
+	"numberOfStyles":2,
+	"hittable":false,
+	"imgWidth":16,
+	"imgHeight":32,
+	"viewRectHeight":32,
+	"collisionRects":[{}],
+	"animations":[
+				{"id":"default", "timeBetweenFrames":0.15, "numberOfDirections":1, "looping":true}
+				]
+}

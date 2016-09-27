@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE module PUBLIC "-//Google Inc.//DTD Google Web Toolkit trunk//EN" "http://google-web-toolkit.googlecode.com/svn/trunk/distro-source/core/src/gwt-module.dtd">
+<module>
+	<source path="net/hollowbit/archipelo" />
+	
+	<!--  Packets -->
+	<extend-configuration-property name="gdx.reflect.include" value="net.hollowbit.archipelo.network.Packet" />
+	<extend-configuration-property name="gdx.reflect.include" value="net.hollowbit.archipelo.network.packets.MessagePacket" />
+	<extend-configuration-property name="gdx.reflect.include" value="net.hollowbit.archipelo.network.packets.LoginPacket" />
+	<extend-configuration-property name="gdx.reflect.include" value="net.hollowbit.archipelo.network.packets.LogoutPacket" />
+	<extend-configuration-property name="gdx.reflect.include" value="net.hollowbit.archipelo.network.packets.WorldSnapshotPacket" />
+	<extend-configuration-property name="gdx.reflect.include" value="net.hollowbit.archipelo.network.packets.ChatMessagePacket" />
+	<extend-configuration-property name="gdx.reflect.include" value="net.hollowbit.archipelo.network.packets.EntityAddPacket" />
+	<extend-configuration-property name="gdx.reflect.include" value="net.hollowbit.archipelo.network.packets.EntityRemovePacket" />
+	<extend-configuration-property name="gdx.reflect.include" value="net.hollowbit.archipelo.network.packets.ControlsPacket" />
+	<extend-configuration-property name="gdx.reflect.include" value="net.hollowbit.archipelo.network.packets.PopupTextPacket" />
+	<extend-configuration-property name="gdx.reflect.include" value="net.hollowbit.archipelo.network.packets.PlayerCreationPacket" />
+	<extend-configuration-property name="gdx.reflect.include" value="net.hollowbit.archipelo.network.packets.TeleportPacket" />
+	
+	
+	<!-- Entities -->
+	<extend-configuration-property name="gdx.reflect.include" value="net.hollowbit.archipelo.entity.living.Player" />
+	<extend-configuration-property name="gdx.reflect.include" value="net.hollowbit.archipelo.entity.lifeless.Teleporter" />
+	<extend-configuration-property name="gdx.reflect.include" value="net.hollowbit.archipelo.entity.lifeless.Door" />
+	
+	<!-- Other -->
+	<extend-configuration-property name="gdx.reflect.include" value="net.hollowbit.archipelo.entity.EntitySnapshot" />
+	<extend-configuration-property name="gdx.reflect.include" value="net.hollowbit.archipelo.world.MapSnapshot" />
+	<extend-configuration-property name="gdx.reflect.include" value="net.hollowbit.archipelo.items.Item" />
+</module>

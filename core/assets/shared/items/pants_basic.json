@@ -1,0 +1,9 @@
+{
+	"id":"pants_basic",
+	"name":"Basic Pants",
+	"desc":"Just some basic pants.",
+	"iconX":1,
+	"minDamage":1,
+	"durability":400,
+	"wearable":true
+}

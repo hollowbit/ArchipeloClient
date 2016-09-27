@@ -1,0 +1,92 @@
+{
+"elementList": [
+	{
+		"id": "blank",
+		"name": "Eraser",
+		"x": 2
+	},
+	{
+		"id": "bush",
+		"name": "Bush",
+		"y": 4,
+		"width": 2,
+		"collisionTable": [[false, false, false, false],
+							[false, true, true, false]]
+	},
+	{
+		"id": "double-bush",
+		"name": "Double Bush",
+		"y": 3,
+		"width": 2,
+		"collisionTable": [[true, true, false, false],
+							[false, false, true, true]]
+	},
+	{
+		"id": "small-bush",
+		"name": "Small Bush",
+		"y": 5,
+		"x": 2,
+		"collisionTable": [[false, false],
+							[true, true]]
+	},
+	{
+		"id": "tree",
+		"name": "Tree",
+		"width": 2,
+		"height": 3,
+		"collisionTable": [[false, false, false, false],
+							[false, false, false, false],
+							[false, false, false, false],
+							[false, false, false, false],
+							[false, false, false, false],
+							[false, true, true, false]]
+	},
+	{
+		"id": "well",
+		"name": "Well",
+		"y": 5,
+		"width": 2,
+		"height": 2,
+		"collisionTable": [[false, false, false, false],
+							[false, false, false, false],
+							[false, false, false, false],
+							[false, true, true, false],]
+	},
+	{
+		"id": "smithy",
+		"name": "Smithy",
+		"x": 2,
+		"width": 6,
+		"height": 5,
+		"offsetX": -3,
+		"collisionTable": [[false, false, false, false, false, false, false, false, false, false, false, false],
+							[false, false, false, false, false, false, false, false, false, false, false, false],
+							[false, false, false, false, false, false, false, false, false, false, false, false],
+							[false, false, false, false, false, false, false, false, false, false, false, false],
+							[false, false, false, false, false, false, false, false, false, false, false, false],
+							[false, false, false, false, false, false, false, false, false, false, false, false],
+							[false, false, false, false, false, false, false, false, false, false, false, false],
+							[false, true, true, true, true, true, true, false, false, false, false, false],
+							[false, true, true, false, false, true, true, false, false, false, false, false],
+							[false, true, true, false, false, true, true, false, false, false, true, false]]
+	},
+	{
+		"id": "hospital",
+		"name": "Hospital",
+		"x": 8,
+		"width": 4,
+		"height": 5,
+		"offsetX": -3,
+		"collisionTable": [[false, false, false, false, false, false, false, false],
+							[false, false, false, false, false, false, false, false],
+							[false, false, false, false, false, false, false, false],
+							[false, false, false, false, false, false, false, false],
+							[false, false, false, false, false, false, false, false],
+							[false, false, false, false, false, false, false, false],
+							[false, false, false, false, false, false, false, false],
+							[false, true, true, true, true, true, true, false],
+							[false, true, true, false, false, true, true, false],
+							[false, true, true, false, false, true, true, false]]
+	}
+]
+}

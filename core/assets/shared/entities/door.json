@@ -1,0 +1,16 @@
+{
+	"id":"door",
+	"hittable":false,
+	"imgWidth":12,
+	"imgHeight":13,
+	"viewRectWidth":12,
+	"viewRectHeight":13,
+	"collisionRects":[
+					{"name":"bottom", "width":12, "height":5},
+					{"name":"top", "width":12, "height":8, "offsetY":5}
+					],
+	"animations":[
+				{"id":"open"},
+				{"id":"closed"}
+				]
+}

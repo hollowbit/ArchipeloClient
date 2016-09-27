@@ -1,0 +1,88 @@
+{
+"tileList": [
+	{
+		"id": "grass",
+		"name": "Grass"
+	},
+	{
+		"id": "water",
+		"x": 1,
+		"name": "Water",
+		collisionTable: [[true, true],
+						[true, true]]
+	},
+	{
+		"id": "dirt",
+		"x": 3,
+		"y": 1,
+		"name": "Dirt"
+	},
+	{
+		"id": "dirt_grass_north_west",
+		"x": 2,
+		"name": "Dirt to Grass (North West)"
+	},
+	{
+		"id": "dirt_grass_north",
+		"x": 3,
+		"name": "Dirt to Grass (North)"
+	},
+	{
+		"id": "dirt_grass_north_east",
+		"x": 4,
+		"name": "Dirt to Grass (North East)"
+	},
+	{
+		"id": "dirt_grass_west",
+		"x": 2,
+		"y": 1,
+		"name": "Dirt to Grass (West)"
+	},
+	{
+		"id": "dirt_grass_south_west",
+		"x": 2,
+		"y": 2,
+		"name": "Dirt to Grass (South West)"
+	},
+	{
+		"id": "dirt_grass_south",
+		"x": 3,
+		"y": 2,
+		"name": "Dirt to Grass (South)"
+	},
+	{
+		"id": "dirt_grass_south_east",
+		"x": 4,
+		"y": 2,
+		"name": "Dirt to Grass (South East)"
+	},
+	{
+		"id": "dirt_grass_east",
+		"x": 4,
+		"y": 1,
+		"name": "Dirt to Grass (East)"
+	},
+	{
+		"id": "dirt_grass_inner_bottom_right",
+		"y": 1,
+		"name": "Dirt to Grass (Inner Bottom Right)"
+	},
+	{
+		"id": "dirt_grass_inner_bottom_left",
+		"x": 1,
+		"y": 1,
+		"name": "Dirt to Grass (Inner Bottom Left)"
+	},
+	{
+		"id": "dirt_grass_inner_top_right",
+		"y": 2,
+		"name": "Dirt to Grass (Inner Bottom Right)"
+	},
+	{
+		"id": "dirt_grass_inner_top_left",
+		"x": 1,
+		"y": 2,
+		"name": "Dirt to Grass (Inner Bottom Left)"
+	}
+]
+}

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE module PUBLIC "-//Google Inc.//DTD Google Web Toolkit trunk//EN" "http://google-web-toolkit.googlecode.com/svn/trunk/distro-source/core/src/gwt-module.dtd">
+<module>
+	<source path="net/hollowbit/archipeloshared" >
+	
+		<include name="TileList.java"/>
+		<include name="TileData.java"/>
+		<include name="ElementList.java"/>
+		<include name="ElementData.java"/>
+		<include name="CollisionRect.java"/>
+		<include name="Direction.java"/>
+		<include name="Controls.java"/>
+		<include name="EntityTypeData.java"/>
+		<include name="EntityAnimationData.java"/>
+		<include name="StringValidator.java"/>
+		<include name="CollisionRectData.java"/>
+		<include name="ItemTypeData.java"/>
+	
+	</source>
+	
+	<extend-configuration-property name="gdx.reflect.include" value="net.hollowbit.archipeloshared.TileList" />
+	<extend-configuration-property name="gdx.reflect.include" value="net.hollowbit.archipeloshared.TileData" />
+	<extend-configuration-property name="gdx.reflect.include" value="net.hollowbit.archipeloshared.ElementList" />
+	<extend-configuration-property name="gdx.reflect.include" value="net.hollowbit.archipeloshared.ElementData" />
+	<extend-configuration-property name="gdx.reflect.include" value="net.hollowbit.archipeloshared.EntityTypeData" />
+	<extend-configuration-property name="gdx.reflect.include" value="net.hollowbit.archipeloshared.EntityAnimationData" />
+	<extend-configuration-property name="gdx.reflect.include" value="net.hollowbit.archipeloshared.CollisionRectData" />
+	<extend-configuration-property name="gdx.reflect.include" value="net.hollowbit.archipeloshared.ItemTypeData" />
+</module>

@@ -16,6 +16,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 import net.hollowbit.archipelo.entity.EntityType;
+import net.hollowbit.archipelo.hollowbitserver.HollowBitServerConnectivity;
 import net.hollowbit.archipelo.items.ItemType;
 import net.hollowbit.archipelo.network.NetworkManager;
 import net.hollowbit.archipelo.screen.ScreenManager;
@@ -53,6 +54,7 @@ public class ArchipeloClient extends ApplicationAdapter {
 	MapElementManager elementManager;
 	FontManager fontManager;
 	Skin skin;
+	HollowBitServerConnectivity hollowBitServerConnectivity;
 	
 	GameCamera cameraGame;
 	UiCamera cameraUi;
@@ -98,6 +100,7 @@ public class ArchipeloClient extends ApplicationAdapter {
 		networkManager = new NetworkManager();
 		fontManager = new FontManager();
 		screenManager = new ScreenManager(new MainMenuScreen());
+		hollowBitServerConnectivity = new HollowBitServerConnectivity();
 		
 		//For testing purposes
 		//IS_MOBILE = true;
@@ -189,6 +192,10 @@ public class ArchipeloClient extends ApplicationAdapter {
 	
 	public FontManager getFontManager () {
 		return fontManager;
+	}
+	
+	public HollowBitServerConnectivity getHollowBitServerConnectivity () {
+		return hollowBitServerConnectivity;
 	}
 	
 	public World getWorld () {

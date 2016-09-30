@@ -1,12 +1,8 @@
 # ArchipeloClient
-Official repository for the ArchipeloClient! You may now use this code to create awesome Archipelo related content, including client mods, utility apps and more! Please read the 'Legal Information' section first.
+Official repository for the ArchipeloClient! You may now use this code for whatever you like.
 
 <h3>Legal Information</h3>
-The legal information has changed slightly. Basically, you can now use the code more freely! Here are some basic rules to follow:
-  1. Only use the code to make programs that will not damage the game or its community.
-  2. Do not use the code to make programs unrelated to Archipelo.
-  3. Make the project open-source, like this code is!
-We would also like to remind you that we have the right to shutdown any projects that we feel are going against the rules.
+<p>This code is available publically for the user of anybody. Please note that anything in the 'assets' directory is not opensource and is not open for use unless they are used for an Archipelo related project. Such projects could be a modded client or utility app. You are not allowed to use these assets for anything else. Thanks for your cooperation.</p>
 
 <br>
 

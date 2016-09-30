@@ -16,6 +16,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 import net.hollowbit.archipelo.entity.EntityType;
+import net.hollowbit.archipelo.hollowbitserver.HollowBitServerConnectivity;
 import net.hollowbit.archipelo.items.ItemType;
 import net.hollowbit.archipelo.network.NetworkManager;
 import net.hollowbit.archipelo.screen.ScreenManager;
@@ -23,6 +24,7 @@ import net.hollowbit.archipelo.screen.screens.MainMenuScreen;
 import net.hollowbit.archipelo.tools.AssetManager;
 import net.hollowbit.archipelo.tools.FontManager;
 import net.hollowbit.archipelo.tools.GameCamera;
+import net.hollowbit.archipelo.tools.PingGetter;
 import net.hollowbit.archipelo.tools.UiCamera;
 import net.hollowbit.archipelo.world.MapElementManager;
 import net.hollowbit.archipelo.world.World;
@@ -53,6 +55,7 @@ public class ArchipeloClient extends ApplicationAdapter {
 	MapElementManager elementManager;
 	FontManager fontManager;
 	Skin skin;
+	HollowBitServerConnectivity hollowBitServerConnectivity;
 	
 	GameCamera cameraGame;
 	UiCamera cameraUi;
@@ -68,6 +71,11 @@ public class ArchipeloClient extends ApplicationAdapter {
 		batch = new SpriteBatch();
 		
 		skin = new Skin(Gdx.files.internal("ui/uiskin.json"));
+		
+		//Enable color markup on skin fonts
+		skin.getFont("default-font").getData().markupEnabled = true;
+		skin.getFont("large-font").getData().markupEnabled = true;
+		skin.getFont("chat-font").getData().markupEnabled = true;
 
 		//Temporary way to add assets
 		assetManager = new AssetManager();
@@ -98,6 +106,7 @@ public class ArchipeloClient extends ApplicationAdapter {
 		networkManager = new NetworkManager();
 		fontManager = new FontManager();
 		screenManager = new ScreenManager(new MainMenuScreen());
+		hollowBitServerConnectivity = new HollowBitServerConnectivity();
 		
 		//For testing purposes
 		//IS_MOBILE = true;
@@ -114,6 +123,9 @@ public class ArchipeloClient extends ApplicationAdapter {
 		
 		//Connect after everything is loaded
 		networkManager.connect(ADDRESS, PORT);
+		
+		PingGetter pingGetter = new PingGetter();
+		System.out.println("" + pingGetter.getPing(ADDRESS, PORT));
 	}
 
 	@Override
@@ -189,6 +201,10 @@ public class ArchipeloClient extends ApplicationAdapter {
 	
 	public FontManager getFontManager () {
 		return fontManager;
+	}
+	
+	public HollowBitServerConnectivity getHollowBitServerConnectivity () {
+		return hollowBitServerConnectivity;
 	}
 	
 	public World getWorld () {

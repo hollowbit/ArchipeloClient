@@ -129,7 +129,6 @@ public class HollowBitServerConnectivity {
             
 			@Override
             public boolean onMessage(final WebSocket webSocket, final String message) {
-				System.out.println(message);
             	try {
             		String[] splitter = message.split("/");//Split at bracket to seperate uuid
             		String packetId = splitter[0];//Get uuid

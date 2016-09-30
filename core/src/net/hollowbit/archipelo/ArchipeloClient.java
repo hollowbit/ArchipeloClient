@@ -24,6 +24,7 @@ import net.hollowbit.archipelo.screen.screens.MainMenuScreen;
 import net.hollowbit.archipelo.tools.AssetManager;
 import net.hollowbit.archipelo.tools.FontManager;
 import net.hollowbit.archipelo.tools.GameCamera;
+import net.hollowbit.archipelo.tools.PingGetter;
 import net.hollowbit.archipelo.tools.UiCamera;
 import net.hollowbit.archipelo.world.MapElementManager;
 import net.hollowbit.archipelo.world.World;
@@ -70,6 +71,11 @@ public class ArchipeloClient extends ApplicationAdapter {
 		batch = new SpriteBatch();
 		
 		skin = new Skin(Gdx.files.internal("ui/uiskin.json"));
+		
+		//Enable color markup on skin fonts
+		skin.getFont("default-font").getData().markupEnabled = true;
+		skin.getFont("large-font").getData().markupEnabled = true;
+		skin.getFont("chat-font").getData().markupEnabled = true;
 
 		//Temporary way to add assets
 		assetManager = new AssetManager();
@@ -117,6 +123,9 @@ public class ArchipeloClient extends ApplicationAdapter {
 		
 		//Connect after everything is loaded
 		networkManager.connect(ADDRESS, PORT);
+		
+		PingGetter pingGetter = new PingGetter();
+		System.out.println("" + pingGetter.getPing(ADDRESS, PORT));
 	}
 
 	@Override

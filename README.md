@@ -2,7 +2,7 @@
 Official repository for the ArchipeloClient! You may now use this code for whatever you like.
 
 <h3>Legal Information</h3>
-<p>This code is available publically for the user of anybody. Please note that anything in the 'assets' directory is not opensource and is not open for use unless they are used for an Archipelo related project. Such projects could be a modded client or utility app. You are not allowed to use these assets for anything else. Thanks for your cooperation.</p>
+<p>This code is opensource and available publically for the use of anybody. Please note that anything in the 'assets' directory is not opensource and is not open for use unless they are used for an Archipelo related project that helps the game and its community. Any harmful projects will be asked to shutdown. Allowed projects could be a modded client (as long as it isn't for cheating, just cosmetic) or utility app. You are not allowed to use these assets for anything else. Thanks for your cooperation.</p>
 
 <br>
 

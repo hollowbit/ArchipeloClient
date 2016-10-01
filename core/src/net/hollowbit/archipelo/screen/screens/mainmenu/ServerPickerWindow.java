@@ -40,7 +40,7 @@ public class ServerPickerWindow extends Window {
 		
 		row();
 		
-		add(serverListScrollPane).width(650).height(400).colspan(2);
+		add(serverListScrollPane).width(600).height(400).colspan(2);
 		
 		row();
 		
@@ -130,6 +130,7 @@ public class ServerPickerWindow extends Window {
 						infoLabel.setText("Could not find any servers.");
 					}
 					
+					getCell(serverListScrollPane).width(serverListTable.getWidth());
 					pack();
 				} catch (Exception e) {
 					infoLabel.setText("Could not get server info!");

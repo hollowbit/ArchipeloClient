@@ -1,9 +1,13 @@
 package net.hollowbit.archipelo.screen.screens.mainmenu;
 
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+
+import net.hollowbit.archipelo.ArchipeloClient;
 
 public class ServerListing extends Table implements Comparable<ServerListing>{
 	
@@ -17,7 +21,7 @@ public class ServerListing extends Table implements Comparable<ServerListing>{
 	private TextButton connectButton;
 	private int ping;
 	
-	public ServerListing (String name, int region, int traffic, int ping, Skin skin) {
+	public ServerListing (final String name, int region, int traffic, int ping, final String address, Skin skin) {
 		setBounds(0, 0, 300, 25);
 		this.ping = ping;
 		
@@ -37,6 +41,14 @@ public class ServerListing extends Table implements Comparable<ServerListing>{
 		add(pingLabel).fill();
 
 		connectButton = new TextButton("Connect", skin);
+		connectButton.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				ArchipeloClient.getGame().getNetworkManager().connect(address, ArchipeloClient.PORT);
+				ArchipeloClient.SERVER = name;
+				super.clicked(event, x, y);
+			}
+		});
 		add(connectButton);
 		
 		row();
@@ -58,9 +70,9 @@ public class ServerListing extends Table implements Comparable<ServerListing>{
 	
 	@Override
 	public int compareTo (ServerListing o) {
-		if (this.ping < o.ping)
-			return 1;
 		if (this.ping > o.ping)
+			return 1;
+		if (this.ping < o.ping)
 			return -1;
 		return 0;
 	}

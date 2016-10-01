@@ -26,7 +26,7 @@ public class PingGetter {
 			while (!gotPing) {}//Wait until we get a ping
 			return ping;
 		} catch (Exception e) {
-			return 9999999;
+			return -1;
 		}
 	}
 	
@@ -41,6 +41,10 @@ public class PingGetter {
 
             @Override
             public boolean onClose(final WebSocket webSocket, final WebSocketCloseCode code, final String reason) {
+            	if (!gotPing) {
+            		ping = -1;
+            		gotPing = true;
+            	}
                 return FULLY_HANDLED;
             }
             
@@ -56,6 +60,10 @@ public class PingGetter {
             
             @Override
             public boolean onError(WebSocket webSocket, Throwable error) {
+            	if (!gotPing) {
+            		ping = -1;
+            		gotPing = true;
+            	}
             	return FULLY_HANDLED;
             }
             

@@ -37,7 +37,7 @@ public class LoginWindow extends Window implements PacketHandler {
 	
 	Preferences prefs = Gdx.app.getPreferences("Archipelo");
 	
-	public LoginWindow (Stage stage) {
+	public LoginWindow (final LoginRegisterWindow loginRegisterWindow, Stage stage) {
 		super("Login", ArchipeloClient.getGame().getUiSkin());
 		this.setStage(stage);
 		this.setMovable(false);
@@ -95,6 +95,7 @@ public class LoginWindow extends Window implements PacketHandler {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				//Remove from stage and from main menu
+				loginRegisterWindow.setVisible(true);
 				remove();
 				super.clicked(event, x, y);
 			}

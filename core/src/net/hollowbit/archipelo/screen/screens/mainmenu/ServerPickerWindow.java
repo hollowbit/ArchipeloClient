@@ -3,10 +3,11 @@ package net.hollowbit.archipelo.screen.screens.mainmenu;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.List;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
@@ -17,39 +18,56 @@ import net.hollowbit.archipelo.tools.PingGetter;
 
 public class ServerPickerWindow extends Window {
 	
-	List<ServerListing> serverList;
 	ScrollPane serverListScrollPane;
 	Label infoLabel;
 	PingGetter pingGetter;
-	TextButton connectButton;
+	TextButton refreshButton;
+	TextButton exitButton;
+	Table serverListTable;
 	
 	public ServerPickerWindow () {
 		super("Pick Server", ArchipeloClient.getGame().getUiSkin());
+
+		serverListTable = new Table(getSkin());
+		serverListScrollPane = new ScrollPane(serverListTable, getSkin());
+		pingGetter = new PingGetter();
+		loadServerList();
 		
 		setMovable(false);
 		
-		pingGetter = new PingGetter();
-		
-		infoLabel = new Label("Getting server info...", getSkin());
-		add(infoLabel);
+		infoLabel = new Label("Getting server info...", getSkin(), "small");
+		add(infoLabel).pad(5).colspan(2);
 		
 		row();
 		
-		serverList = new List<ServerListing>(getSkin());
-		serverListScrollPane = new ScrollPane(serverList, getSkin());
-		add(serverListScrollPane).width(300).height(400);
+		add(serverListScrollPane).width(650).height(400).colspan(2);
 		
 		row();
 		
-		connectButton = new TextButton("Connect", getSkin());
-		connectButton.addListener(new ClickListener() {
+		refreshButton = new TextButton("Refresh", getSkin());
+		refreshButton.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
-				connect();
+				loadServerList();
 				super.clicked(event, x, y);
 			}
 		});
-		add(connectButton);
+		add(refreshButton).pad(5);
+		
+		if (!ArchipeloClient.IS_GWT) {
+			exitButton = new TextButton("Exit", getSkin());
+			exitButton.addListener(new ClickListener() {
+				@Override
+				public void clicked(InputEvent event, float x, float y) {
+					Gdx.app.exit();
+					super.clicked(event, x, y);
+				}
+			});
+			add(exitButton).pad(5);
+		}
+		
+		pack();
+
 	}
 	
 	public void loadServerList() {
@@ -59,11 +77,12 @@ public class ServerPickerWindow extends Window {
 			public void responseReceived(int id, String[] data) {
 				if (id != 6) {
 					infoLabel.setText("Could not get server info!");
+					pack();
 					return;
 				}
 				
 				try {
-					serverList.clearItems();
+					serverListTable.clearChildren();
 					
 					ArrayList<ServerListing> servers = new ArrayList<ServerListing>();
 					for (String serverDataRaw : data) {
@@ -73,20 +92,51 @@ public class ServerPickerWindow extends Window {
 						int traffic = Integer.parseInt(serverData[2]);
 						String hostname = serverData[3];
 						
-						servers.add(new ServerListing(name, region, traffic, pingGetter.getPing(hostname, ArchipeloClient.PORT), getSkin()));
+						int ping = pingGetter.getPing(hostname, ArchipeloClient.PORT);
+						if (ping < 0)//Means there was an error and could not connect to this server at all
+							continue;
+						
+						servers.add(new ServerListing(name, region, traffic, ping, hostname, getSkin()));
 					}
-					Collections.sort(servers);
-					serverList.setItems((ServerListing[]) servers.toArray());
-					infoLabel.setText("Pick server to connect to:");
+					
+					if (servers.size() > 0) {
+						Collections.sort(servers);
+						
+						for (ServerListing listing : servers) {
+							//serverListTable.add(listing).padTop(30);
+							//serverListTable.row();
+							
+							int size = serverListTable.getCells().size;
+							if (size > 0)
+								serverListTable.getCells().get(size - 1).expand(true, false);
+
+							boolean moveToBottom = serverListScrollPane.getScrollY() >= serverListScrollPane.getMaxY() - 10;
+							
+							//Add message to table
+							serverListTable.row();
+							serverListTable.add(listing).expandY().growX().top().left().pad(15, 5, 15, 5);
+							
+							//Update chatPane so that getMaxY is updated
+							serverListScrollPane.layout();
+							
+							//Adjust scoll if scroll is at bottom, otherwise, don't.
+							if (moveToBottom)
+								serverListScrollPane.setScrollY(serverListScrollPane.getMaxY());
+						}
+						serverListTable.pack();
+						
+						infoLabel.setText("Pick server to connect to:");
+					} else {
+						infoLabel.setText("Could not find any servers.");
+					}
+					
+					pack();
 				} catch (Exception e) {
 					infoLabel.setText("Could not get server info!");
+					pack();
 				}
 			}
 		});
-	}
-	
-	public void connect () {
-		
 	}
 	
 }

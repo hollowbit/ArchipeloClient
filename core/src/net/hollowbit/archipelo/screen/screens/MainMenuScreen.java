@@ -1,10 +1,10 @@
 package net.hollowbit.archipelo.screen.screens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Preferences;
-import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
@@ -17,9 +17,13 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 import net.hollowbit.archipelo.ArchipeloClient;
+import net.hollowbit.archipelo.hollowbitserver.HollowBitServerQueryResponseHandler;
 import net.hollowbit.archipelo.screen.Screen;
 import net.hollowbit.archipelo.screen.ScreenType;
-import net.hollowbit.archipelo.screen.screens.mainmenu.*;
+import net.hollowbit.archipelo.screen.screens.mainmenu.LoginRegisterWindow;
+import net.hollowbit.archipelo.screen.screens.mainmenu.LoginWindow;
+import net.hollowbit.archipelo.screen.screens.mainmenu.RegisterWindow;
+import net.hollowbit.archipelo.screen.screens.mainmenu.ServerPickerWindow;
 import net.hollowbit.archipelo.tools.FontManager.Fonts;
 import net.hollowbit.archipelo.tools.FontManager.Sizes;
 import net.hollowbit.archipelo.tools.GameCamera;
@@ -107,10 +111,52 @@ public class MainMenuScreen extends Screen {
 		logoY = 0;
 		
 		//Show disclaimer message on first time opening app
-		Preferences prefs = Gdx.app.getPreferences("archipelo");
+		final Preferences prefs = Gdx.app.getPreferences(ArchipeloClient.PREFS_NAME);
 		if (!ArchipeloClient.DEBUGMODE && !prefs.getBoolean("disclaimer-shown", false)) {
 			showDisclaimerWindow();
 			prefs.putBoolean("disclaimer-shown", true);
+		}
+		
+		//If login info was saved, verify it.
+		if (ArchipeloClient.LOGGED_IN) {
+			ArchipeloClient.getGame().getHollowBitServerConnectivity().sendVerifyQuery(ArchipeloClient.NAME, ArchipeloClient.PASSWORD, new HollowBitServerQueryResponseHandler() {
+				
+				@Override
+				public void responseReceived(int id, String[] data) {
+					if (id != 3) {//3 means there was a correct login. If it's not 3, it failed.
+						//Reset info to let the game know that there is no login credentials at the moment
+						ArchipeloClient.LOGGED_IN = false;
+						ArchipeloClient.NAME = "";
+						ArchipeloClient.PASSWORD = "";
+						
+						prefs.putBoolean("logged-in", false);
+						prefs.putString("username", "");
+						prefs.putString("password", "");
+						prefs.flush();
+					}
+				}
+			});
+		}
+		
+		//If there is a server saved, try to connect to it, if possible.
+		if (ArchipeloClient.SERVER_PICKED) {
+			ArchipeloClient.getGame().getHollowBitServerConnectivity().sendGetServerByNameQuery(ArchipeloClient.SERVER, new HollowBitServerQueryResponseHandler() {
+				
+				@Override
+				public void responseReceived(int id, String[] data) {
+					if (id == 15) {//If we found the server we last connected to, try to connect to it again.
+						String hostname = data[0];
+						ArchipeloClient.getGame().getNetworkManager().connect(hostname, ArchipeloClient.PORT);
+					} else {
+						ArchipeloClient.SERVER_PICKED = false;
+						ArchipeloClient.SERVER = "";
+						
+						prefs.putBoolean("server-picked", false);
+						prefs.putString("server-name", "");
+						prefs.flush();
+					}
+				}
+			});
 		}
 	}
 
@@ -145,8 +191,8 @@ public class MainMenuScreen extends Screen {
 		
 		cam.move(camX, camY, 0);
 		
-		//Update flash button
 		if (progression == 0) {
+			//Update flash button
 			flashTimer += deltaTime;
 			if (flashTimer >= FLASH_TIME) {
 				flashTimer -= FLASH_TIME;
@@ -174,6 +220,33 @@ public class MainMenuScreen extends Screen {
 					startProgressionThree();
 				}
 			}
+			
+		} else if (progression == 3) {
+			//If the user isn't logged in and the login window isn't already open, open it.
+			if (!ArchipeloClient.LOGGED_IN && !isLoginRegisterWindowOpen()) {
+				loginRegisterWndw = new LoginRegisterWindow(this, stage);
+				stage.addActor(loginRegisterWndw);
+				loginRegisterWndw.setPosition(Gdx.graphics.getWidth() / 2 - loginRegisterWndw.getWidth() / 2, Gdx.graphics.getHeight() / 2 - loginRegisterWndw.getHeight() / 2);
+			}
+			
+			//If the user is logged in and the login window is still open, close it.
+			if (ArchipeloClient.LOGGED_IN && isLoginRegisterWindowOpen()) {
+				loginRegisterWndw.remove();
+				loginRegisterWndw = null;
+			}
+			
+			//If no server is picked and the picker isn't already open, open it.
+			if (!ArchipeloClient.SERVER_PICKED && !isServerPickerWindowOpen() && !isLoginRegisterWindowOpen()) {//Don't open the server picker if the login window is open
+				serverPickerWndw = new ServerPickerWindow();
+				stage.addActor(serverPickerWndw);
+				serverPickerWndw.setPosition(Gdx.graphics.getWidth() / 2 - serverPickerWndw.getWidth() / 2, Gdx.graphics.getHeight() / 2 - serverPickerWndw.getHeight() / 2);
+			}
+			
+			//If the server is picked and the server picker window is still open, close it.
+			if (ArchipeloClient.SERVER_PICKED && isServerPickerWindowOpen()) {
+				serverPickerWndw.remove();
+				serverPickerWndw = null;
+			}
 		}
 	}
 
@@ -191,7 +264,7 @@ public class MainMenuScreen extends Screen {
 			font.draw(batch, layoutFPS, 10, height - layoutFPS.height);
 		}
 		
-		GlyphLayout layoutCon = new GlyphLayout(font, "Connection (US-East): " + (ArchipeloClient.getGame().getNetworkManager().isConnected() ? "[GREEN]Connected!" : "[RED]Not Connected."));
+		GlyphLayout layoutCon = new GlyphLayout(font, "Connection (" + ArchipeloClient.SERVER + "): " + (ArchipeloClient.getGame().getNetworkManager().isConnected() ? "[GREEN]Connected!" : "[RED]Not Connected."));
 		font.draw(batch, layoutCon, 4, 4 + layoutCon.height);
 		
 		if (flashOn && progression == 0)//Render flashing "Press Start" text
@@ -336,6 +409,14 @@ public class MainMenuScreen extends Screen {
 	
 	public boolean isThereAlreadyARegisterWindow () {
 		return registerWndw != null;
+	}
+	
+	public boolean isLoginRegisterWindowOpen () {
+		return loginRegisterWndw != null && stage.getActors().contains(loginRegisterWndw, true);
+	}
+	
+	public boolean isServerPickerWindowOpen () {
+		return serverPickerWndw != null && stage.getActors().contains(serverPickerWndw, true);
 	}
 	
 }

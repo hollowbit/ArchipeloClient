@@ -10,6 +10,7 @@ import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -24,16 +25,15 @@ import net.hollowbit.archipelo.screen.screens.MainMenuScreen;
 import net.hollowbit.archipelo.tools.AssetManager;
 import net.hollowbit.archipelo.tools.FontManager;
 import net.hollowbit.archipelo.tools.GameCamera;
-import net.hollowbit.archipelo.tools.PingGetter;
 import net.hollowbit.archipelo.tools.UiCamera;
 import net.hollowbit.archipelo.world.MapElementManager;
 import net.hollowbit.archipelo.world.World;
 
 public class ArchipeloClient extends ApplicationAdapter {
 	
-	public static final String ADDRESS = "localhost";
 	public static final int PORT = 22122;
 	
+	public static final String PREFS_NAME = "archipelo";
 	public static final String VERSION = "0.1a";
 	public static final int TILE_SIZE = 16;
 	public static final int PLAYER_SIZE = 32;
@@ -44,6 +44,12 @@ public class ArchipeloClient extends ApplicationAdapter {
 	public static float DELTA_TIME = 0;
 	public static float STATE_TIME = 0;//this is for looping animations where it doesn't matter where it starts.
 	public static boolean DEBUGMODE = true;
+	
+	public static String SERVER = "No Server Chosen";
+	public static boolean SERVER_PICKED = false;
+	public static String NAME = "";
+	public static String PASSWORD = "";
+	public static boolean LOGGED_IN = false;
 	
 	private static ArchipeloClient game;
 	
@@ -121,11 +127,18 @@ public class ArchipeloClient extends ApplicationAdapter {
 		
 		world = new World();
 		
-		//Connect after everything is loaded
-		networkManager.connect(ADDRESS, PORT);
+		//Load prefs
+		Preferences prefs = Gdx.app.getPreferences(PREFS_NAME);
+		if (prefs.getBoolean("logged-in", false)) {
+			LOGGED_IN = true;
+			NAME = prefs.getString("username");
+			PASSWORD = prefs.getString("password");
+		}
 		
-		PingGetter pingGetter = new PingGetter();
-		System.out.println("" + pingGetter.getPing(ADDRESS, PORT));
+		if (prefs.getBoolean("server-picked", false)) {
+			SERVER_PICKED = true;
+			SERVER = prefs.getString("server-name");
+		}
 	}
 
 	@Override

@@ -39,7 +39,7 @@ public class RegisterWindow extends Window implements PacketHandler {
 	
 	Preferences prefs = Gdx.app.getPreferences("Archipelo");
 	
-	public RegisterWindow(Stage stage) {
+	public RegisterWindow(final LoginRegisterWindow loginRegisterWindow, Stage stage) {
 		super("Register", ArchipeloClient.getGame().getUiSkin());
 		this.setStage(stage);
 		this.setMovable(false);
@@ -106,6 +106,7 @@ public class RegisterWindow extends Window implements PacketHandler {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				//Remove from stage
+				loginRegisterWindow.setVisible(true);
 				remove();
 				super.clicked(event, x, y);
 			}

@@ -19,12 +19,10 @@ import net.hollowbit.archipelo.network.PacketHandler;
 import net.hollowbit.archipelo.network.PacketType;
 import net.hollowbit.archipelo.network.packets.LoginPacket;
 import net.hollowbit.archipelo.screen.screens.GameScreen;
-import net.hollowbit.archipelo.screen.screens.MainMenuScreen;
 import net.hollowbit.archipelo.screen.screens.PlayerCreatorScreen;
+import net.hollowbit.archipeloshared.StringValidator;
 
 public class LoginWindow extends Window implements PacketHandler {
-	
-	MainMenuScreen screen;
 	
 	//Ui
 	Label usernameLbl;
@@ -39,9 +37,8 @@ public class LoginWindow extends Window implements PacketHandler {
 	
 	Preferences prefs = Gdx.app.getPreferences("Archipelo");
 	
-	public LoginWindow(final MainMenuScreen screen, Stage stage) {
+	public LoginWindow (Stage stage) {
 		super("Login", ArchipeloClient.getGame().getUiSkin());
-		this.screen = screen;
 		this.setStage(stage);
 		this.setMovable(false);
 		
@@ -75,6 +72,10 @@ public class LoginWindow extends Window implements PacketHandler {
 			public void clicked(InputEvent event, float x, float y) {
 				if (usernameFld.getText().equals("") || passwordFld.getText().equals("")) {
 					showErrorWindow("Please don't leave fields blank!");
+				} else if (!StringValidator.isStringValid(usernameFld.getText(), StringValidator.USERNAME)) {
+					showErrorWindow("Please only use a-zA-Z0-9 and _ for usernames.");
+				} else if (!StringValidator.isStringValid(passwordFld.getText(), StringValidator.PASSWORD)) {
+					showErrorWindow("Please only use a-zA-Z0-9 and !@#$%^&*()-_+= for passwords.");
 				} else {
 					//Put data in variables for later and send login packet
 					username = usernameFld.getText();

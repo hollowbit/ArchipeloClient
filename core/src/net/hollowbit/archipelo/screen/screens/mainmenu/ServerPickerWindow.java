@@ -1,13 +1,15 @@
 package net.hollowbit.archipelo.screen.screens.mainmenu;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.List;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 import net.hollowbit.archipelo.ArchipeloClient;
 import net.hollowbit.archipelo.hollowbitserver.HollowBitServerQueryResponseHandler;
@@ -21,35 +23,40 @@ public class ServerPickerWindow extends Window {
 	PingGetter pingGetter;
 	TextButton connectButton;
 	
-	public ServerPickerWindow(Skin skin) {
-		super("Pick Server", skin);
+	public ServerPickerWindow () {
+		super("Pick Server", ArchipeloClient.getGame().getUiSkin());
 		
-		ArchipeloClient.getGame().getHollowBitServerConnectivity().sendGetServerListQuery(getHollowBitQueryResponseHandler());
-		
-		setBounds(0, 0, 300, 420);
+		setMovable(false);
 		
 		pingGetter = new PingGetter();
 		
-		infoLabel = new Label("Getting server info...", skin);
+		infoLabel = new Label("Getting server info...", getSkin());
 		add(infoLabel);
 		
 		row();
 		
-		serverList = new List<ServerListing>(skin);
-		serverListScrollPane = new ScrollPane(serverList, skin);
+		serverList = new List<ServerListing>(getSkin());
+		serverListScrollPane = new ScrollPane(serverList, getSkin());
 		add(serverListScrollPane).width(300).height(400);
 		
 		row();
 		
-		connectButton = new TextButton("Connect", skin);
+		connectButton = new TextButton("Connect", getSkin());
+		connectButton.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				connect();
+				super.clicked(event, x, y);
+			}
+		});
 		add(connectButton);
 	}
 	
-	private HollowBitServerQueryResponseHandler getHollowBitQueryResponseHandler () {
-		return new HollowBitServerQueryResponseHandler() {
+	public void loadServerList() {
+		ArchipeloClient.getGame().getHollowBitServerConnectivity().sendGetServerListQuery(new HollowBitServerQueryResponseHandler() {
 			
 			@Override
-			public void responceReceived(int id, String[] data) {
+			public void responseReceived(int id, String[] data) {
 				if (id != 6) {
 					infoLabel.setText("Could not get server info!");
 					return;
@@ -68,13 +75,18 @@ public class ServerPickerWindow extends Window {
 						
 						servers.add(new ServerListing(name, region, traffic, pingGetter.getPing(hostname, ArchipeloClient.PORT), getSkin()));
 					}
+					Collections.sort(servers);
 					serverList.setItems((ServerListing[]) servers.toArray());
 					infoLabel.setText("Pick server to connect to:");
 				} catch (Exception e) {
 					infoLabel.setText("Could not get server info!");
 				}
 			}
-		};
+		});
+	}
+	
+	public void connect () {
+		
 	}
 	
 }

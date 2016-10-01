@@ -42,12 +42,15 @@ public class MainMenuScreen extends Screen {
 	
 	//Ui
 	Stage stage;
-	TextButton loginBtn;
-	TextButton registerBtn;
+	TextButton playBtn;
+	TextButton changeServerBtn;
+	TextButton logoutBtn;
 	TextButton exitBtn;
 	
 	LoginWindow loginWndw;
 	RegisterWindow registerWndw;
+	LoginRegisterWindow loginRegisterWndw;
+	ServerPickerWindow serverPickerWndw;
 	
 	Texture background;
 	Texture logo;
@@ -106,7 +109,7 @@ public class MainMenuScreen extends Screen {
 		//Show disclaimer message on first time opening app
 		Preferences prefs = Gdx.app.getPreferences("archipelo");
 		if (!ArchipeloClient.DEBUGMODE && !prefs.getBoolean("disclaimer-shown", false)) {
-			showErrorWindow("Please note that Archipelo is very early and development. Please judge it accordingly. Also note that server-wide account deletion is a possibility during this development stage. Thank you.");
+			showDisclaimerWindow();
 			prefs.putBoolean("disclaimer-shown", true);
 		}
 	}
@@ -206,16 +209,22 @@ public class MainMenuScreen extends Screen {
 	@Override
 	public void resize (int width, int height) {
 		stage.getViewport().update(width, height);
-		if (loginBtn != null)
-			loginBtn.setPosition(Gdx.graphics.getWidth() / 2 - loginBtn.getWidth() / 2, Gdx.graphics.getHeight() / 2 - loginBtn.getHeight() / 2 + 20);
-		if (registerBtn != null)
-			registerBtn.setPosition(Gdx.graphics.getWidth() / 2 - registerBtn.getWidth() / 2, Gdx.graphics.getHeight() / 2 - registerBtn.getHeight() / 2 - 20);
+		if (playBtn != null)
+			playBtn.setPosition(Gdx.graphics.getWidth() / 2 - playBtn.getWidth() / 2, Gdx.graphics.getHeight() / 2 - playBtn.getHeight() / 2 + 20);
+		if (changeServerBtn != null)
+			changeServerBtn.setPosition(Gdx.graphics.getWidth() / 2 - changeServerBtn.getWidth() / 2, Gdx.graphics.getHeight() / 2 - changeServerBtn.getHeight() / 2 - 20);
+		if (logoutBtn != null)
+				logoutBtn.setPosition(Gdx.graphics.getWidth() / 2 - logoutBtn.getWidth() / 2, Gdx.graphics.getHeight() / 2 - logoutBtn.getHeight() / 2 - 60);
 		if (exitBtn != null)
-			exitBtn.setPosition(Gdx.graphics.getWidth() / 2 - exitBtn.getWidth() / 2, Gdx.graphics.getHeight() / 2 - exitBtn.getHeight() / 2 - 60);
+			exitBtn.setPosition(Gdx.graphics.getWidth() / 2 - exitBtn.getWidth() / 2, Gdx.graphics.getHeight() / 2 - exitBtn.getHeight() / 2 - 100);
 		if (loginWndw != null)
 			loginWndw.setPosition(Gdx.graphics.getWidth() / 2 - loginWndw.getWidth() / 2, Gdx.graphics.getHeight() / 2 - loginWndw.getHeight() / 2);
 		if (registerWndw != null)
 			registerWndw.setPosition(Gdx.graphics.getWidth() / 2 - registerWndw.getWidth() / 2, Gdx.graphics.getHeight() / 2 - registerWndw.getHeight() / 2);
+		if (loginRegisterWndw != null)
+			loginRegisterWndw.setPosition(Gdx.graphics.getWidth() / 2 - loginRegisterWndw.getWidth() / 2, Gdx.graphics.getHeight() / 2 - loginRegisterWndw.getHeight() / 2);
+		if (serverPickerWndw != null)
+			serverPickerWndw.setPosition(Gdx.graphics.getWidth() / 2 - serverPickerWndw.getWidth() / 2, Gdx.graphics.getHeight() / 2 - serverPickerWndw.getHeight() / 2);
 		
 		backgroundWidth = cam.getWidth() * BACKGROUND_IMAGE_SCALE;
 		backgroundHeight = cam.getHeight() * BACKGROUND_IMAGE_SCALE;
@@ -229,42 +238,49 @@ public class MainMenuScreen extends Screen {
 	private void startProgressionThree () {
 		progression = 3;
 		
-		final MainMenuScreen screen = this;
-		
 		//Load ui
-		loginBtn = new TextButton("Login", ArchipeloClient.getGame().getUiSkin());
-		loginBtn.addListener(new ClickListener() {
+		playBtn = new TextButton("Play", ArchipeloClient.getGame().getUiSkin());
+		playBtn.addListener(new ClickListener() {
 			
 			@Override
 			public void clicked (InputEvent event, float x, float y) {
-				if (loginWndw == null || loginWndw.getStage() == null) {
-					loginWndw = new LoginWindow(screen, stage);
-					loginWndw.setPosition(Gdx.graphics.getWidth() / 2 - loginWndw.getWidth() / 2, Gdx.graphics.getHeight() / 2 - loginWndw.getHeight() / 2);
-					stage.addActor(loginWndw);
-				}
+				ArchipeloClient.getGame().getScreenManager().setScreen(new CharacterPickerScreen());
 				super.clicked(event, x, y);
 			}
 			
 		});
-		loginBtn.setPosition(Gdx.graphics.getWidth() / 2 - loginBtn.getWidth() / 2, Gdx.graphics.getHeight() / 2 - loginBtn.getHeight() / 2 + 20);
-		stage.addActor(loginBtn);
+		playBtn.setPosition(Gdx.graphics.getWidth() / 2 - playBtn.getWidth() / 2, Gdx.graphics.getHeight() / 2 - playBtn.getHeight() / 2 + 20);
+		stage.addActor(playBtn);
 		
-		registerBtn = new TextButton("Register", ArchipeloClient.getGame().getUiSkin());
-		registerBtn.addListener(new ClickListener() {
+		changeServerBtn = new TextButton("Change Server", ArchipeloClient.getGame().getUiSkin());
+		changeServerBtn.addListener(new ClickListener() {
 			
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
-				if (registerWndw == null || registerWndw.getStage() == null) {
-					registerWndw = new RegisterWindow(screen, stage);
-					registerWndw.setPosition(Gdx.graphics.getWidth() / 2 - registerWndw.getWidth() / 2, Gdx.graphics.getHeight() / 2 - registerWndw.getHeight() / 2);
-					stage.addActor(registerWndw);
-				}
+				
 				super.clicked(event, x, y);
 			}
 			
 		});
-		registerBtn.setPosition(Gdx.graphics.getWidth() / 2 - registerBtn.getWidth() / 2, Gdx.graphics.getHeight() / 2 - registerBtn.getHeight() / 2 - 20);
-		stage.addActor(registerBtn);
+		changeServerBtn.setPosition(Gdx.graphics.getWidth() / 2 - changeServerBtn.getWidth() / 2, Gdx.graphics.getHeight() / 2 - changeServerBtn.getHeight() / 2 - 20);
+		stage.addActor(changeServerBtn);
+		
+		final MainMenuScreen mainMenuScreen = this;
+		
+		logoutBtn = new TextButton("Logout", ArchipeloClient.getGame().getUiSkin());
+		logoutBtn.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				if (loginRegisterWndw == null || loginRegisterWndw.getStage() == null) {
+					loginRegisterWndw = new LoginRegisterWindow(mainMenuScreen, stage);
+					loginRegisterWndw.setPosition(Gdx.graphics.getWidth() / 2 - loginRegisterWndw.getWidth() / 2, Gdx.graphics.getHeight() / 2 - loginRegisterWndw.getHeight() / 2);
+					stage.addActor(loginRegisterWndw);
+				}
+				super.clicked(event, x, y);
+			}
+		});
+		logoutBtn.setPosition(Gdx.graphics.getWidth() / 2 - logoutBtn.getWidth() / 2, Gdx.graphics.getHeight() / 2 - logoutBtn.getHeight() / 2 - 60);
+		stage.addActor(logoutBtn);
 		
 		if (!ArchipeloClient.IS_GWT) {
 			exitBtn = new TextButton("Exit", ArchipeloClient.getGame().getUiSkin());
@@ -277,18 +293,18 @@ public class MainMenuScreen extends Screen {
 				}
 				
 			});
-			exitBtn.setPosition(Gdx.graphics.getWidth() / 2 - exitBtn.getWidth() / 2, Gdx.graphics.getHeight() / 2 - exitBtn.getHeight() / 2 - 60);
+			exitBtn.setPosition(Gdx.graphics.getWidth() / 2 - exitBtn.getWidth() / 2, Gdx.graphics.getHeight() / 2 - exitBtn.getHeight() / 2 - 100);
 			stage.addActor(exitBtn);
 		}
 	}
 	
-	private void showErrorWindow (String error) {
+	private void showDisclaimerWindow () {
 		final Dialog dialog = new Dialog("Disclaimer", ArchipeloClient.getGame().getUiSkin(), "dialog") {
 		    public void result(Object obj) {
 		        remove();
 		    }
 		};
-		Label label = new Label(error, ArchipeloClient.getGame().getUiSkin());
+		Label label = new Label("Please note that Archipelo is very early in development. Please judge it accordingly. Also note that server-wide account deletion is a possibility during this development stage. Thank you.", ArchipeloClient.getGame().getUiSkin());
 		label.setWrap(true);
 		dialog.add(label).width(500);
 		dialog.row();
@@ -305,5 +321,21 @@ public class MainMenuScreen extends Screen {
 		dialog.key(Keys.ESCAPE, true);
 		dialog.show(stage);
 	}
-
+	
+	public void setLoginWindow (LoginWindow loginWndw) {
+		this.loginWndw = loginWndw;
+	}
+	
+	public boolean isThereAlreadyALoginWindow () {
+		return loginWndw != null;
+	}
+	
+	public void setRegisterWindow (RegisterWindow registerWndw) {
+		this.registerWndw = registerWndw;
+	}
+	
+	public boolean isThereAlreadyARegisterWindow () {
+		return registerWndw != null;
+	}
+	
 }

@@ -19,13 +19,10 @@ import net.hollowbit.archipelo.network.PacketHandler;
 import net.hollowbit.archipelo.network.PacketType;
 import net.hollowbit.archipelo.network.packets.LoginPacket;
 import net.hollowbit.archipelo.screen.screens.GameScreen;
-import net.hollowbit.archipelo.screen.screens.MainMenuScreen;
 import net.hollowbit.archipelo.screen.screens.PlayerCreatorScreen;
 import net.hollowbit.archipeloshared.StringValidator;
 
 public class RegisterWindow extends Window implements PacketHandler {
-	
-	MainMenuScreen screen;
 	
 	//Ui
 	Label usernameLbl;
@@ -42,9 +39,8 @@ public class RegisterWindow extends Window implements PacketHandler {
 	
 	Preferences prefs = Gdx.app.getPreferences("Archipelo");
 	
-	public RegisterWindow(final MainMenuScreen screen, Stage stage) {
+	public RegisterWindow(Stage stage) {
 		super("Register", ArchipeloClient.getGame().getUiSkin());
-		this.screen = screen;
 		this.setStage(stage);
 		this.setMovable(false);
 		

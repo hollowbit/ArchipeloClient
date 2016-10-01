@@ -2,6 +2,6 @@ package net.hollowbit.archipelo.hollowbitserver;
 
 public interface HollowBitServerQueryResponseHandler {
 	
-	public void responceReceived (int id, String[] data);
+	public void responseReceived (int id, String[] data);
 	
 }

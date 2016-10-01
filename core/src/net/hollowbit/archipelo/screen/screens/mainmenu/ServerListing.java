@@ -5,7 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 
-public class ServerListing extends Table {
+public class ServerListing extends Table implements Comparable<ServerListing>{
 	
 	private static final String[] REGION_NAME = {"World", "North America East", "North America West", "South America East", "South America West", "East Asia", "West Asia", "South Asia", "Eastern Europe", "Western Europe", "Northern Africa", "Southern Africa", "Oceania"};
 	private static final String[] TRAFFIC_NAME = {"Low", "Medium", "High"};
@@ -15,9 +15,11 @@ public class ServerListing extends Table {
 	private Label trafficLabel;
 	private Label pingLabel;
 	private TextButton connectButton;
+	private int ping;
 	
 	public ServerListing (String name, int region, int traffic, int ping, Skin skin) {
 		setBounds(0, 0, 300, 25);
+		this.ping = ping;
 		
 		//Initialize labels
 		nameLabel = new Label(name, skin);
@@ -52,6 +54,15 @@ public class ServerListing extends Table {
 		regionLabel = new Label("Region: " + REGION_NAME[region], skin, "small");
 		add(regionLabel);
 		
+	}
+	
+	@Override
+	public int compareTo (ServerListing o) {
+		if (this.ping < o.ping)
+			return 1;
+		if (this.ping > o.ping)
+			return -1;
+		return 0;
 	}
 	
 }

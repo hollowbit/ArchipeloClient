@@ -243,7 +243,7 @@ public class MainMenuScreen extends Screen {
 			}
 			
 			//If the server is picked and the server picker window is still open, close it.
-			if (ArchipeloClient.SERVER_PICKED && isServerPickerWindowOpen()) {
+			if (ArchipeloClient.SERVER_PICKED && ArchipeloClient.getGame().getNetworkManager().isConnected() && isServerPickerWindowOpen()) {
 				serverPickerWndw.remove();
 				serverPickerWndw = null;
 			}
@@ -330,7 +330,12 @@ public class MainMenuScreen extends Screen {
 			
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
-				
+				if (!isServerPickerWindowOpen()) {
+					ArchipeloClient.getGame().getNetworkManager().disconnect();
+					serverPickerWndw = new ServerPickerWindow();
+					serverPickerWndw.setPosition(Gdx.graphics.getWidth() / 2 - serverPickerWndw.getWidth() / 2, Gdx.graphics.getHeight() / 2 - serverPickerWndw.getHeight() / 2);
+					stage.addActor(serverPickerWndw);
+				}
 				super.clicked(event, x, y);
 			}
 			
@@ -345,6 +350,17 @@ public class MainMenuScreen extends Screen {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				if (loginRegisterWndw == null || loginRegisterWndw.getStage() == null) {
+					//Reset login credentials
+					ArchipeloClient.LOGGED_IN = false;
+					ArchipeloClient.NAME = "";
+					ArchipeloClient.PASSWORD = "";
+					
+					Preferences prefs = Gdx.app.getPreferences(ArchipeloClient.PREFS_NAME);
+					prefs.putBoolean("logged-in", false);
+					prefs.putString("username", "");
+					prefs.putString("password", "");
+					prefs.flush();
+					
 					loginRegisterWndw = new LoginRegisterWindow(mainMenuScreen, stage);
 					loginRegisterWndw.setPosition(Gdx.graphics.getWidth() / 2 - loginRegisterWndw.getWidth() / 2, Gdx.graphics.getHeight() / 2 - loginRegisterWndw.getHeight() / 2);
 					stage.addActor(loginRegisterWndw);

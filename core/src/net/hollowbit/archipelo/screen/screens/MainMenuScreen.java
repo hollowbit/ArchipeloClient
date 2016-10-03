@@ -119,14 +119,14 @@ public class MainMenuScreen extends Screen {
 		
 		//If login info was saved, verify it.
 		if (ArchipeloClient.LOGGED_IN) {
-			ArchipeloClient.getGame().getHollowBitServerConnectivity().sendVerifyQuery(ArchipeloClient.NAME, ArchipeloClient.PASSWORD, new HollowBitServerQueryResponseHandler() {
+			ArchipeloClient.getGame().getHollowBitServerConnectivity().sendVerifyQuery(ArchipeloClient.USERNAME, ArchipeloClient.PASSWORD, new HollowBitServerQueryResponseHandler() {
 				
 				@Override
 				public void responseReceived(int id, String[] data) {
 					if (id != 3) {//3 means there was a correct login. If it's not 3, it failed.
 						//Reset info to let the game know that there is no login credentials at the moment
 						ArchipeloClient.LOGGED_IN = false;
-						ArchipeloClient.NAME = "";
+						ArchipeloClient.USERNAME = "";
 						ArchipeloClient.PASSWORD = "";
 						
 						prefs.putBoolean("logged-in", false);
@@ -352,7 +352,7 @@ public class MainMenuScreen extends Screen {
 				if (loginRegisterWndw == null || loginRegisterWndw.getStage() == null) {
 					//Reset login credentials
 					ArchipeloClient.LOGGED_IN = false;
-					ArchipeloClient.NAME = "";
+					ArchipeloClient.USERNAME = "";
 					ArchipeloClient.PASSWORD = "";
 					
 					Preferences prefs = Gdx.app.getPreferences(ArchipeloClient.PREFS_NAME);
@@ -416,7 +416,7 @@ public class MainMenuScreen extends Screen {
 	}
 	
 	public boolean isThereAlreadyALoginWindow () {
-		return loginWndw != null;
+		return loginWndw != null && stage.getActors().contains(loginWndw, true);
 	}
 	
 	public void setRegisterWindow (RegisterWindow registerWndw) {
@@ -424,7 +424,7 @@ public class MainMenuScreen extends Screen {
 	}
 	
 	public boolean isThereAlreadyARegisterWindow () {
-		return registerWndw != null;
+		return registerWndw != null && stage.getActors().contains(registerWndw, true);
 	}
 	
 	public boolean isLoginRegisterWindowOpen () {

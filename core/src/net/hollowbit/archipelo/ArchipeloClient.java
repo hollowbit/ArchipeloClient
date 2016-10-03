@@ -47,7 +47,7 @@ public class ArchipeloClient extends ApplicationAdapter {
 	
 	public static String SERVER = "No Server Chosen";
 	public static boolean SERVER_PICKED = false;
-	public static String NAME = "";
+	public static String USERNAME = "";
 	public static String PASSWORD = "";
 	public static boolean LOGGED_IN = false;
 	
@@ -68,12 +68,24 @@ public class ArchipeloClient extends ApplicationAdapter {
 	
 	World world = null;
 	
-	String username;
-	
 	@Override
 	public void create () {
 		game = this;
 		Gdx.app.setLogLevel(Application.LOG_DEBUG);
+		
+		//Load prefs
+		Preferences prefs = Gdx.app.getPreferences(PREFS_NAME);
+		if (prefs.getBoolean("logged-in", false)) {
+			LOGGED_IN = true;
+			USERNAME = prefs.getString("username");
+			PASSWORD = prefs.getString("password");
+		}
+		
+		if (prefs.getBoolean("server-picked", false)) {
+			SERVER_PICKED = true;
+			SERVER = prefs.getString("server-name");
+		}
+		
 		batch = new SpriteBatch();
 		
 		skin = new Skin(Gdx.files.internal("ui/uiskin.json"));
@@ -111,8 +123,8 @@ public class ArchipeloClient extends ApplicationAdapter {
 		//Managers
 		networkManager = new NetworkManager();
 		fontManager = new FontManager();
-		screenManager = new ScreenManager(new MainMenuScreen());
 		hollowBitServerConnectivity = new HollowBitServerConnectivity();
+		screenManager = new ScreenManager(new MainMenuScreen());
 		
 		//For testing purposes
 		//IS_MOBILE = true;
@@ -126,19 +138,6 @@ public class ArchipeloClient extends ApplicationAdapter {
 			IS_GWT = true;
 		
 		world = new World();
-		
-		//Load prefs
-		Preferences prefs = Gdx.app.getPreferences(PREFS_NAME);
-		if (prefs.getBoolean("logged-in", false)) {
-			LOGGED_IN = true;
-			NAME = prefs.getString("username");
-			PASSWORD = prefs.getString("password");
-		}
-		
-		if (prefs.getBoolean("server-picked", false)) {
-			SERVER_PICKED = true;
-			SERVER = prefs.getString("server-name");
-		}
 	}
 
 	@Override
@@ -230,14 +229,6 @@ public class ArchipeloClient extends ApplicationAdapter {
 	
 	public static ArchipeloClient getGame () {
 		return game;
-	}
-	
-	public void setUsername (String username) {
-		this.username = username;
-	}
-	
-	public String getUsername () {
-		return username;
 	}
 	
 }

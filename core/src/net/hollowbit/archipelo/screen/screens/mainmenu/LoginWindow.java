@@ -12,17 +12,13 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.Align;
 
 import net.hollowbit.archipelo.ArchipeloClient;
-import net.hollowbit.archipelo.network.Packet;
-import net.hollowbit.archipelo.network.PacketHandler;
-import net.hollowbit.archipelo.network.PacketType;
-import net.hollowbit.archipelo.network.packets.LoginPacket;
-import net.hollowbit.archipelo.screen.screens.GameScreen;
-import net.hollowbit.archipelo.screen.screens.PlayerCreatorScreen;
+import net.hollowbit.archipelo.hollowbitserver.HollowBitServerQueryResponseHandler;
 import net.hollowbit.archipeloshared.StringValidator;
 
-public class LoginWindow extends Window implements PacketHandler {
+public class LoginWindow extends Window {
 	
 	//Ui
 	Label usernameLbl;
@@ -42,14 +38,18 @@ public class LoginWindow extends Window implements PacketHandler {
 		this.setStage(stage);
 		this.setMovable(false);
 		
-		ArchipeloClient.getGame().getNetworkManager().addPacketHandler(this);
-		
 		//Load ui elements
+		Label instructionsLabel = new Label("Login to an existing account.", getSkin(), "small");
+		instructionsLabel.setWrap(true);
+		instructionsLabel.setAlignment(Align.center);
+		add(instructionsLabel).width(400).pad(10).colspan(2);
+		row();
+		
 		usernameLbl = new Label("Username: ", getSkin());
 		add(usernameLbl).width(usernameLbl.getWidth());
 		usernameFld = new TextField(prefs.getString("username", ""), getSkin());
 		stage.setKeyboardFocus(usernameFld);
-		add(usernameFld).width(usernameFld.getWidth());
+		add(usernameFld).pad(10);
 		row();
 		
 		passwordLbl = new Label("Password: ", getSkin());
@@ -57,12 +57,12 @@ public class LoginWindow extends Window implements PacketHandler {
 		passwordFld = new TextField(prefs.getString("password", ""), getSkin());
 		passwordFld.setPasswordCharacter('*');
 		passwordFld.setPasswordMode(true);
-		add(passwordFld).width(passwordFld.getWidth());
+		add(passwordFld).pad(10);
 		row();
 		
 		rememberChkBx = new CheckBox(" Remember?", getSkin());
 		rememberChkBx.setChecked(prefs.getBoolean("remember", false));
-		add(rememberChkBx).width(rememberChkBx.getWidth());
+		add(rememberChkBx).pad(10);
 		row();
 		
 		loginBtn = new TextButton("Login", getSkin());
@@ -80,14 +80,16 @@ public class LoginWindow extends Window implements PacketHandler {
 					//Put data in variables for later and send login packet
 					username = usernameFld.getText();
 					password = passwordFld.getText();
-                	ArchipeloClient.getGame().getNetworkManager().sendPacket(new LoginPacket(username, password, false));
+                	//ArchipeloClient.getGame().getNetworkManager().sendPacket(new LoginPacket(username, password, false));
+					
+					ArchipeloClient.getGame().getHollowBitServerConnectivity().sendVerifyQuery(username, password, getHollowBitServerQueryResponseHandler());
 				}
 
 				super.clicked(event, x, y);
 			}
 			
 		});
-		add(loginBtn).width(loginBtn.getWidth());
+		add(loginBtn).pad(10);
 		
 		cancelBtn = new TextButton("Cancel", getSkin());
 		cancelBtn.addListener(new ClickListener() {
@@ -101,12 +103,60 @@ public class LoginWindow extends Window implements PacketHandler {
 			}
 			
 		});
-		add(cancelBtn).width(cancelBtn.getWidth());
+		add(cancelBtn).pad(10);
 		
 		pack();
 	}
-
-	@Override
+	
+	private HollowBitServerQueryResponseHandler getHollowBitServerQueryResponseHandler () {
+		return new HollowBitServerQueryResponseHandler() {
+			
+			@Override
+			public void responseReceived(int id, String[] data) {
+				switch (id) {
+				case 5://Verify too fast
+					showErrorWindow("You are verifying too fast. Wait " + data[0] + " before logins.");
+					break;
+				case 1://User doesn't exist
+					showErrorWindow("User with this name doesn't exist.");
+					break;
+				case 2://Wrong password
+					showErrorWindow("User exists but the password is incorrect.");
+					break;
+				case 13://Invalid username
+					showErrorWindow("Please only use a-zA-Z0-9 and _ for usernames.");
+					break;
+				case 12://Invalid password
+					showErrorWindow("Please only use a-zA-Z0-9 and !@#$%^&*()-_+= for passwords.");
+					break;
+				case 11://Invalid email
+					showErrorWindow("Email address entered is invalid.");
+					break;
+				case 3://Correct login!
+					if (rememberChkBx.isChecked()) {
+						//Save login settings
+						prefs.putString("username", username);
+						prefs.putString("password", password);
+						prefs.putBoolean("logged-in", true);
+					} else {
+						prefs.putString("username", "");
+						prefs.putString("password", "");
+						prefs.putBoolean("logged-in", false);
+					}
+					prefs.flush();
+					
+					ArchipeloClient.LOGGED_IN = true;
+					ArchipeloClient.USERNAME = username;
+					ArchipeloClient.PASSWORD = password;
+					
+					remove();
+					break;
+				}
+			}
+		};
+	}
+	
+	/*@Override
 	public boolean handlePacket(Packet packet) {
 		if (packet.packetType == PacketType.LOGIN) {
 			LoginPacket loginPacket = (LoginPacket) packet;
@@ -146,7 +196,7 @@ public class LoginWindow extends Window implements PacketHandler {
 			}
 		}
 		return false;
-	}
+	}*/
 	
 	private void showErrorWindow (String error) {
 		Dialog dialog = new Dialog("Login Error", getSkin(), "dialog") {

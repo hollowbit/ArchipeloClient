@@ -16,6 +16,7 @@ import com.github.czyzby.websocket.data.WebSocketCloseCode;
 import com.github.czyzby.websocket.net.ExtendedNet;
 
 import net.hollowbit.archipelo.ArchipeloClient;
+import net.hollowbit.archipelo.screen.ScreenType;
 import net.hollowbit.archipelo.screen.screens.ErrorScreen;
 import net.hollowbit.archipelo.screen.screens.MainMenuScreen;
 
@@ -122,7 +123,8 @@ public class NetworkManager implements PacketHandler {
             @Override
             public boolean onClose(final WebSocket webSocket, final WebSocketCloseCode code, final String reason) {
                 Gdx.app.log("WS", "Disconnected - status: " + code + ", reason: " + reason);
-                ArchipeloClient.getGame().getScreenManager().setScreen(new MainMenuScreen());
+                if (ArchipeloClient.getGame().getScreenManager().getScreenType() == ScreenType.GAME)
+                	ArchipeloClient.getGame().getScreenManager().setScreen(new MainMenuScreen());
                 return FULLY_HANDLED;
             }
 

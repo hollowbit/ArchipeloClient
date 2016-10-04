@@ -33,7 +33,6 @@ public class ArchipeloClient extends ApplicationAdapter {
 	
 	public static final int PORT = 22122;
 	
-	public static final String PREFS_NAME = "archipelo";
 	public static final String VERSION = "0.1a";
 	public static final int TILE_SIZE = 16;
 	public static final int PLAYER_SIZE = 32;

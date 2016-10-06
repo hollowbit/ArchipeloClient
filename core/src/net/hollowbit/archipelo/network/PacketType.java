@@ -19,7 +19,7 @@ public class PacketType {
 	public static final int POPUP_TEXT = 8;
 	public static final int CHAT_MESSAGE = 9;
 	public static final int TELEPORT = 10;
-	public static final int PLAYER_CREATION = 11;
+	public static final int PLAYER_PICK = 11;
 	
 	private static HashMap<Integer, Class> registeredPackets;
 	
@@ -36,7 +36,7 @@ public class PacketType {
 			registeredPackets.put(POPUP_TEXT, ClassReflection.forName("net.hollowbit.archipelo.network.packets.PopupTextPacket"));
 			registeredPackets.put(CHAT_MESSAGE, ClassReflection.forName("net.hollowbit.archipelo.network.packets.ChatMessagePacket"));
 			registeredPackets.put(TELEPORT, ClassReflection.forName("net.hollowbit.archipelo.network.packets.TeleportPacket"));
-			registeredPackets.put(PLAYER_CREATION, ClassReflection.forName("net.hollowbit.archipelo.network.packets.PlayerCreationPacket"));
+			registeredPackets.put(PLAYER_PICK, ClassReflection.forName("net.hollowbit.archipelo.network.packets.PlayerPickPacket"));
 		} catch (Exception e) {
 			System.out.println("Was unable to register all packet.");
 			Gdx.app.exit();

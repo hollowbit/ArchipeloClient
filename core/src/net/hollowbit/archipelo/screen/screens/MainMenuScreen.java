@@ -17,6 +17,10 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 import net.hollowbit.archipelo.ArchipeloClient;
 import net.hollowbit.archipelo.hollowbitserver.HollowBitServerQueryResponseHandler;
+import net.hollowbit.archipelo.network.Packet;
+import net.hollowbit.archipelo.network.PacketHandler;
+import net.hollowbit.archipelo.network.PacketType;
+import net.hollowbit.archipelo.network.packets.LoginPacket;
 import net.hollowbit.archipelo.screen.Screen;
 import net.hollowbit.archipelo.screen.ScreenType;
 import net.hollowbit.archipelo.screen.screens.mainmenu.LoginRegisterWindow;
@@ -304,7 +308,45 @@ public class MainMenuScreen extends Screen {
 			
 			@Override
 			public void clicked (InputEvent event, float x, float y) {
-				ArchipeloClient.getGame().getScreenManager().setScreen(new CharacterPickerScreen());
+				//Add listener to get login pack response
+				ArchipeloClient.getGame().getNetworkManager().addPacketHandler(new PacketHandler() {
+					
+					@Override
+					public boolean handlePacket (Packet packet) {
+						if (packet.packetType == PacketType.LOGIN) {
+							LoginPacket loginPacket = (LoginPacket) packet;
+							//Handle packet results
+							switch (loginPacket.result) {
+							case LoginPacket.RESULT_BAD_VERSION:
+								showErrorWindow("Your client version does not match the server's version (" + loginPacket.version + ").");
+								break;
+							case LoginPacket.RESULT_LOGIN_ERROR:
+								showErrorWindow("Login error occured. Logout and log back in again please.");
+								break;
+							case LoginPacket.RESULT_LOGIN_SUCCESSFUL:
+								ArchipeloClient.getGame().getScreenManager().setScreen(new CharacterPickerScreen());
+								break;
+							}
+							ArchipeloClient.getGame().getNetworkManager().removePacketHandler(this);
+							return true;
+						}
+						return false;
+					}
+				});
+				
+				//Send login packet
+				Prefs prefs = ArchipeloClient.getGame().getPrefs();
+				if (prefs.isLoggedIn()) {
+					if (prefs.isServerPicked()) {
+						//Connected and logged in, so send packet
+						ArchipeloClient.getGame().getNetworkManager().sendPacket(new LoginPacket(prefs.getUsername(), prefs.getPassword()));
+					} else {
+						showErrorWindow("Please connect to a server before joining the game.");
+					}
+				} else {
+					showErrorWindow("Please login before joining the game.");
+				}
+					
 				super.clicked(event, x, y);
 			}
 			
@@ -412,6 +454,19 @@ public class MainMenuScreen extends Screen {
 	
 	public boolean isServerPickerWindowOpen () {
 		return serverPickerWndw != null && stage.getActors().contains(serverPickerWndw, true);
+	}
+	
+	private void showErrorWindow (String error) {
+		Dialog dialog = new Dialog("Login Error", ArchipeloClient.getGame().getUiSkin(), "dialog") {
+		    public void result(Object obj) {
+		        remove();
+		    }
+		};
+		dialog.text(error);
+		dialog.button("Close", true);
+		dialog.key(Keys.ENTER, true);
+		dialog.key(Keys.ESCAPE, true);
+		dialog.show(stage);
 	}
 	
 }

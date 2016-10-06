@@ -1,6 +1,7 @@
 package net.hollowbit.archipelo.screen.screens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
@@ -9,13 +10,15 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 import net.hollowbit.archipelo.ArchipeloClient;
 import net.hollowbit.archipelo.items.Item;
 import net.hollowbit.archipelo.items.ItemType;
-import net.hollowbit.archipelo.network.packets.PlayerCreationPacket;
+import net.hollowbit.archipelo.network.packets.PlayerPickPacket;
 import net.hollowbit.archipelo.screen.Screen;
 import net.hollowbit.archipelo.screen.ScreenType;
 import net.hollowbit.archipelo.screen.screens.playercreator.ColorPickListener;
@@ -23,6 +26,7 @@ import net.hollowbit.archipelo.screen.screens.playercreator.ColorPicker;
 import net.hollowbit.archipelo.tools.GameCamera;
 import net.hollowbit.archipeloshared.CollisionRect;
 import net.hollowbit.archipeloshared.Direction;
+import net.hollowbit.archipeloshared.StringValidator;
 
 public class PlayerCreatorScreen extends Screen {
 	
@@ -55,6 +59,8 @@ public class PlayerCreatorScreen extends Screen {
 	TextButton changeHairRightButton;
 	TextButton changeFaceLeftButton;
 	TextButton changeFaceRightButton;
+	
+	TextField nameTextField;
 	
 	TextButton finishButton;
 	
@@ -281,7 +287,14 @@ public class PlayerCreatorScreen extends Screen {
 		finishButton.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
-				new PlayerCreationPacket(selectedHair, selectedFace, hairColor, eyeColor, bodyColor).send();
+				if (nameTextField.getText().equals("")) {
+					showErrorWindow("Please enter a name.");
+					return;
+				} else if (!StringValidator.isStringValid(nameTextField.getText(), StringValidator.USERNAME)) {
+					showErrorWindow("Please only use a-zA-Z0-9 and _ for names.");
+				}
+				
+				new PlayerPickPacket(nameTextField.getText(), selectedHair, selectedFace, hairColor, eyeColor, bodyColor).send();
 				ArchipeloClient.getGame().getScreenManager().setScreen(new GameScreen());
 				super.clicked(event, x, y);
 			}
@@ -303,6 +316,11 @@ public class PlayerCreatorScreen extends Screen {
 			
 		});
 		stage.addActor(changeDirectionButton);
+		
+		nameTextField = new TextField("", ArchipeloClient.getGame().getUiSkin());
+		nameTextField.setBounds(0, 0, DISPLAY_SIZE, nameTextField.getHeight());
+		nameTextField.setMessageText("Name");
+		stage.addActor(nameTextField);
 		
 		resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		
@@ -455,11 +473,27 @@ public class PlayerCreatorScreen extends Screen {
 		
 		//Change direction
 		changeDirectionButton.setPosition(width / 2 - changeDirectionButton.getWidth() / 2, height / 2 - changeDirectionButton.getHeight() / 2);
+		
+		//Name Textfield
+		nameTextField.setPosition(width / 2 - nameTextField.getWidth() / 2, height / 2 - changeDirectionButton.getHeight() / 2 - nameTextField.getHeight() - 5);
 	}
 
 	@Override
 	public void dispose () {
 		stage.dispose();	
+	}
+	
+	private void showErrorWindow (String error) {
+		Dialog dialog = new Dialog("Creation Error", ArchipeloClient.getGame().getUiSkin(), "dialog") {
+		    public void result(Object obj) {
+		        remove();
+		    }
+		};
+		dialog.text(error);
+		dialog.button("Close", true);
+		dialog.key(Keys.ENTER, true);
+		dialog.key(Keys.ESCAPE, true);
+		dialog.show(stage);
 	}
 
 }

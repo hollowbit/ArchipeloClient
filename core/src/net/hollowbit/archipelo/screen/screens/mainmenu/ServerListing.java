@@ -1,7 +1,5 @@
 package net.hollowbit.archipelo.screen.screens.mainmenu;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -47,14 +45,7 @@ public class ServerListing extends Table implements Comparable<ServerListing>{
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				ArchipeloClient.getGame().getNetworkManager().connect(address, ArchipeloClient.PORT);
-				ArchipeloClient.SERVER_PICKED = true;
-				ArchipeloClient.SERVER = name;
-				
-				Preferences prefs = Gdx.app.getPreferences(ArchipeloClient.PREFS_NAME);
-				prefs.putBoolean("server-picked", true);
-				prefs.putString("server-name", name);
-				prefs.flush();
-				
+				ArchipeloClient.getGame().getPrefs().setServer(name);
 				super.clicked(event, x, y);
 			}
 		});

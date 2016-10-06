@@ -51,6 +51,7 @@ public class Map {
 					}
 				}
 				
+				
 				MapElement element = ArchipeloClient.getGame().getMapElementManager().getElement(elementData[row][col]);
 				
 				if (element != null) {

@@ -6,11 +6,23 @@ import com.badlogic.gdx.Preferences;
 public class Prefs {
 	
 	private Preferences prefs;
-	private boolean loggedIn, serverPicked;
+	private boolean loggedIn, serverPicked, showedDisclaimer;
 	private String username, password, serverName;
 	
 	public Prefs () {
 		prefs = Gdx.app.getPreferences("archipelo");
+		
+		//Login
+		this.loggedIn = prefs.getBoolean("logged-in", false);
+		this.username = prefs.getString("username", "");
+		this.password = prefs.getString("password", "");
+		
+		//Server
+		this.serverPicked = prefs.getBoolean("server-picked", false);
+		this.serverName = prefs.getString("server-name", "");
+		
+		//Other
+		this.showedDisclaimer = prefs.getBoolean("showed-disclaimer", false);
 	}
 	
 	public void resetLogin () {
@@ -67,6 +79,16 @@ public class Prefs {
 	
 	public String getServerName () {
 		return serverName;
+	}
+	
+	public boolean hasShownDisclaimer () {
+		return showedDisclaimer;
+	}
+	
+	public void setShowedDisclaimer () {
+		this.showedDisclaimer = true;
+		prefs.putBoolean("showed-disclaimer", true);
+		prefs.flush();
 	}
 	
 }

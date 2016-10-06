@@ -177,7 +177,7 @@ public class World implements PacketHandler {
 			Entity entity = EntityType.createEntityBySnapshot(entitySnapshot, map);
 			entity.load();
 			entities.add(entity);
-			if (entity.getName().equals(ArchipeloClient.USERNAME)) {
+			if (entity.getName().equals(ArchipeloClient.getGame().getPrefs().getUsername())) {
 				player = (Player) entity;
 				player.setIsCurrentPlayer(true);
 				player.createCurrentPlayer();
@@ -219,7 +219,7 @@ public class World implements PacketHandler {
 			Entity entity = EntityType.createEntityBySnapshot(new EntitySnapshot(entityAddPacket.username, entityAddPacket.type, entityAddPacket.style, entityAddPacket.properties), map);
 			entities.add(entity);
 			entity.load();
-			if (entity.getName().equals(ArchipeloClient.USERNAME)) {
+			if (entity.getName().equals(ArchipeloClient.getGame().getPrefs().getUsername())) {
 				player = (Player) entity;
 				player.setIsCurrentPlayer(true);
 				player.createCurrentPlayer();

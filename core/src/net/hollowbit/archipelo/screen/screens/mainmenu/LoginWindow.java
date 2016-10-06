@@ -1,8 +1,6 @@
 package net.hollowbit.archipelo.screen.screens.mainmenu;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
-import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
@@ -16,6 +14,7 @@ import com.badlogic.gdx.utils.Align;
 
 import net.hollowbit.archipelo.ArchipeloClient;
 import net.hollowbit.archipelo.hollowbitserver.HollowBitServerQueryResponseHandler;
+import net.hollowbit.archipelo.tools.Prefs;
 import net.hollowbit.archipeloshared.StringValidator;
 
 public class LoginWindow extends Window {
@@ -30,8 +29,7 @@ public class LoginWindow extends Window {
 	CheckBox rememberChkBx;
 	
 	String username = "", password = "";
-	
-	Preferences prefs = Gdx.app.getPreferences("Archipelo");
+	Prefs prefs = ArchipeloClient.getGame().getPrefs();
 	
 	public LoginWindow (final LoginRegisterWindow loginRegisterWindow, Stage stage) {
 		super("Login", ArchipeloClient.getGame().getUiSkin());
@@ -47,21 +45,21 @@ public class LoginWindow extends Window {
 		
 		usernameLbl = new Label("Username: ", getSkin());
 		add(usernameLbl).width(usernameLbl.getWidth());
-		usernameFld = new TextField(prefs.getString("username", ""), getSkin());
+		usernameFld = new TextField(prefs.getUsername(), getSkin());
 		stage.setKeyboardFocus(usernameFld);
 		add(usernameFld).pad(10);
 		row();
 		
 		passwordLbl = new Label("Password: ", getSkin());
 		add(passwordLbl).width(passwordLbl.getWidth());
-		passwordFld = new TextField(prefs.getString("password", ""), getSkin());
+		passwordFld = new TextField(prefs.getPassword(), getSkin());
 		passwordFld.setPasswordCharacter('*');
 		passwordFld.setPasswordMode(true);
 		add(passwordFld).pad(10);
 		row();
 		
 		rememberChkBx = new CheckBox(" Remember?", getSkin());
-		rememberChkBx.setChecked(prefs.getBoolean("remember", false));
+		rememberChkBx.setChecked(prefs.isLoggedIn());
 		add(rememberChkBx).pad(10);
 		row();
 		
@@ -133,22 +131,10 @@ public class LoginWindow extends Window {
 					showErrorWindow("Email address entered is invalid.");
 					break;
 				case 3://Correct login!
-					if (rememberChkBx.isChecked()) {
-						//Save login settings
-						prefs.putString("username", username);
-						prefs.putString("password", password);
-						prefs.putBoolean("logged-in", true);
-					} else {
-						prefs.putString("username", "");
-						prefs.putString("password", "");
-						prefs.putBoolean("logged-in", false);
-					}
-					prefs.flush();
-					
-					ArchipeloClient.LOGGED_IN = true;
-					ArchipeloClient.USERNAME = username;
-					ArchipeloClient.PASSWORD = password;
-					
+					if (rememberChkBx.isChecked())//Save login if remember is on
+						prefs.setLogin(username, password);
+					else
+						prefs.resetLogin();
 					remove();
 					break;
 				}

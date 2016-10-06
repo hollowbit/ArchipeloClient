@@ -10,7 +10,6 @@ import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
-import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -25,6 +24,7 @@ import net.hollowbit.archipelo.screen.screens.MainMenuScreen;
 import net.hollowbit.archipelo.tools.AssetManager;
 import net.hollowbit.archipelo.tools.FontManager;
 import net.hollowbit.archipelo.tools.GameCamera;
+import net.hollowbit.archipelo.tools.Prefs;
 import net.hollowbit.archipelo.tools.UiCamera;
 import net.hollowbit.archipelo.world.MapElementManager;
 import net.hollowbit.archipelo.world.World;
@@ -44,12 +44,6 @@ public class ArchipeloClient extends ApplicationAdapter {
 	public static float STATE_TIME = 0;//this is for looping animations where it doesn't matter where it starts.
 	public static boolean DEBUGMODE = true;
 	
-	public static String SERVER = "No Server Chosen";
-	public static boolean SERVER_PICKED = false;
-	public static String USERNAME = "";
-	public static String PASSWORD = "";
-	public static boolean LOGGED_IN = false;
-	
 	private static ArchipeloClient game;
 	
 	SpriteBatch batch;
@@ -61,6 +55,7 @@ public class ArchipeloClient extends ApplicationAdapter {
 	FontManager fontManager;
 	Skin skin;
 	HollowBitServerConnectivity hollowBitServerConnectivity;
+	Prefs prefs;
 	
 	GameCamera cameraGame;
 	UiCamera cameraUi;
@@ -73,17 +68,7 @@ public class ArchipeloClient extends ApplicationAdapter {
 		Gdx.app.setLogLevel(Application.LOG_DEBUG);
 		
 		//Load prefs
-		Preferences prefs = Gdx.app.getPreferences(PREFS_NAME);
-		if (prefs.getBoolean("logged-in", false)) {
-			LOGGED_IN = true;
-			USERNAME = prefs.getString("username");
-			PASSWORD = prefs.getString("password");
-		}
-		
-		if (prefs.getBoolean("server-picked", false)) {
-			SERVER_PICKED = true;
-			SERVER = prefs.getString("server-name");
-		}
+		prefs = new Prefs();
 		
 		batch = new SpriteBatch();
 		
@@ -224,6 +209,10 @@ public class ArchipeloClient extends ApplicationAdapter {
 	
 	public Skin getUiSkin () {
 		return skin;
+	}
+	
+	public Prefs getPrefs () {
+		return prefs;
 	}
 	
 	public static ArchipeloClient getGame () {

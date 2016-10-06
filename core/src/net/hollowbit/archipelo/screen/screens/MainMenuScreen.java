@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
-import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
@@ -27,6 +26,7 @@ import net.hollowbit.archipelo.screen.screens.mainmenu.ServerPickerWindow;
 import net.hollowbit.archipelo.tools.FontManager.Fonts;
 import net.hollowbit.archipelo.tools.FontManager.Sizes;
 import net.hollowbit.archipelo.tools.GameCamera;
+import net.hollowbit.archipelo.tools.Prefs;
 import net.hollowbit.archipeloshared.CollisionRect;
 
 public class MainMenuScreen extends Screen {
@@ -69,6 +69,7 @@ public class MainMenuScreen extends Screen {
 	GlyphLayout pressAnyGlyphLayout;
 	
 	float backgroundWidth, backgroundHeight;
+	Prefs prefs;
 	
 	public MainMenuScreen () {
 		super(ScreenType.MAIN_MENU);
@@ -110,51 +111,37 @@ public class MainMenuScreen extends Screen {
 		LOGO_PROGRESSION_ZERO_Y += logo.getHeight();
 		logoY = 0;
 		
+		prefs = ArchipeloClient.getGame().getPrefs();
+		
 		//Show disclaimer message on first time opening app
-		final Preferences prefs = Gdx.app.getPreferences(ArchipeloClient.PREFS_NAME);
-		if (!ArchipeloClient.DEBUGMODE && !prefs.getBoolean("disclaimer-shown", false)) {
+		if (!ArchipeloClient.DEBUGMODE && !prefs.hasShownDisclaimer()) {
 			showDisclaimerWindow();
-			prefs.putBoolean("disclaimer-shown", true);
+			prefs.setShowedDisclaimer();
 		}
 		
 		//If login info was saved, verify it.
-		if (ArchipeloClient.LOGGED_IN) {
-			ArchipeloClient.getGame().getHollowBitServerConnectivity().sendVerifyQuery(ArchipeloClient.USERNAME, ArchipeloClient.PASSWORD, new HollowBitServerQueryResponseHandler() {
+		if (prefs.isLoggedIn()) {
+			ArchipeloClient.getGame().getHollowBitServerConnectivity().sendVerifyQuery(prefs.getUsername(), prefs.getPassword(), new HollowBitServerQueryResponseHandler() {
 				
 				@Override
 				public void responseReceived(int id, String[] data) {
-					if (id != 3) {//3 means there was a correct login. If it's not 3, it failed.
-						//Reset info to let the game know that there is no login credentials at the moment
-						ArchipeloClient.LOGGED_IN = false;
-						ArchipeloClient.USERNAME = "";
-						ArchipeloClient.PASSWORD = "";
-						
-						prefs.putBoolean("logged-in", false);
-						prefs.putString("username", "");
-						prefs.putString("password", "");
-						prefs.flush();
-					}
+					if (id != 3)//3 means there was a correct login. If it's not 3, it failed.
+						prefs.resetLogin();//Reset info to let the game know that there is no login credentials at the moment
 				}
 			});
 		}
 		
 		//If there is a server saved, try to connect to it, if possible.
-		if (ArchipeloClient.SERVER_PICKED) {
-			ArchipeloClient.getGame().getHollowBitServerConnectivity().sendGetServerByNameQuery(ArchipeloClient.SERVER, new HollowBitServerQueryResponseHandler() {
+		if (prefs.isServerPicked()) {
+			ArchipeloClient.getGame().getHollowBitServerConnectivity().sendGetServerByNameQuery(prefs.getServerName(), new HollowBitServerQueryResponseHandler() {
 				
 				@Override
 				public void responseReceived(int id, String[] data) {
 					if (id == 15) {//If we found the server we last connected to, try to connect to it again.
 						String hostname = data[0];
 						ArchipeloClient.getGame().getNetworkManager().connect(hostname, ArchipeloClient.PORT);
-					} else {
-						ArchipeloClient.SERVER_PICKED = false;
-						ArchipeloClient.SERVER = "";
-						
-						prefs.putBoolean("server-picked", false);
-						prefs.putString("server-name", "");
-						prefs.flush();
-					}
+					} else
+						prefs.resetServer();
 				}
 			});
 		}
@@ -223,27 +210,27 @@ public class MainMenuScreen extends Screen {
 			
 		} else if (progression == 3) {
 			//If the user isn't logged in and the login window isn't already open, open it.
-			if (!ArchipeloClient.LOGGED_IN && !isLoginRegisterWindowOpen()) {
+			if (!prefs.isLoggedIn() && !isLoginRegisterWindowOpen()) {
 				loginRegisterWndw = new LoginRegisterWindow(this, stage);
 				stage.addActor(loginRegisterWndw);
 				loginRegisterWndw.setPosition(Gdx.graphics.getWidth() / 2 - loginRegisterWndw.getWidth() / 2, Gdx.graphics.getHeight() / 2 - loginRegisterWndw.getHeight() / 2);
 			}
 			
 			//If the user is logged in and the login window is still open, close it.
-			if (ArchipeloClient.LOGGED_IN && isLoginRegisterWindowOpen()) {
+			if (prefs.isLoggedIn() && isLoginRegisterWindowOpen()) {
 				loginRegisterWndw.remove();
 				loginRegisterWndw = null;
 			}
 			
 			//If no server is picked and the picker isn't already open, open it.
-			if (!ArchipeloClient.SERVER_PICKED && !isServerPickerWindowOpen() && !isLoginRegisterWindowOpen()) {//Don't open the server picker if the login window is open
+			if (!prefs.isLoggedIn() && !isServerPickerWindowOpen() && !isLoginRegisterWindowOpen()) {//Don't open the server picker if the login window is open
 				serverPickerWndw = new ServerPickerWindow();
 				stage.addActor(serverPickerWndw);
 				serverPickerWndw.setPosition(Gdx.graphics.getWidth() / 2 - serverPickerWndw.getWidth() / 2, Gdx.graphics.getHeight() / 2 - serverPickerWndw.getHeight() / 2);
 			}
 			
 			//If the server is picked and the server picker window is still open, close it.
-			if (ArchipeloClient.SERVER_PICKED && ArchipeloClient.getGame().getNetworkManager().isConnected() && isServerPickerWindowOpen()) {
+			if (prefs.isLoggedIn() && ArchipeloClient.getGame().getNetworkManager().isConnected() && isServerPickerWindowOpen()) {
 				serverPickerWndw.remove();
 				serverPickerWndw = null;
 			}
@@ -264,7 +251,7 @@ public class MainMenuScreen extends Screen {
 			font.draw(batch, layoutFPS, 10, height - layoutFPS.height);
 		}
 		
-		GlyphLayout layoutCon = new GlyphLayout(font, "Connection (" + ArchipeloClient.SERVER + "): " + (ArchipeloClient.getGame().getNetworkManager().isConnected() ? "[GREEN]Connected!" : "[RED]Not Connected."));
+		GlyphLayout layoutCon = new GlyphLayout(font, "Connection (" + prefs.getServerName() + "): " + (ArchipeloClient.getGame().getNetworkManager().isConnected() ? "[GREEN]Connected!" : "[RED]Not Connected."));
 		font.draw(batch, layoutCon, 4, 4 + layoutCon.height);
 		
 		if (flashOn && progression == 0)//Render flashing "Press Start" text
@@ -351,15 +338,7 @@ public class MainMenuScreen extends Screen {
 			public void clicked(InputEvent event, float x, float y) {
 				if (loginRegisterWndw == null || loginRegisterWndw.getStage() == null) {
 					//Reset login credentials
-					ArchipeloClient.LOGGED_IN = false;
-					ArchipeloClient.USERNAME = "";
-					ArchipeloClient.PASSWORD = "";
-					
-					Preferences prefs = Gdx.app.getPreferences(ArchipeloClient.PREFS_NAME);
-					prefs.putBoolean("logged-in", false);
-					prefs.putString("username", "");
-					prefs.putString("password", "");
-					prefs.flush();
+					prefs.resetLogin();
 					
 					loginRegisterWndw = new LoginRegisterWindow(mainMenuScreen, stage);
 					loginRegisterWndw.setPosition(Gdx.graphics.getWidth() / 2 - loginRegisterWndw.getWidth() / 2, Gdx.graphics.getHeight() / 2 - loginRegisterWndw.getHeight() / 2);

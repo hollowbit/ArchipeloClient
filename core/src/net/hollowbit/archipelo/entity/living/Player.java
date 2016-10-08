@@ -1,12 +1,14 @@
 package net.hollowbit.archipelo.entity.living;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.reflect.ClassReflection;
 import com.badlogic.gdx.utils.reflect.ReflectionException;
 
+import net.hollowbit.archipelo.ArchipeloClient;
 import net.hollowbit.archipelo.entity.EntitySnapshot;
 import net.hollowbit.archipelo.entity.EntityType;
 import net.hollowbit.archipelo.entity.LivingEntity;
@@ -231,142 +233,8 @@ public class Player extends LivingEntity {
 		if (!loaded)
 			return;
 		
-		boolean drawUseableOnBottom = location.getDirection() == Direction.DOWN_LEFT || location.getDirection() == Direction.LEFT || location.getDirection() == Direction.UP_LEFT || location.getDirection() == Direction.UP; 
+		drawPlayer(batch, location.getDirection(), loaded, isRolling(), location.getX(), location.getY(), rollingStateTime, rollingStateTime, equippedInventory, isSprinting, ArchipeloClient.PLAYER_SIZE, ArchipeloClient.PLAYER_SIZE);
 		
-		if (isMoving) {
-			if (isRolling()) {
-				batch.draw(this.getEntityType().getAnimationFrame("rolling", location.getDirection(), rollingStateTime), location.getX(), location.getY());
-				if (drawUseableOnBottom && equippedInventory[EQUIP_INDEX_USABLE] != null) {
-					batch.setColor(new Color(equippedInventory[EQUIP_INDEX_USABLE].color));
-					batch.draw(ItemType.getItemTypeByItem(equippedInventory[EQUIP_INDEX_USABLE]).getRollFrame(location.getDirection(), rollingStateTime, equippedInventory[EQUIP_INDEX_USABLE].style), location.getX(), location.getY());
-					batch.setColor(1, 1, 1, 1);
-				}
-				for (int i = 0; i < EQUIP_SIZE - 1; i++) {//Loop through each part of equipable
-					if (equippedInventory[i] == null)
-						continue;
-					batch.setColor(new Color(equippedInventory[i].color));
-					if (i == EQUIP_INDEX_HAIR) {
-						//If a hat is equipped, use the hair texture for when wearing hats
-						if (equippedInventory[EQUIP_INDEX_HAT] == null)
-							batch.draw(ItemType.getItemTypeByItem(equippedInventory[i]).getRollFrame(location.getDirection(), rollingStateTime, 0), location.getX(), location.getY());
-					} else if (i == EQUIP_INDEX_FACE) {
-						batch.setColor(1, 1, 1, 1);
-						batch.draw(ItemType.getItemTypeByItem(equippedInventory[i]).getRollFrame(location.getDirection(), rollingStateTime, 0), location.getX(), location.getY());//Draw mouth
-						batch.setColor(new Color(equippedInventory[i].color));
-						batch.draw(ItemType.getItemTypeByItem(equippedInventory[i]).getRollFrame(location.getDirection(), rollingStateTime, 1), location.getX(), location.getY());//Draw eye's iris with color
-						batch.setColor(new Color(equippedInventory[EQUIP_INDEX_HAIR].color));
-						batch.draw(ItemType.getItemTypeByItem(equippedInventory[i]).getRollFrame(location.getDirection(), rollingStateTime, 2), location.getX(), location.getY());//Draw eyebrows with hair color
-						batch.setColor(1, 1, 1, 1);
-					} else
-						batch.draw(ItemType.getItemTypeByItem(equippedInventory[i]).getRollFrame(location.getDirection(), rollingStateTime, equippedInventory[i].style), location.getX(), location.getY());
-					batch.setColor(1, 1, 1, 1);
-				}
-				if (!drawUseableOnBottom && equippedInventory[EQUIP_INDEX_USABLE] != null) {
-					batch.setColor(new Color(equippedInventory[EQUIP_INDEX_USABLE].color));
-					batch.draw(ItemType.getItemTypeByItem(equippedInventory[EQUIP_INDEX_USABLE]).getRollFrame(location.getDirection(), rollingStateTime, equippedInventory[EQUIP_INDEX_USABLE].style), location.getX(), location.getY());
-					batch.setColor(1, 1, 1, 1);
-				}
-			} else {
-				if (isSprinting) {
-					batch.draw(this.getEntityType().getAnimationFrame("default", location.getDirection(), movingStateTime), location.getX(), location.getY());
-					if (drawUseableOnBottom && equippedInventory[EQUIP_INDEX_USABLE] != null) {
-						batch.setColor(new Color(equippedInventory[EQUIP_INDEX_USABLE].color));
-						batch.draw(ItemType.getItemTypeByItem(equippedInventory[EQUIP_INDEX_USABLE]).getRollFrame(location.getDirection(), rollingStateTime, equippedInventory[EQUIP_INDEX_USABLE].style), location.getX(), location.getY());
-						batch.setColor(1, 1, 1, 1);
-					}
-					for (int i = 0; i < EQUIP_SIZE - 1; i++) {//Loop through each part of equipable
-						if (equippedInventory[i] == null)
-							continue;
-						batch.setColor(new Color(equippedInventory[i].color));
-						if (i == EQUIP_INDEX_HAIR) {
-							//If a hat is equipped, use the hair texture for when wearing hats
-							if (equippedInventory[EQUIP_INDEX_HAT] == null)
-								batch.draw(ItemType.getItemTypeByItem(equippedInventory[i]).getSprintFrame(location.getDirection(), movingStateTime, 0), location.getX(), location.getY());
-						} else if (i == EQUIP_INDEX_FACE) {
-							batch.setColor(1, 1, 1, 1);
-							batch.draw(ItemType.getItemTypeByItem(equippedInventory[i]).getSprintFrame(location.getDirection(), movingStateTime, 0), location.getX(), location.getY());//Draw mouth
-							batch.setColor(new Color(equippedInventory[i].color));
-							batch.draw(ItemType.getItemTypeByItem(equippedInventory[i]).getSprintFrame(location.getDirection(), movingStateTime, 1), location.getX(), location.getY());//Draw eye's iris with color
-							batch.setColor(new Color(equippedInventory[EQUIP_INDEX_HAIR].color));
-							batch.draw(ItemType.getItemTypeByItem(equippedInventory[i]).getSprintFrame(location.getDirection(), movingStateTime, 2), location.getX(), location.getY());//Draw eyebrows with hair color
-							batch.setColor(1, 1, 1, 1);
-						} else
-							batch.draw(ItemType.getItemTypeByItem(equippedInventory[i]).getSprintFrame(location.getDirection(), movingStateTime, equippedInventory[i].style), location.getX(), location.getY());
-						batch.setColor(1, 1, 1, 1);
-					}
-					if (!drawUseableOnBottom && equippedInventory[EQUIP_INDEX_USABLE] != null) {
-						batch.setColor(new Color(equippedInventory[EQUIP_INDEX_USABLE].color));
-						batch.draw(ItemType.getItemTypeByItem(equippedInventory[EQUIP_INDEX_USABLE]).getRollFrame(location.getDirection(), rollingStateTime, equippedInventory[EQUIP_INDEX_USABLE].style), location.getX(), location.getY());
-						batch.setColor(1, 1, 1, 1);
-					}
-				 } else {
-					batch.draw(this.getEntityType().getAnimationFrame("sprinting", location.getDirection(), movingStateTime), location.getX(), location.getY());
-					if (drawUseableOnBottom && equippedInventory[EQUIP_INDEX_USABLE] != null) {
-						batch.setColor(new Color(equippedInventory[EQUIP_INDEX_USABLE].color));
-						batch.draw(ItemType.getItemTypeByItem(equippedInventory[EQUIP_INDEX_USABLE]).getRollFrame(location.getDirection(), rollingStateTime, equippedInventory[EQUIP_INDEX_USABLE].style), location.getX(), location.getY());
-						batch.setColor(1, 1, 1, 1);
-					}
-					for (int i = 0; i < EQUIP_SIZE - 1; i++) {//Loop through each part of equipable
-						if (equippedInventory[i] == null)
-							continue;
-						batch.setColor(new Color(equippedInventory[i].color));
-						if (i == EQUIP_INDEX_HAIR) {
-							//Only draw hair if no hat/helmet is equipped
-							if (equippedInventory[EQUIP_INDEX_HAT] == null)
-								batch.draw(ItemType.getItemTypeByItem(equippedInventory[i]).getWalkFrame(location.getDirection(), movingStateTime, 0), location.getX(), location.getY());
-						} else if (i == EQUIP_INDEX_FACE) {
-							batch.setColor(1, 1, 1, 1);
-							batch.draw(ItemType.getItemTypeByItem(equippedInventory[i]).getWalkFrame(location.getDirection(), movingStateTime, 0), location.getX(), location.getY());//Draw mouth
-							batch.setColor(new Color(equippedInventory[i].color));
-							batch.draw(ItemType.getItemTypeByItem(equippedInventory[i]).getWalkFrame(location.getDirection(), movingStateTime, 1), location.getX(), location.getY());//Draw eye's iris with color
-							batch.setColor(new Color(equippedInventory[EQUIP_INDEX_HAIR].color));
-							batch.draw(ItemType.getItemTypeByItem(equippedInventory[i]).getWalkFrame(location.getDirection(), movingStateTime, 2), location.getX(), location.getY());//Draw eyebrows with hair color
-							batch.setColor(1, 1, 1, 1);
-						} else
-							batch.draw(ItemType.getItemTypeByItem(equippedInventory[i]).getWalkFrame(location.getDirection(), movingStateTime, equippedInventory[i].style), location.getX(), location.getY());
-						batch.setColor(1, 1, 1, 1);
-					}
-					if (!drawUseableOnBottom && equippedInventory[EQUIP_INDEX_USABLE] != null) {
-						batch.setColor(new Color(equippedInventory[EQUIP_INDEX_USABLE].color));
-						batch.draw(ItemType.getItemTypeByItem(equippedInventory[EQUIP_INDEX_USABLE]).getRollFrame(location.getDirection(), rollingStateTime, equippedInventory[EQUIP_INDEX_USABLE].style), location.getX(), location.getY());
-						batch.setColor(1, 1, 1, 1);
-					}
-				 }
-			}
-		} else {
-			batch.draw(EntityType.PLAYER.getAnimationFrame("default", location.getDirection(), 0), location.getX(), location.getY());
-			if (drawUseableOnBottom && equippedInventory[EQUIP_INDEX_USABLE] != null) {
-				batch.setColor(new Color(equippedInventory[EQUIP_INDEX_USABLE].color));
-				batch.draw(ItemType.getItemTypeByItem(equippedInventory[EQUIP_INDEX_USABLE]).getRollFrame(location.getDirection(), rollingStateTime, equippedInventory[EQUIP_INDEX_USABLE].style), location.getX(), location.getY());
-				batch.setColor(1, 1, 1, 1);
-			}
-			for (int i = 0; i < EQUIP_SIZE - 1; i++) {//Loop through each part of equipable
-				if (equippedInventory[i] == null)
-					continue;
-				batch.setColor(new Color(equippedInventory[i].color));
-				if (i == EQUIP_INDEX_HAIR) {
-					//If a hat is equipped, use the hair texture for when wearing hats
-					if (equippedInventory[EQUIP_INDEX_HAT] == null)
-						batch.draw(ItemType.getItemTypeByItem(equippedInventory[i]).getWalkFrame(location.getDirection(), 0, 0), location.getX(), location.getY());
-				} else if (i == EQUIP_INDEX_FACE) {
-					batch.setColor(1, 1, 1, 1);
-					batch.draw(ItemType.getItemTypeByItem(equippedInventory[i]).getWalkFrame(location.getDirection(), 0, 0), location.getX(), location.getY());//Draw mouth
-					batch.setColor(new Color(equippedInventory[i].color));
-					batch.draw(ItemType.getItemTypeByItem(equippedInventory[i]).getWalkFrame(location.getDirection(), 0, 1), location.getX(), location.getY());//Draw eye's iris with color
-					batch.setColor(new Color(equippedInventory[EQUIP_INDEX_HAIR].color));
-					batch.draw(ItemType.getItemTypeByItem(equippedInventory[i]).getWalkFrame(location.getDirection(), 0, 2), location.getX(), location.getY());//Draw eyebrows with hair color
-					batch.setColor(1, 1, 1, 1);
-				} else
-					batch.draw(ItemType.getItemTypeByItem(equippedInventory[i]).getWalkFrame(location.getDirection(), 0, equippedInventory[i].style), location.getX(), location.getY());
-				batch.setColor(1, 1, 1, 1);
-			}
-			if (!drawUseableOnBottom && equippedInventory[EQUIP_INDEX_USABLE] != null) {
-				batch.setColor(new Color(equippedInventory[EQUIP_INDEX_USABLE].color));
-				batch.draw(ItemType.getItemTypeByItem(equippedInventory[EQUIP_INDEX_USABLE]).getRollFrame(location.getDirection(), rollingStateTime, equippedInventory[EQUIP_INDEX_USABLE].style), location.getX(), location.getY());
-				batch.setColor(1, 1, 1, 1);
-			}
-		}
-		batch.setColor(1, 1, 1, 1);
 		super.render(batch);
 	}
 	
@@ -502,6 +370,180 @@ public class Player extends LivingEntity {
 			}
 		}
 		return false;
+	}
+	
+	/**
+	 * Static method to draw player from any screen, not just gamescreen
+	 * @param batch
+	 * @param direction
+	 * @param isMoving
+	 * @param isRolling
+	 * @param x
+	 * @param y
+	 * @param movingStateTime
+	 * @param rollingStateTime
+	 * @param equippedInventory
+	 * @param isSprinting
+	 * @param width
+	 * @param height
+	 */
+	public static void drawPlayer (Batch batch, Direction direction, boolean isMoving, boolean isRolling, float x, float y, float movingStateTime, float rollingStateTime, Item[] equippedInventory, boolean isSprinting, int width, int height) {
+		boolean drawUseableOnBottom = direction == Direction.DOWN_LEFT || direction == Direction.LEFT || direction == Direction.UP_LEFT || direction == Direction.UP; 
+		
+		if (isMoving) {
+			if (isRolling) {
+				batch.draw(EntityType.PLAYER.getAnimationFrame("rolling", direction, rollingStateTime), x, y, width, height);
+				if (drawUseableOnBottom && equippedInventory[EQUIP_INDEX_USABLE] != null) {
+					batch.setColor(new Color(equippedInventory[EQUIP_INDEX_USABLE].color));
+					batch.draw(ItemType.getItemTypeByItem(equippedInventory[EQUIP_INDEX_USABLE]).getRollFrame(direction, rollingStateTime, equippedInventory[EQUIP_INDEX_USABLE].style), x, y, width, height);
+					batch.setColor(1, 1, 1, 1);
+				}
+				for (int i = 0; i < EQUIP_SIZE - 1; i++) {//Loop through each part of equipable
+					if (equippedInventory[i] == null)
+						continue;
+					batch.setColor(new Color(equippedInventory[i].color));
+					if (i == EQUIP_INDEX_HAIR) {
+						//If a hat is equipped, use the hair texture for when wearing hats
+						if (equippedInventory[EQUIP_INDEX_HAT] == null)
+							batch.draw(ItemType.getItemTypeByItem(equippedInventory[i]).getRollFrame(direction, rollingStateTime, 0), x, y, width, height);
+					} else if (i == EQUIP_INDEX_FACE) {
+						batch.setColor(1, 1, 1, 1);
+						batch.draw(ItemType.getItemTypeByItem(equippedInventory[i]).getRollFrame(direction, rollingStateTime, 0), x, y, width, height);//Draw mouth
+						batch.setColor(new Color(equippedInventory[i].color));
+						batch.draw(ItemType.getItemTypeByItem(equippedInventory[i]).getRollFrame(direction, rollingStateTime, 1), x, y, width, height);//Draw eye's iris with color
+						batch.setColor(new Color(equippedInventory[EQUIP_INDEX_HAIR].color));
+						batch.draw(ItemType.getItemTypeByItem(equippedInventory[i]).getRollFrame(direction, rollingStateTime, 2), x, y, width, height);//Draw eyebrows with hair color
+						batch.setColor(1, 1, 1, 1);
+					} else
+						batch.draw(ItemType.getItemTypeByItem(equippedInventory[i]).getRollFrame(direction, rollingStateTime, equippedInventory[i].style), x, y, width, height);
+					batch.setColor(1, 1, 1, 1);
+				}
+				if (!drawUseableOnBottom && equippedInventory[EQUIP_INDEX_USABLE] != null) {
+					batch.setColor(new Color(equippedInventory[EQUIP_INDEX_USABLE].color));
+					batch.draw(ItemType.getItemTypeByItem(equippedInventory[EQUIP_INDEX_USABLE]).getRollFrame(direction, rollingStateTime, equippedInventory[EQUIP_INDEX_USABLE].style), x, y, width, height);
+					batch.setColor(1, 1, 1, 1);
+				}
+			} else {
+				if (isSprinting) {
+					batch.draw(EntityType.PLAYER.getAnimationFrame("default", direction, movingStateTime), x, y, width, height);
+					if (drawUseableOnBottom && equippedInventory[EQUIP_INDEX_USABLE] != null) {
+						batch.setColor(new Color(equippedInventory[EQUIP_INDEX_USABLE].color));
+						batch.draw(ItemType.getItemTypeByItem(equippedInventory[EQUIP_INDEX_USABLE]).getRollFrame(direction, rollingStateTime, equippedInventory[EQUIP_INDEX_USABLE].style), x, y, width, height);
+						batch.setColor(1, 1, 1, 1);
+					}
+					for (int i = 0; i < EQUIP_SIZE - 1; i++) {//Loop through each part of equipable
+						if (equippedInventory[i] == null)
+							continue;
+						batch.setColor(new Color(equippedInventory[i].color));
+						if (i == EQUIP_INDEX_HAIR) {
+							//If a hat is equipped, use the hair texture for when wearing hats
+							if (equippedInventory[EQUIP_INDEX_HAT] == null)
+								batch.draw(ItemType.getItemTypeByItem(equippedInventory[i]).getSprintFrame(direction, movingStateTime, 0), x, y, width, height);
+						} else if (i == EQUIP_INDEX_FACE) {
+							batch.setColor(1, 1, 1, 1);
+							batch.draw(ItemType.getItemTypeByItem(equippedInventory[i]).getSprintFrame(direction, movingStateTime, 0), x, y, width, height);//Draw mouth
+							batch.setColor(new Color(equippedInventory[i].color));
+							batch.draw(ItemType.getItemTypeByItem(equippedInventory[i]).getSprintFrame(direction, movingStateTime, 1), x, y, width, height);//Draw eye's iris with color
+							batch.setColor(new Color(equippedInventory[EQUIP_INDEX_HAIR].color));
+							batch.draw(ItemType.getItemTypeByItem(equippedInventory[i]).getSprintFrame(direction, movingStateTime, 2), x, y, width, height);//Draw eyebrows with hair color
+							batch.setColor(1, 1, 1, 1);
+						} else
+							batch.draw(ItemType.getItemTypeByItem(equippedInventory[i]).getSprintFrame(direction, movingStateTime, equippedInventory[i].style), x, y, width, height);
+						batch.setColor(1, 1, 1, 1);
+					}
+					if (!drawUseableOnBottom && equippedInventory[EQUIP_INDEX_USABLE] != null) {
+						batch.setColor(new Color(equippedInventory[EQUIP_INDEX_USABLE].color));
+						batch.draw(ItemType.getItemTypeByItem(equippedInventory[EQUIP_INDEX_USABLE]).getRollFrame(direction, rollingStateTime, equippedInventory[EQUIP_INDEX_USABLE].style), x, y, width, height);
+						batch.setColor(1, 1, 1, 1);
+					}
+				 } else {
+					batch.draw(EntityType.PLAYER.getAnimationFrame("sprinting", direction, movingStateTime), x, y, width, height);
+					if (drawUseableOnBottom && equippedInventory[EQUIP_INDEX_USABLE] != null) {
+						batch.setColor(new Color(equippedInventory[EQUIP_INDEX_USABLE].color));
+						batch.draw(ItemType.getItemTypeByItem(equippedInventory[EQUIP_INDEX_USABLE]).getRollFrame(direction, rollingStateTime, equippedInventory[EQUIP_INDEX_USABLE].style), x, y, width, height);
+						batch.setColor(1, 1, 1, 1);
+					}
+					for (int i = 0; i < EQUIP_SIZE - 1; i++) {//Loop through each part of equipable
+						if (equippedInventory[i] == null)
+							continue;
+						batch.setColor(new Color(equippedInventory[i].color));
+						if (i == EQUIP_INDEX_HAIR) {
+							//Only draw hair if no hat/helmet is equipped
+							if (equippedInventory[EQUIP_INDEX_HAT] == null)
+								batch.draw(ItemType.getItemTypeByItem(equippedInventory[i]).getWalkFrame(direction, movingStateTime, 0), x, y, width, height);
+						} else if (i == EQUIP_INDEX_FACE) {
+							batch.setColor(1, 1, 1, 1);
+							batch.draw(ItemType.getItemTypeByItem(equippedInventory[i]).getWalkFrame(direction, movingStateTime, 0), x, y, width, height);//Draw mouth
+							batch.setColor(new Color(equippedInventory[i].color));
+							batch.draw(ItemType.getItemTypeByItem(equippedInventory[i]).getWalkFrame(direction, movingStateTime, 1), x, y, width, height);//Draw eye's iris with color
+							batch.setColor(new Color(equippedInventory[EQUIP_INDEX_HAIR].color));
+							batch.draw(ItemType.getItemTypeByItem(equippedInventory[i]).getWalkFrame(direction, movingStateTime, 2), x, y, width, height);//Draw eyebrows with hair color
+							batch.setColor(1, 1, 1, 1);
+						} else
+							batch.draw(ItemType.getItemTypeByItem(equippedInventory[i]).getWalkFrame(direction, movingStateTime, equippedInventory[i].style), x, y, width, height);
+						batch.setColor(1, 1, 1, 1);
+					}
+					if (!drawUseableOnBottom && equippedInventory[EQUIP_INDEX_USABLE] != null) {
+						batch.setColor(new Color(equippedInventory[EQUIP_INDEX_USABLE].color));
+						batch.draw(ItemType.getItemTypeByItem(equippedInventory[EQUIP_INDEX_USABLE]).getRollFrame(direction, rollingStateTime, equippedInventory[EQUIP_INDEX_USABLE].style), x, y, width, height);
+						batch.setColor(1, 1, 1, 1);
+					}
+				 }
+			}
+		} else {
+			batch.draw(EntityType.PLAYER.getAnimationFrame("default", direction, 0), x, y);
+			if (drawUseableOnBottom && equippedInventory[EQUIP_INDEX_USABLE] != null) {
+				batch.setColor(new Color(equippedInventory[EQUIP_INDEX_USABLE].color));
+				batch.draw(ItemType.getItemTypeByItem(equippedInventory[EQUIP_INDEX_USABLE]).getRollFrame(direction, rollingStateTime, equippedInventory[EQUIP_INDEX_USABLE].style), x, y, width, height);
+				batch.setColor(1, 1, 1, 1);
+			}
+			for (int i = 0; i < EQUIP_SIZE - 1; i++) {//Loop through each part of equipable
+				if (equippedInventory[i] == null)
+					continue;
+				batch.setColor(new Color(equippedInventory[i].color));
+				if (i == EQUIP_INDEX_HAIR) {
+					//If a hat is equipped, use the hair texture for when wearing hats
+					if (equippedInventory[EQUIP_INDEX_HAT] == null)
+						batch.draw(ItemType.getItemTypeByItem(equippedInventory[i]).getWalkFrame(direction, 0, 0), x, y, width, height);
+				} else if (i == EQUIP_INDEX_FACE) {
+					batch.setColor(1, 1, 1, 1);
+					batch.draw(ItemType.getItemTypeByItem(equippedInventory[i]).getWalkFrame(direction, 0, 0), x, y, width, height);//Draw mouth
+					batch.setColor(new Color(equippedInventory[i].color));
+					batch.draw(ItemType.getItemTypeByItem(equippedInventory[i]).getWalkFrame(direction, 0, 1), x, y, width, height);//Draw eye's iris with color
+					batch.setColor(new Color(equippedInventory[EQUIP_INDEX_HAIR].color));
+					batch.draw(ItemType.getItemTypeByItem(equippedInventory[i]).getWalkFrame(direction, 0, 2), x, y, width, height);//Draw eyebrows with hair color
+					batch.setColor(1, 1, 1, 1);
+				} else
+					batch.draw(ItemType.getItemTypeByItem(equippedInventory[i]).getWalkFrame(direction, 0, equippedInventory[i].style), x, y, width, height);
+				batch.setColor(1, 1, 1, 1);
+			}
+			if (!drawUseableOnBottom && equippedInventory[EQUIP_INDEX_USABLE] != null) {
+				batch.setColor(new Color(equippedInventory[EQUIP_INDEX_USABLE].color));
+				batch.draw(ItemType.getItemTypeByItem(equippedInventory[EQUIP_INDEX_USABLE]).getRollFrame(direction, rollingStateTime, equippedInventory[EQUIP_INDEX_USABLE].style), x, y, width, height);
+				batch.setColor(1, 1, 1, 1);
+			}
+		}
+		batch.setColor(1, 1, 1, 1);
+	}
+	
+	/**
+	 * Creates equipment inventory with given items
+	 * @return
+	 */
+	public static Item[] createEquipInventory (Item body, Item boots, Item pants, Item shirt, Item gloves, Item shoulderpads, Item face, Item hair, Item hat, Item usable) {
+		Item[] equipInventory = new Item[EQUIP_SIZE];
+		equipInventory[EQUIP_INDEX_BODY] = body;
+		equipInventory[EQUIP_INDEX_BOOTS] = boots;
+		equipInventory[EQUIP_INDEX_PANTS] = pants;
+		equipInventory[EQUIP_INDEX_SHIRT] = shirt;
+		equipInventory[EQUIP_INDEX_GLOVES] = gloves;
+		equipInventory[EQUIP_INDEX_SHOULDERPADS] = shoulderpads;
+		equipInventory[EQUIP_INDEX_FACE] = face;
+		equipInventory[EQUIP_INDEX_HAIR] = hair;
+		equipInventory[EQUIP_INDEX_HAT] = hat;
+		equipInventory[EQUIP_INDEX_USABLE] = usable;
+		
+		return equipInventory;
 	}
 
 }

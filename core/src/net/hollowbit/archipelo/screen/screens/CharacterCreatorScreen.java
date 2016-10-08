@@ -16,8 +16,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 import net.hollowbit.archipelo.ArchipeloClient;
+import net.hollowbit.archipelo.entity.living.Player;
 import net.hollowbit.archipelo.items.Item;
 import net.hollowbit.archipelo.items.ItemType;
+import net.hollowbit.archipelo.network.Packet;
+import net.hollowbit.archipelo.network.PacketHandler;
+import net.hollowbit.archipelo.network.PacketType;
 import net.hollowbit.archipelo.network.packets.PlayerPickPacket;
 import net.hollowbit.archipelo.screen.Screen;
 import net.hollowbit.archipelo.screen.ScreenType;
@@ -28,7 +32,7 @@ import net.hollowbit.archipeloshared.CollisionRect;
 import net.hollowbit.archipeloshared.Direction;
 import net.hollowbit.archipeloshared.StringValidator;
 
-public class PlayerCreatorScreen extends Screen {
+public class CharacterCreatorScreen extends Screen implements PacketHandler {
 	
 	private static final float CAM_SPEED_X = 50;
 	private static final float CAM_SPEED_Y = 40;
@@ -89,8 +93,8 @@ public class PlayerCreatorScreen extends Screen {
 	
 	ColorPicker colorPickerWindow = null;//Not null if a window is open
 	
-	public PlayerCreatorScreen () {
-		super(ScreenType.PLAYER_CREATOR);
+	public CharacterCreatorScreen () {
+		super(ScreenType.CHARACTER_CREATOR);
 	}
 
 	@Override
@@ -295,7 +299,6 @@ public class PlayerCreatorScreen extends Screen {
 				}
 				
 				new PlayerPickPacket(nameTextField.getText(), selectedHair, selectedFace, hairColor, eyeColor, bodyColor).send();
-				ArchipeloClient.getGame().getScreenManager().setScreen(new GameScreen());
 				super.clicked(event, x, y);
 			}
 		});
@@ -383,6 +386,7 @@ public class PlayerCreatorScreen extends Screen {
 		stage.draw();
 		batch.begin();
 		
+		/////////////Draw display items////////////
 		//Draw hair
 		batch.setColor(HAIR_COLORS[hairColor]);
 		batch.draw(HAIR_STYLES[selectedHair].getType().getWalkFrame(Direction.DOWN, 0), width - ARROW_BUTTON_WIDTH - PADDING - PART_BUTTON_SIZE - PADDING, height - PADDING_FROM_TOP, PART_BUTTON_SIZE, PART_BUTTON_SIZE);
@@ -411,35 +415,11 @@ public class PlayerCreatorScreen extends Screen {
 		
 		
 		/////////////Draw display player///////////////////
-			
-		//Draw body
-		batch.setColor(BODY_COLORS[bodyColor]);
-		batch.draw(BODY.getType().getWalkFrame(Direction.values()[direction], statetime), width / 2 - DISPLAY_SIZE / 2, height / 2 - DISPLAY_SIZE / 2, DISPLAY_SIZE, DISPLAY_SIZE);
+		HAIR_STYLES[selectedHair].color = Color.rgba8888(HAIR_COLORS[hairColor]);
+		FACE_STYLES[selectedFace].color = Color.rgba8888(EYE_COLORS[eyeColor]);
+		Item[] equipInventory = Player.createEquipInventory(BODY, null, PANTS, SHIRT, null, null, FACE_STYLES[selectedFace], HAIR_STYLES[selectedHair], null, null);
 		
-		//Draw pants
-		//batch.setColor(PANTS_COLORS[pantsColor]);
-		batch.setColor(1, 1, 1, 1);
-		batch.draw(PANTS.getType().getWalkFrame(Direction.values()[direction], statetime), width / 2 - DISPLAY_SIZE / 2, height / 2 - DISPLAY_SIZE / 2, DISPLAY_SIZE, DISPLAY_SIZE);
-		
-		//Draw shirt
-		//batch.setColor(SHIRT_COLORS[shirtColor]);
-		batch.setColor(1, 1, 1, 1);
-		batch.draw(SHIRT.getType().getWalkFrame(Direction.values()[direction], statetime), width / 2 - DISPLAY_SIZE / 2, height / 2 - DISPLAY_SIZE / 2, DISPLAY_SIZE, DISPLAY_SIZE);
-		
-		//Draw hair
-		batch.setColor(HAIR_COLORS[hairColor]);
-		batch.draw(HAIR_STYLES[selectedHair].getType().getWalkFrame(Direction.values()[direction], statetime), width / 2 - DISPLAY_SIZE / 2, height / 2 - DISPLAY_SIZE / 2, DISPLAY_SIZE, DISPLAY_SIZE);
-				
-		//Draw face
-		batch.setColor(1, 1, 1, 1);
-		batch.draw(FACE_STYLES[selectedFace].getType().getWalkFrame(Direction.values()[direction], statetime, 0), width / 2 - DISPLAY_SIZE / 2, height / 2 - DISPLAY_SIZE / 2, DISPLAY_SIZE, DISPLAY_SIZE);
-		batch.setColor(EYE_COLORS[eyeColor]);
-		batch.draw(FACE_STYLES[selectedFace].getType().getWalkFrame(Direction.values()[direction], statetime, 1), width / 2 - DISPLAY_SIZE / 2, height / 2 - DISPLAY_SIZE / 2, DISPLAY_SIZE, DISPLAY_SIZE);
-		batch.setColor(HAIR_COLORS[hairColor]);
-		batch.draw(FACE_STYLES[selectedFace].getType().getWalkFrame(Direction.values()[direction], statetime, 2), width / 2 - DISPLAY_SIZE / 2, height / 2 - DISPLAY_SIZE / 2, DISPLAY_SIZE, DISPLAY_SIZE);
-		
-		//Reset color
-		batch.setColor(1, 1, 1, 1);
+		Player.drawPlayer(batch, Direction.values()[direction], true, false, width / 2 - DISPLAY_SIZE / 2, height / 2 - DISPLAY_SIZE / 2, statetime, 0, equipInventory, false, DISPLAY_SIZE, DISPLAY_SIZE);
 		
 		batch.end();
 		stageWindow.draw();
@@ -480,7 +460,32 @@ public class PlayerCreatorScreen extends Screen {
 
 	@Override
 	public void dispose () {
-		stage.dispose();	
+		stage.dispose();
+		ArchipeloClient.getGame().getNetworkManager().removePacketHandler(this);
+	}
+
+	@Override
+	public boolean handlePacket (Packet packet) {
+		if (packet.packetType == PacketType.PLAYER_PICK) {
+			PlayerPickPacket playerPickPacket = (PlayerPickPacket) packet;
+			
+			//Handle packet result
+			switch(playerPickPacket.result) {
+			case PlayerPickPacket.RESULT_NAME_ALREADY_TAKEN:
+				showErrorWindow("Name already taken. Sorry.");
+				break;
+			case PlayerPickPacket.RESULT_INVALID_USERNAME:
+				showErrorWindow("Please only use a-zA-Z0-9 and _ for names.");
+				break;
+			case PlayerPickPacket.RESULT_TOO_MANY_CHARACTERS:
+				showErrorWindow("You should not be in this menu. You have too many characters.");
+				break;
+			case PlayerPickPacket.RESULT_SUCCESSFUL:
+				ArchipeloClient.getGame().getScreenManager().setScreen(new GameScreen(playerPickPacket.name));
+				break;
+			}
+		}
+		return false;
 	}
 	
 	private void showErrorWindow (String error) {

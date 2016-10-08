@@ -20,7 +20,7 @@ import net.hollowbit.archipelo.hollowbitserver.HollowBitServerConnectivity;
 import net.hollowbit.archipelo.items.ItemType;
 import net.hollowbit.archipelo.network.NetworkManager;
 import net.hollowbit.archipelo.screen.ScreenManager;
-import net.hollowbit.archipelo.screen.screens.MainMenuScreen;
+import net.hollowbit.archipelo.screen.screens.*;
 import net.hollowbit.archipelo.tools.AssetManager;
 import net.hollowbit.archipelo.tools.FontManager;
 import net.hollowbit.archipelo.tools.GameCamera;
@@ -37,6 +37,7 @@ public class ArchipeloClient extends ApplicationAdapter {
 	public static final int TILE_SIZE = 16;
 	public static final int PLAYER_SIZE = 32;
 	public static final float UNITS_PER_PIXEL = 1 / 3f;//World pixels per screen pixel.
+	public static final int MAX_CHARACTERS_PER_PLAYER = 4;
 	public static boolean IS_MOBILE = false;
 	public static boolean IS_GWT = false;
 	
@@ -61,6 +62,8 @@ public class ArchipeloClient extends ApplicationAdapter {
 	UiCamera cameraUi;
 	
 	World world = null;
+	
+	private String playerName = "";
 	
 	@Override
 	public void create () {
@@ -213,6 +216,14 @@ public class ArchipeloClient extends ApplicationAdapter {
 	
 	public Prefs getPrefs () {
 		return prefs;
+	}
+	
+	public void setPlayerName (String playerName) {
+		this.playerName = playerName;
+	}
+	
+	public String getPlayerName () {
+		return playerName;
 	}
 	
 	public static ArchipeloClient getGame () {

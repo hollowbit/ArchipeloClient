@@ -7,10 +7,8 @@ public class ScreenManager {
 	private Screen currentScreen;
 	private Screen newScreen;
 	
-	public ScreenManager (Screen screen) {
+	public ScreenManager () {
 		newScreen = null;
-		currentScreen = screen;
-		currentScreen.create();
 	}
 	
 	public void render (SpriteBatch batch, float width, float height) {

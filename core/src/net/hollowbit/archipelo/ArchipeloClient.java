@@ -11,7 +11,6 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
@@ -20,11 +19,12 @@ import net.hollowbit.archipelo.hollowbitserver.HollowBitServerConnectivity;
 import net.hollowbit.archipelo.items.ItemType;
 import net.hollowbit.archipelo.network.NetworkManager;
 import net.hollowbit.archipelo.screen.ScreenManager;
-import net.hollowbit.archipelo.screen.screens.*;
+import net.hollowbit.archipelo.screen.screens.MainMenuScreen;
 import net.hollowbit.archipelo.tools.AssetManager;
 import net.hollowbit.archipelo.tools.FontManager;
 import net.hollowbit.archipelo.tools.GameCamera;
 import net.hollowbit.archipelo.tools.Prefs;
+import net.hollowbit.archipelo.tools.QuickUi;
 import net.hollowbit.archipelo.tools.UiCamera;
 import net.hollowbit.archipelo.world.MapElementManager;
 import net.hollowbit.archipelo.world.World;
@@ -84,13 +84,14 @@ public class ArchipeloClient extends ApplicationAdapter {
 
 		//Temporary way to add assets
 		assetManager = new AssetManager();
-		assetManager.putTextureMap("tiles", new Texture("tiles.png"), TILE_SIZE, TILE_SIZE);
-		assetManager.putTexture("blank", new Texture("blank.png"));
-		assetManager.putTexture("blank-border", new Texture("blank_border.png"));
-		assetManager.putTexture("elements", new Texture("map_elements.png"));
-		assetManager.putTexture("maptag", new Texture("maptag.png"));
-		assetManager.putTexture("mainmenu-background", new Texture("mainmenu_background.png"));
-		assetManager.putTexture("logo", new Texture("logo.png"));
+		assetManager.putTextureMap("tiles", "tiles.png", TILE_SIZE, TILE_SIZE);
+		assetManager.putTextureMap("icons", "ui/icons.png", QuickUi.ICON_SIZE, QuickUi.ICON_SIZE, true);
+		assetManager.putTexture("blank", "blank.png");
+		assetManager.putTexture("blank-border", "blank_border.png");
+		assetManager.putTexture("elements", "map_elements.png");
+		assetManager.putTexture("maptag", "maptag.png", true);
+		assetManager.putTexture("mainmenu-background", "mainmenu_background.png", true);
+		assetManager.putTexture("logo", "logo.png", true);
 		ItemType.loadAllImages();
 		//assetManager.putTexture("invalid", new Texture("invalid.png"));//For some reason this image cannot be loaded by html. Fix later.
 
@@ -110,8 +111,9 @@ public class ArchipeloClient extends ApplicationAdapter {
 		//Managers
 		networkManager = new NetworkManager();
 		fontManager = new FontManager();
+		screenManager = new ScreenManager();
 		hollowBitServerConnectivity = new HollowBitServerConnectivity();
-		screenManager = new ScreenManager(new MainMenuScreen());
+		screenManager.setScreen(new MainMenuScreen());
 		
 		//For testing purposes
 		//IS_MOBILE = true;
@@ -144,6 +146,8 @@ public class ArchipeloClient extends ApplicationAdapter {
 		
 		if (batch.isDrawing())
 			batch.end();
+		
+		hollowBitServerConnectivity.udpate();
 		
 		cameraGame.update(DELTA_TIME);
 		batch.setProjectionMatrix(cameraGame.combined());

@@ -1,5 +1,5 @@
 {
-com.badlogic.gdx.graphics.g2d.BitmapFont: { default-font: { file: uifont.fnt }, large-font: { file: pixelated_medium.fnt }, chat-font: { file: pixelated_very_small.fnt} },
+com.badlogic.gdx.graphics.g2d.BitmapFont: { default-font: { file: uifont.fnt }, medium-font: { file: pixelated_medium.fnt }, chat-font: { file: pixelated_very_small.fnt}, large-font: { file: pixelated_large.fnt} },
 com.badlogic.gdx.graphics.Color: {
 	green: { a: 1, b: 0, g: 1, r: 0 },
 	white: { a: 1, b: 1, g: 1, r: 1 },
@@ -15,7 +15,7 @@ com.badlogic.gdx.scenes.scene2d.ui.Button$ButtonStyle: {
 },
 com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
 	default: { down: default-round-down, up: default-round, font: default-font, fontColor: white },
-	large: { down: default-round-down, up: default-round, font: large-font, fontColor: white },
+	large: { down: default-round-down, up: default-round, font: medium-font, fontColor: white },
 	toggle: { down: default-round-down, up: default-round, checked: default-round-down, font: default-font, fontColor: white, downFontColor: red }
 },
 com.badlogic.gdx.scenes.scene2d.ui.ScrollPane$ScrollPaneStyle: {
@@ -46,7 +46,8 @@ com.badlogic.gdx.scenes.scene2d.ui.Slider$SliderStyle: {
 },
 com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
 	default: { font: default-font, fontColor: white },
-	small: { font: chat-font, fontColor: white }
+	small: { font: chat-font, fontColor: white },
+	menu-title: { font: medium-font, fontColor: white }
 },
 com.badlogic.gdx.scenes.scene2d.ui.TextField$TextFieldStyle: {
 	default: { selection: selection, background: textfield, font: default-font, fontColor: white, cursor: cursor },

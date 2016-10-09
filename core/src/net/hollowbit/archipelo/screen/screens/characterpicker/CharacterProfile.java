@@ -30,7 +30,7 @@ public class CharacterProfile extends Table {
 	public CharacterProfile (final String name, Item[] equippedInventory, String island, String lastPlayedDateTime, String creationDateTime, int level) {
 		this.setSkin(ArchipeloClient.getGame().getUiSkin());
 		
-		characterDisplay = new CharacterDisplay(equippedInventory);
+		characterDisplay = new CharacterDisplay(equippedInventory, true);
 		add(characterDisplay).width(DISPLAY_SIZE).height(DISPLAY_SIZE);
 		
 		row();

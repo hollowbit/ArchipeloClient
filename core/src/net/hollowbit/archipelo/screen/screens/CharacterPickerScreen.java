@@ -3,8 +3,11 @@ package net.hollowbit.archipelo.screen.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 import net.hollowbit.archipelo.ArchipeloClient;
 import net.hollowbit.archipelo.network.Packet;
@@ -15,17 +18,23 @@ import net.hollowbit.archipelo.network.packets.PlayerPickPacket;
 import net.hollowbit.archipelo.screen.Screen;
 import net.hollowbit.archipelo.screen.ScreenType;
 import net.hollowbit.archipelo.screen.screens.characterpicker.CharacterPickWindow;
+import net.hollowbit.archipelo.screen.screens.mainmenu.ScrollingBackground;
+import net.hollowbit.archipelo.tools.QuickUi;
+import net.hollowbit.archipelo.tools.QuickUi.IconType;
 
 public class CharacterPickerScreen extends Screen implements PacketHandler {
 	
 	Stage stage;
 	CharacterPickWindow characterPickWindow;
+	ScrollingBackground scrollingBackground;
+	ImageButton backButton;
 	
 	public CharacterPickerScreen () {
 		super(ScreenType.CHARACTER_PICKER);
 		stage = new Stage(ArchipeloClient.getGame().getCameraUi().getScreenViewport(), ArchipeloClient.getGame().getBatch());
 		Gdx.input.setInputProcessor(stage);
 		ArchipeloClient.getGame().getNetworkManager().addPacketHandler(this);
+		scrollingBackground = new ScrollingBackground();
 	}
 
 	@Override
@@ -34,6 +43,17 @@ public class CharacterPickerScreen extends Screen implements PacketHandler {
 		characterPickWindow.setPosition(Gdx.graphics.getWidth() / 2 - characterPickWindow.getWidth() / 2, Gdx.graphics.getHeight() / 2 - characterPickWindow.getHeight() / 2);
 		stage.addActor(characterPickWindow);
 		
+		backButton = QuickUi.getIconButton(IconType.BACK);
+		backButton.addListener(new ClickListener () {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				super.clicked(event, x, y);
+				ArchipeloClient.getGame().getScreenManager().setScreen(new MainMenuScreen());
+			}
+		});
+		backButton.setPosition(5, Gdx.graphics.getHeight() - QuickUi.ICON_SIZE - 5);
+		stage.addActor(backButton);
+		
 		//Send character list packet
 		new PlayerListPacket(ArchipeloClient.getGame().getPrefs().getUsername()).send();
 	}
@@ -41,11 +61,12 @@ public class CharacterPickerScreen extends Screen implements PacketHandler {
 	@Override
 	public void update (float deltaTime) {
 		stage.act();
+		scrollingBackground.update(deltaTime);
 	}
 
 	@Override
 	public void render (SpriteBatch batch, float width, float height) {
-		
+		scrollingBackground.render(batch);
 	}
 
 	@Override
@@ -57,6 +78,8 @@ public class CharacterPickerScreen extends Screen implements PacketHandler {
 
 	@Override
 	public void resize (int width, int height) {
+		scrollingBackground.resize();
+		backButton.setPosition(5, Gdx.graphics.getHeight() - QuickUi.ICON_SIZE - 5);
 		characterPickWindow.setPosition(Gdx.graphics.getWidth() / 2 - characterPickWindow.getWidth() / 2, Gdx.graphics.getHeight() / 2 - characterPickWindow.getHeight() / 2);
 	}
 
@@ -64,8 +87,6 @@ public class CharacterPickerScreen extends Screen implements PacketHandler {
 	public void dispose () {
 		ArchipeloClient.getGame().getNetworkManager().removePacketHandler(this);
 	}
-	
-	
 	
 	@Override
 	public boolean handlePacket (Packet packet) {

@@ -4,13 +4,14 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
@@ -26,17 +27,15 @@ import net.hollowbit.archipelo.network.packets.PlayerPickPacket;
 import net.hollowbit.archipelo.screen.Screen;
 import net.hollowbit.archipelo.screen.ScreenType;
 import net.hollowbit.archipelo.screen.screens.mainmenu.CharacterDisplay;
+import net.hollowbit.archipelo.screen.screens.mainmenu.ScrollingBackground;
 import net.hollowbit.archipelo.screen.screens.playercreator.ColorPickListener;
 import net.hollowbit.archipelo.screen.screens.playercreator.ColorPicker;
-import net.hollowbit.archipelo.tools.GameCamera;
-import net.hollowbit.archipeloshared.CollisionRect;
+import net.hollowbit.archipelo.tools.QuickUi;
+import net.hollowbit.archipelo.tools.QuickUi.IconType;
 import net.hollowbit.archipeloshared.Direction;
 import net.hollowbit.archipeloshared.StringValidator;
 
 public class CharacterCreatorScreen extends Screen implements PacketHandler {
-	
-	private static final float CAM_SPEED_X = 50;
-	private static final float CAM_SPEED_Y = 40;
 	
 	private static final int ARROW_BUTTON_HEIGHT = 96;
 	private static final int ARROW_BUTTON_WIDTH = 40;
@@ -65,6 +64,7 @@ public class CharacterCreatorScreen extends Screen implements PacketHandler {
 	TextButton changeFaceLeftButton;
 	TextButton changeFaceRightButton;
 	
+	Label titleLabel;
 	CharacterDisplay characterDisplay;
 	
 	TextField nameTextField;
@@ -77,6 +77,8 @@ public class CharacterCreatorScreen extends Screen implements PacketHandler {
 	Button pantsColorButton;
 	Button shirtColorButton;
 	
+	ImageButton backButton;
+	
 	int selectedHair = 0;
 	int selectedFace = 0;
 	
@@ -86,11 +88,7 @@ public class CharacterCreatorScreen extends Screen implements PacketHandler {
 	//int shirtColor;
 	//int pantsColor;
 	
-	float stetime = 0;
-	
-	float camVelocityX = CAM_SPEED_X, camVelocityY = CAM_SPEED_Y;
-	GameCamera cam;
-	Texture background;
+	ScrollingBackground scrollingBackground;
 	
 	ColorPicker colorPickerWindow = null;//Not null if a window is open
 	
@@ -102,9 +100,13 @@ public class CharacterCreatorScreen extends Screen implements PacketHandler {
 	public void create () {
 		stage = new Stage(ArchipeloClient.getGame().getCameraUi().getScreenViewport(), ArchipeloClient.getGame().getBatch());
 		stageWindow = new Stage(ArchipeloClient.getGame().getCameraUi().getScreenViewport(), ArchipeloClient.getGame().getBatch());
+		scrollingBackground = new ScrollingBackground();
 		ArchipeloClient.getGame().getNetworkManager().addPacketHandler(this);
 		
 		Gdx.input.setInputProcessor(new InputMultiplexer(stageWindow, stage));//Put stageWindow first so it has priority
+		
+		titleLabel = new Label("Create Character", ArchipeloClient.getGame().getUiSkin(), "menu-title");
+		stage.addActor(titleLabel);
 		
 		//Hair
 		changeHairLeftButton = new TextButton("<", ArchipeloClient.getGame().getUiSkin());
@@ -307,7 +309,7 @@ public class CharacterCreatorScreen extends Screen implements PacketHandler {
 		stage.addActor(finishButton);
 		
 		//Character display
-		characterDisplay = new CharacterDisplay(getEquppedInventory());
+		characterDisplay = new CharacterDisplay(getEquppedInventory(), true);
 		characterDisplay.setBounds(0, 0, DISPLAY_SIZE, DISPLAY_SIZE);
 		stage.addActor(characterDisplay);
 		
@@ -316,14 +318,17 @@ public class CharacterCreatorScreen extends Screen implements PacketHandler {
 		nameTextField.setMessageText("Name");
 		stage.addActor(nameTextField);
 		
-		resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		backButton = QuickUi.getIconButton(IconType.BACK);
+		backButton.addListener(new ClickListener () {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				super.clicked(event, x, y);
+				ArchipeloClient.getGame().getScreenManager().setScreen(new CharacterPickerScreen());
+			}
+		});
+		stage.addActor(backButton);
 		
-		//Moving background
-		background = ArchipeloClient.getGame().getAssetManager().getTexture("mainmenu-background");
-		cam = ArchipeloClient.getGame().getCamera();
-		cam.move(200, 200, 0);
-		cam.zoom(3);
-		cam.focusOnEntity(null);
+		resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		
 		hairColor = 0;
 		eyeColor = 0;
@@ -336,38 +341,14 @@ public class CharacterCreatorScreen extends Screen implements PacketHandler {
 	public void update (float deltaTime) {
 		stage.act();
 		stageWindow.act();
+		scrollingBackground.update(deltaTime);
 		
-		//Update game camera to move around map
-		CollisionRect rect = cam.getViewRect();
-		float camX = rect.x + camVelocityX * deltaTime;
-		float camY = rect.y + camVelocityY * deltaTime;
-		
-		if (camX < 0) {
-			camX = 0;
-			camVelocityX = -camVelocityX;
-		}
-		
-		if (camY < 0) {
-			camY = 0;
-			camVelocityY = -camVelocityY;
-		}
-		
-		if (camX + rect.width > background.getWidth()) {
-			camX = background.getWidth() - rect.width;
-			camVelocityX = -camVelocityX;
-		}
-		
-		if (camY + rect.height > background.getHeight()) {
-			camY = background.getHeight() - rect.height;
-			camVelocityY = -camVelocityY;
-		}
-		
-		cam.move(camX, camY, 0);
+		characterDisplay.setEquippedInventory(getEquppedInventory());
 	}
 	
 	@Override
 	public void render (SpriteBatch batch, float width, float height) {
-		batch.draw(background, 0, 0);//Render blurred background image
+		scrollingBackground.render(batch);
 	}
 
 	@Override
@@ -410,7 +391,8 @@ public class CharacterCreatorScreen extends Screen implements PacketHandler {
 
 	@Override
 	public void resize (int width, int height) {
-		stage.getViewport().update(width, height);
+		titleLabel.setPosition(width / 2 - titleLabel.getWidth() / 2, height - titleLabel.getHeight() - 40);
+		
 		//Hair
 		changeHairLeftButton.setPosition(width - ARROW_BUTTON_WIDTH - PADDING - PART_BUTTON_SIZE - PADDING - ARROW_BUTTON_WIDTH - PADDING, height - PADDING_FROM_TOP);
 		hairColorButton.setPosition(width - ARROW_BUTTON_WIDTH - PADDING - PART_BUTTON_SIZE - PADDING, height - PADDING_FROM_TOP);
@@ -438,9 +420,15 @@ public class CharacterCreatorScreen extends Screen implements PacketHandler {
 		
 		//Name Textfield
 		nameTextField.setPosition(width / 2 - nameTextField.getWidth() / 2, height / 2 - characterDisplay.getHeight() / 2 - nameTextField.getHeight() - 5);
+		
+		//Back button
+		backButton.setPosition(5, Gdx.graphics.getHeight() - QuickUi.ICON_SIZE - 5);
+		
+		scrollingBackground.resize();
 	}
 	
 	private Item[] getEquppedInventory () {
+		BODY.color = Color.rgba8888(BODY_COLORS[bodyColor]);
 		HAIR_STYLES[selectedHair].color = Color.rgba8888(HAIR_COLORS[hairColor]);
 		FACE_STYLES[selectedFace].color = Color.rgba8888(EYE_COLORS[eyeColor]);
 		return Player.createEquipInventory(BODY, null, PANTS, SHIRT, null, null, FACE_STYLES[selectedFace], HAIR_STYLES[selectedHair], null, null);

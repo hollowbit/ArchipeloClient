@@ -6,7 +6,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -15,25 +14,16 @@ import com.badlogic.gdx.utils.Align;
 import net.hollowbit.archipelo.ArchipeloClient;
 import net.hollowbit.archipelo.screen.Screen;
 import net.hollowbit.archipelo.screen.ScreenType;
+import net.hollowbit.archipelo.screen.screens.mainmenu.ScrollingBackground;
 import net.hollowbit.archipelo.tools.FontManager.Fonts;
 import net.hollowbit.archipelo.tools.FontManager.Sizes;
-import net.hollowbit.archipelo.tools.GameCamera;
-import net.hollowbit.archipeloshared.CollisionRect;
 
 public class ErrorScreen extends Screen {
 	
-	private static final float CAM_SPEED_X = 10;
-	private static final float CAM_SPEED_Y = 5;
-	
-	private static final float BACKGROUND_IMAGE_SCALE = 1.5f;
-	
-	Texture background;
-	float camVelocityX = CAM_SPEED_X, camVelocityY = CAM_SPEED_Y;
-	GameCamera cam;
 	String title;
 	Exception e;
 	
-	float backgroundWidth, backgroundHeight;
+	ScrollingBackground scrollingBackground;
 	
 	public ErrorScreen(String title) {
 		super(ScreenType.ERROR);
@@ -56,12 +46,7 @@ public class ErrorScreen extends Screen {
 
 	@Override
 	public void create() {
-		background = ArchipeloClient.getGame().getAssetManager().getTexture("mainmenu-background");
-		cam = ArchipeloClient.getGame().getCamera();
-		cam.focusOnEntity(null);
-		cam.move(200, 200, 0);
-		backgroundWidth = cam.getWidth() * BACKGROUND_IMAGE_SCALE;
-		backgroundHeight = cam.getHeight() * BACKGROUND_IMAGE_SCALE;
+		scrollingBackground = new ScrollingBackground();
 		
 		Gdx.input.setInputProcessor(new InputAdapter() {
 			
@@ -83,42 +68,17 @@ public class ErrorScreen extends Screen {
 
 	@Override
 	public void update(float deltaTime) {
-		//Update game camera to move around map
-		CollisionRect rect = cam.getViewRect();
-		float camX = rect.x + camVelocityX * deltaTime;
-		float camY = rect.y + camVelocityY * deltaTime;
-			
-		if (camX < 0) {
-			camX = 0;
-			camVelocityX = -camVelocityX;
-		}
-		
-		if (camY < 0) {
-			camY = 0;
-			camVelocityY = -camVelocityY;
-		}
-		
-		if (camX + rect.width > backgroundWidth) {
-			camX = backgroundWidth - rect.width;
-			camVelocityX = -camVelocityX;
-		}
-		
-		if (camY + rect.height > backgroundHeight) {
-			camY = backgroundHeight - rect.height;
-			camVelocityY = -camVelocityY;
-		}
-			
-		cam.move(camX, camY, 0);
+		scrollingBackground.update(deltaTime);
 	}
 
 	@Override
 	public void render(SpriteBatch batch, float width, float height) {
-		batch.draw(background, 0, 0, backgroundWidth, backgroundHeight);//Render blurred background image
+		scrollingBackground.render(batch);
 	}
 
 	@Override
 	public void renderUi(SpriteBatch batch, float width, float height) {
-		GlyphLayout layoutTitle = new GlyphLayout(ArchipeloClient.getGame().getFontManager().getFont(Fonts.PIXELATED, Sizes.MEDIUM), "Error: " + title);
+		GlyphLayout layoutTitle = new GlyphLayout(ArchipeloClient.getGame().getFontManager().getFont(Fonts.PIXELATED, Sizes.MEDIUM), "Error: " + title, Color.WHITE, width - 20, Align.left, true);
 		ArchipeloClient.getGame().getFontManager().getFont(Fonts.PIXELATED, Sizes.MEDIUM).draw(batch, layoutTitle, width / 2 - layoutTitle.width / 2, height - 50);
 		
 		BitmapFont fontSmall = ArchipeloClient.getGame().getFontManager().getFont(Fonts.PIXELATED, Sizes.SMALL);
@@ -143,8 +103,7 @@ public class ErrorScreen extends Screen {
 
 	@Override
 	public void resize(int width, int height) {
-		backgroundWidth = cam.getWidth() * BACKGROUND_IMAGE_SCALE;
-		backgroundHeight = cam.getHeight() * BACKGROUND_IMAGE_SCALE;
+		scrollingBackground.resize();
 	}
 
 	@Override

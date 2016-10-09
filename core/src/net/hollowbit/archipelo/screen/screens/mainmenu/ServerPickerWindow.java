@@ -14,7 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 import net.hollowbit.archipelo.ArchipeloClient;
 import net.hollowbit.archipelo.hollowbitserver.HollowBitServerQueryResponseHandler;
-import net.hollowbit.archipelo.tools.PingGetter;
+import net.hollowbit.archipelo.network.PingGetter;
 
 public class ServerPickerWindow extends Window {
 	
@@ -27,11 +27,7 @@ public class ServerPickerWindow extends Window {
 	
 	public ServerPickerWindow () {
 		super("Pick Server", ArchipeloClient.getGame().getUiSkin());
-
-		serverListTable = new Table(getSkin());
-		serverListScrollPane = new ScrollPane(serverListTable, getSkin());
 		pingGetter = new PingGetter();
-		loadServerList();
 		
 		setMovable(false);
 		
@@ -39,7 +35,10 @@ public class ServerPickerWindow extends Window {
 		add(infoLabel).pad(5).colspan(2);
 		
 		row();
-		
+
+		serverListTable = new Table(getSkin());
+		serverListScrollPane = new ScrollPane(serverListTable, getSkin());
+		serverListScrollPane.setScrollbarsOnTop(true);
 		add(serverListScrollPane).width(600).height(400).colspan(2);
 		
 		row();
@@ -67,23 +66,24 @@ public class ServerPickerWindow extends Window {
 		}
 		
 		pack();
-
+		
+		loadServerList();
 	}
 	
 	public void loadServerList() {
+		serverListTable.clearChildren();
 		ArchipeloClient.getGame().getHollowBitServerConnectivity().sendGetServerListQuery(new HollowBitServerQueryResponseHandler() {
 			
 			@Override
 			public void responseReceived(int id, String[] data) {
 				if (id != 6) {
 					infoLabel.setText("Could not get server info!");
+					System.out.println("ServerPickerWindow.java" + id);
 					pack();
 					return;
 				}
 				
 				try {
-					serverListTable.clearChildren();
-					
 					ArrayList<ServerListing> servers = new ArrayList<ServerListing>();
 					for (String serverDataRaw : data) {
 						String[] serverData = serverDataRaw.split(",");
@@ -130,7 +130,7 @@ public class ServerPickerWindow extends Window {
 						infoLabel.setText("Could not find any servers.");
 					}
 					
-					getCell(serverListScrollPane).width(serverListTable.getWidth());
+					getCell(serverListScrollPane).width(serverListTable.getWidth() + 5);
 					pack();
 				} catch (Exception e) {
 					infoLabel.setText("Could not get server info!");

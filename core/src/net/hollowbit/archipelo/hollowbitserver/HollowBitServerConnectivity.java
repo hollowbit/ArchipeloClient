@@ -1,5 +1,6 @@
 package net.hollowbit.archipelo.hollowbitserver;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -21,8 +22,13 @@ public class HollowBitServerConnectivity {
 	private HashMap<String, HollowBitServerQueryResponseHandler> handlerMap;
 	private WebSocket socket;
 	
+	private volatile boolean isConnected = false;
+	
+	private ArrayList<String> queries;
+	
 	public HollowBitServerConnectivity () {
 		handlerMap = new HashMap<String, HollowBitServerQueryResponseHandler>();//Create map for handlers
+		queries = new ArrayList<String>();
 		try {
 			//Connect to HollowBit server and set listener
 			socket = ExtendedNet.getNet().newSecureWebSocket(ADDRESS, PORT, Gdx.files, "keystore", (Gdx.app.getType() == ApplicationType.Android ? "BKS" : "JKS"), "changeit", "changeit");
@@ -33,16 +39,24 @@ public class HollowBitServerConnectivity {
 		}
 	}
 	
+	public synchronized void udpate () {
+		if (isConnected) {
+			for (String query : queries)
+				socket.send(query);
+			queries.clear();
+		}
+	}
+	
 	/**
 	 * Sends the raw query to HollowBit server and puts the listener in the handlerMap
 	 * @param query Query string to send to server
 	 * @param handler Handles response to queries
 	 */
-	private void sendQuery (String query, HollowBitServerQueryResponseHandler handler) {
+	private synchronized void sendQuery (String query, HollowBitServerQueryResponseHandler handler) {
 		String uuid = UUID.randomUUID().toString();
 		handlerMap.put(uuid, handler);
 		String finalQuery = uuid + "/" + query;
-		socket.send(finalQuery);
+		queries.add(finalQuery);
 	}
 	
 	/**
@@ -123,12 +137,14 @@ public class HollowBitServerConnectivity {
             @Override
             public boolean onOpen(final WebSocket webSocket) {
                 Gdx.app.log("WS", "Connected to HB!");
+                isConnected = true;
                 return FULLY_HANDLED;
             }
 
             @Override
             public boolean onClose(final WebSocket webSocket, final WebSocketCloseCode code, final String reason) {
-                Gdx.app.log("WS", "Disconnected from HB - status: " + code + ", reason: " + reason);
+                isConnected = false;
+				ArchipeloClient.getGame().getScreenManager().setScreen(new ErrorScreen("Could not connect to login server. Try another time."));
                 return FULLY_HANDLED;
             }
             
@@ -162,6 +178,7 @@ public class HollowBitServerConnectivity {
             @Override
             public boolean onError(WebSocket webSocket, Throwable error) {
             	Gdx.app.log("WS", "Error from HB: " + error.getMessage());
+				ArchipeloClient.getGame().getScreenManager().setScreen(new ErrorScreen("Could not connect to login server. Try another time."));
             	return FULLY_HANDLED;
             }
             

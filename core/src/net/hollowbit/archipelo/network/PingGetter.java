@@ -1,4 +1,4 @@
-package net.hollowbit.archipelo.tools;
+package net.hollowbit.archipelo.network;
 
 import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;

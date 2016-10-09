@@ -7,8 +7,8 @@ package net.hollowbit.archipelo.network;
 
 import java.util.ArrayList;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Application.ApplicationType;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Json;
 import com.github.czyzby.websocket.WebSocket;
 import com.github.czyzby.websocket.WebSocketAdapter;
@@ -20,7 +20,7 @@ import net.hollowbit.archipelo.screen.ScreenType;
 import net.hollowbit.archipelo.screen.screens.ErrorScreen;
 import net.hollowbit.archipelo.screen.screens.MainMenuScreen;
 
-public class NetworkManager implements PacketHandler {
+public class NetworkManager {
 	
 	private ArrayList<PacketHandler> packetHandlers;
 	private ArrayList<Packet> packets;
@@ -32,7 +32,6 @@ public class NetworkManager implements PacketHandler {
 		packetHandlers = new ArrayList<PacketHandler>();
 		packets = new ArrayList<Packet>();
 		json = new Json();
-		packetHandlers.add(this);
 	}
 	
 	public void update () {
@@ -46,9 +45,8 @@ public class NetworkManager implements PacketHandler {
 			//Only remove handled packets, keep unhandled ones for the next cycle
 			boolean packetHandled = false;
 			for (PacketHandler packetHandler : currentPacketHandlers) {
-				if (packetHandler.handlePacket(packet)) {
+				if (packetHandler.handlePacket(packet))
 					packetHandled = true;
-				}
 			}
 			
 			if (packetHandled) 
@@ -152,14 +150,5 @@ public class NetworkManager implements PacketHandler {
             
         };
     }
-
-	@Override
-	public boolean handlePacket(Packet packet) {
-		if (packet.packetType == PacketType.LOGOUT) {
-			ArchipeloClient.getGame().getScreenManager().setScreen(new MainMenuScreen());
-			return true;
-		}
-		return false;
-	}
 	
 }

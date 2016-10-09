@@ -26,25 +26,19 @@ import net.hollowbit.archipelo.screen.ScreenType;
 import net.hollowbit.archipelo.screen.screens.mainmenu.LoginRegisterWindow;
 import net.hollowbit.archipelo.screen.screens.mainmenu.LoginWindow;
 import net.hollowbit.archipelo.screen.screens.mainmenu.RegisterWindow;
+import net.hollowbit.archipelo.screen.screens.mainmenu.ScrollingBackground;
 import net.hollowbit.archipelo.screen.screens.mainmenu.ServerPickerWindow;
 import net.hollowbit.archipelo.tools.FontManager.Fonts;
 import net.hollowbit.archipelo.tools.FontManager.Sizes;
-import net.hollowbit.archipelo.tools.GameCamera;
 import net.hollowbit.archipelo.tools.Prefs;
-import net.hollowbit.archipeloshared.CollisionRect;
 
 public class MainMenuScreen extends Screen {
-	
-	private static final float CAM_SPEED_X = 10;
-	private static final float CAM_SPEED_Y = 5;
 	
 	private static final float LOGO_SPEED = 450;
 	private int LOGO_PROGRESSION_ZERO_Y = 150;
 	private int LOGO_PROGRESSION_ONE_Y = 15;
 	
 	private static final float FLASH_TIME = 0.8f;
-	
-	private static final float BACKGROUND_IMAGE_SCALE = 1.5f;
 	
 	private int progression;//0 = press start. 1 = start menu. 2 = menu started
 	
@@ -60,10 +54,7 @@ public class MainMenuScreen extends Screen {
 	LoginRegisterWindow loginRegisterWndw;
 	ServerPickerWindow serverPickerWndw;
 	
-	Texture background;
 	Texture logo;
-	float camVelocityX = CAM_SPEED_X, camVelocityY = CAM_SPEED_Y;
-	GameCamera cam;
 	
 	float logoY;
 	
@@ -72,8 +63,9 @@ public class MainMenuScreen extends Screen {
 	
 	GlyphLayout pressAnyGlyphLayout;
 	
-	float backgroundWidth, backgroundHeight;
 	Prefs prefs;
+	
+	ScrollingBackground scrollingBackground;
 	
 	public MainMenuScreen () {
 		super(ScreenType.MAIN_MENU);
@@ -83,13 +75,8 @@ public class MainMenuScreen extends Screen {
 	public void create () {
 		progression = 0;
 		stage = new Stage(ArchipeloClient.getGame().getCameraUi().getScreenViewport(), ArchipeloClient.getGame().getBatch());
-		background = ArchipeloClient.getGame().getAssetManager().getTexture("mainmenu-background");
 		logo = ArchipeloClient.getGame().getAssetManager().getTexture("logo");
-		cam = ArchipeloClient.getGame().getCamera();
-		cam.focusOnEntity(null);
-		cam.move(200, 200, 0);
-		backgroundWidth = cam.getWidth() * BACKGROUND_IMAGE_SCALE;
-		backgroundHeight = cam.getHeight() * BACKGROUND_IMAGE_SCALE;
+		scrollingBackground  = new ScrollingBackground();
 		
 		pressAnyGlyphLayout = new GlyphLayout(ArchipeloClient.getGame().getFontManager().getFont(Fonts.PIXELATED, Sizes.MEDIUM), ArchipeloClient.IS_MOBILE ? "Tap to Start!" : "Press Any Key!");
 		flashOn = true;
@@ -154,33 +141,7 @@ public class MainMenuScreen extends Screen {
 	@Override
 	public void update (float deltaTime) {
 		stage.act();
-		
-		//Update game camera to move around map
-		CollisionRect rect = cam.getViewRect();
-		float camX = rect.x + camVelocityX * deltaTime;
-		float camY = rect.y + camVelocityY * deltaTime;
-		
-		if (camX < 0) {
-			camX = 0;
-			camVelocityX = -camVelocityX;
-		}
-		
-		if (camY < 0) {
-			camY = 0;
-			camVelocityY = -camVelocityY;
-		}
-		
-		if (camX + rect.width > backgroundWidth) {
-			camX = backgroundWidth - rect.width;
-			camVelocityX = -camVelocityX;
-		}
-		
-		if (camY + rect.height > backgroundHeight) {
-			camY = backgroundHeight - rect.height;
-			camVelocityY = -camVelocityY;
-		}
-		
-		cam.move(camX, camY, 0);
+		scrollingBackground.update(deltaTime);
 		
 		if (progression == 0) {
 			//Update flash button
@@ -227,7 +188,7 @@ public class MainMenuScreen extends Screen {
 			}
 			
 			//If no server is picked and the picker isn't already open, open it.
-			if (!prefs.isLoggedIn() && !isServerPickerWindowOpen() && !isLoginRegisterWindowOpen()) {//Don't open the server picker if the login window is open
+			if (prefs.isLoggedIn() && !isServerPickerWindowOpen() && !ArchipeloClient.getGame().getNetworkManager().isConnected() && !isLoginRegisterWindowOpen()) {//Don't open the server picker if the login window is open
 				serverPickerWndw = new ServerPickerWindow();
 				stage.addActor(serverPickerWndw);
 				serverPickerWndw.setPosition(Gdx.graphics.getWidth() / 2 - serverPickerWndw.getWidth() / 2, Gdx.graphics.getHeight() / 2 - serverPickerWndw.getHeight() / 2);
@@ -243,7 +204,7 @@ public class MainMenuScreen extends Screen {
 
 	@Override
 	public void render (SpriteBatch batch, float width, float height) {
-		batch.draw(background, 0, 0, backgroundWidth, backgroundHeight);//Render blurred background image
+		scrollingBackground.render(batch);
 	}
 
 	@Override
@@ -272,7 +233,9 @@ public class MainMenuScreen extends Screen {
 
 	@Override
 	public void resize (int width, int height) {
-		stage.getViewport().update(width, height);
+		scrollingBackground.resize();
+		
+		//Adjust ui elements for new screen size
 		if (playBtn != null)
 			playBtn.setPosition(Gdx.graphics.getWidth() / 2 - playBtn.getWidth() / 2, Gdx.graphics.getHeight() / 2 - playBtn.getHeight() / 2 + 20);
 		if (changeServerBtn != null)
@@ -289,9 +252,6 @@ public class MainMenuScreen extends Screen {
 			loginRegisterWndw.setPosition(Gdx.graphics.getWidth() / 2 - loginRegisterWndw.getWidth() / 2, Gdx.graphics.getHeight() / 2 - loginRegisterWndw.getHeight() / 2);
 		if (serverPickerWndw != null)
 			serverPickerWndw.setPosition(Gdx.graphics.getWidth() / 2 - serverPickerWndw.getWidth() / 2, Gdx.graphics.getHeight() / 2 - serverPickerWndw.getHeight() / 2);
-		
-		backgroundWidth = cam.getWidth() * BACKGROUND_IMAGE_SCALE;
-		backgroundHeight = cam.getHeight() * BACKGROUND_IMAGE_SCALE;
 	}
 
 	@Override
@@ -302,7 +262,7 @@ public class MainMenuScreen extends Screen {
 	private void startProgressionThree () {
 		progression = 3;
 		
-		//Load ui
+		//Load ui for main menu
 		playBtn = new TextButton("Play", ArchipeloClient.getGame().getUiSkin());
 		playBtn.addListener(new ClickListener() {
 			

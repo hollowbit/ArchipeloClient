@@ -5,15 +5,19 @@ import com.badlogic.gdx.Input.TextInputListener;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.FocusListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
 import net.hollowbit.archipelo.ArchipeloClient;
 
 public class QuickUi {
+	
+	public static final int ICON_SIZE = 100;
 	
 	public static void addCloseButtonToWindow (final Window window) {
 		TextButton closeButton = new TextButton("X", ArchipeloClient.getGame().getUiSkin());
@@ -25,6 +29,10 @@ public class QuickUi {
 			}
 		});
 		window.getTitleTable().add(closeButton);
+	}
+	
+	public static ImageButton getIconButton (IconType iconType) {
+		return new ImageButton(iconType.getUpImage(), iconType.getUpImage());
 	}
 	
 	public static void makeTextFieldMobileCompatible (final String usage, final TextField textField, final Stage stage, final TextFieldMessageListener listener) {
@@ -77,6 +85,27 @@ public class QuickUi {
 	
 	public interface TextFieldMessageListener {
 		public abstract void messageReceived (String message);
+	}
+	
+	public enum IconType {
+		HOME(0),
+		CHAT(1),
+		BACK(2);
+		
+		int row = 0;
+		
+		private IconType (int row) {
+			this.row = row;
+		}
+		
+		public TextureRegionDrawable getUpImage () {
+			return new TextureRegionDrawable(ArchipeloClient.getGame().getAssetManager().getTextureMap("icons")[row][0]);
+		}
+		
+		public TextureRegionDrawable getDownImage () {
+			return new TextureRegionDrawable(ArchipeloClient.getGame().getAssetManager().getTextureMap("icons")[row][1]);
+		}
+		
 	}
 	
 }

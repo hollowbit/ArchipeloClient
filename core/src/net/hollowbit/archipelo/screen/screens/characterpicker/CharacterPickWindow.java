@@ -22,10 +22,9 @@ public class CharacterPickWindow extends Window {
 		setMovable(false);
 		
 		characterTable = new Table();
-		characterScrollPane = new ScrollPane(characterTable);
+		characterScrollPane = new ScrollPane(characterTable, getSkin());
 		characterScrollPane.setFadeScrollBars(false);
 		add(characterScrollPane).width(600).height(400);
-		
 		pack();
 	}
 	
@@ -37,9 +36,8 @@ public class CharacterPickWindow extends Window {
 		characterTable.clear();
 		
 		//Add character profiles to table
-		for (int i = 0; i < playerListPacket.names.length; i++) {
+		for (int i = 0; i < playerListPacket.names.length; i++)
 			characterTable.add(new CharacterProfile(playerListPacket.names[i], playerListPacket.playerEquippedInventories[i], playerListPacket.islands[i], playerListPacket.lastPlayedDateTimes[i], playerListPacket.creationDateTimes[i], 0)).pad(25);//Add proper levels after
-		}
 		
 		//If user has another character slot available, add button to create a new one
 		if (playerListPacket.names.length < ArchipeloClient.MAX_CHARACTERS_PER_PLAYER) {
@@ -57,7 +55,7 @@ public class CharacterPickWindow extends Window {
 		characterTable.pack();
 		
 		//Make scrollpane height match he height of the profiles inside
-		getCell(characterScrollPane).height(characterTable.getHeight());
+		getCell(characterScrollPane).height(characterTable.getHeight() + 25);
 		pack();
 	}
 

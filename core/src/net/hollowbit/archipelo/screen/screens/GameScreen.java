@@ -4,18 +4,14 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
 import net.hollowbit.archipelo.ArchipeloClient;
 import net.hollowbit.archipelo.network.Packet;
@@ -35,6 +31,7 @@ import net.hollowbit.archipelo.tools.ControlsManager;
 import net.hollowbit.archipelo.tools.FontManager.Fonts;
 import net.hollowbit.archipelo.tools.FontManager.Sizes;
 import net.hollowbit.archipelo.tools.QuickUi;
+import net.hollowbit.archipelo.tools.QuickUi.IconType;
 import net.hollowbit.archipelo.tools.QuickUi.TextFieldMessageListener;
 import net.hollowbit.archipelo.tools.WorldSnapshotManager;
 import net.hollowbit.archipelo.world.World;
@@ -82,15 +79,7 @@ public class GameScreen extends Screen implements PacketHandler, InputProcessor 
 		ArchipeloClient.getGame().getCamera().zoom(1);
 		
 		//Add stage elements
-		//Menu image buttons
-		TextureRegion[][] icons = TextureRegion.split(new Texture("ui/icons.png"), 100, 100);
-		
-		for (TextureRegion[] row : icons) {
-			for (TextureRegion image : row)
-				image.getTexture().setFilter(TextureFilter.Linear, TextureFilter.Linear);
-		}
-		
-		homeButton = new ImageButton(new TextureRegionDrawable(icons[0][0]), new TextureRegionDrawable(icons[0][1]));
+		homeButton = QuickUi.getIconButton(IconType.HOME);
 		homeButton.setBounds(0, 0, MENU_BUTTON_SIZE, MENU_BUTTON_SIZE);
 		homeButton.setPosition(MENU_BUTTON_PADDING + (MENU_BUTTON_SIZE + MENU_BUTTON_PADDING) * 0, Gdx.graphics.getHeight() - homeButton.getHeight() - MENU_BUTTON_PADDING);
 		homeButton.addListener(new ClickListener() {
@@ -102,7 +91,7 @@ public class GameScreen extends Screen implements PacketHandler, InputProcessor 
 		});
 		stage.addActor(homeButton);
 		
-		chatButton = new ImageButton(new TextureRegionDrawable(icons[1][0]), new TextureRegionDrawable(icons[1][1]));
+		chatButton = QuickUi.getIconButton(IconType.CHAT);
 		chatButton.setBounds(0, 0, MENU_BUTTON_SIZE, MENU_BUTTON_SIZE);
 		chatButton.setPosition(MENU_BUTTON_PADDING + (MENU_BUTTON_SIZE + MENU_BUTTON_PADDING) * 1, Gdx.graphics.getHeight() - homeButton.getHeight() - MENU_BUTTON_PADDING);
 		chatButton.addListener(new ClickListener() {
@@ -226,6 +215,9 @@ public class GameScreen extends Screen implements PacketHandler, InputProcessor 
 			return true;
 		case PacketType.CHAT_MESSAGE:
 			chatManager.addChatMessage((ChatMessagePacket) packet);
+			return true;
+		case PacketType.LOGOUT:
+			ArchipeloClient.getGame().getScreenManager().setScreen(new MainMenuScreen());
 			return true;
 		}
 		return false;

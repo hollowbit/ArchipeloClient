@@ -15,17 +15,25 @@ public class CharacterDisplay extends Actor {
 	int direction = 0;
 	Item[] equippedInventory;
 	
-	public CharacterDisplay (Item[] equippedInventory) {
+	/**
+	 * Show the appearance of a character
+	 * @param equippedInventory
+	 */
+	public CharacterDisplay (Item[] equippedInventory, boolean allowDirectionChange) {
 		this.equippedInventory = equippedInventory;
-		this.addListener(new ClickListener() {
-			@Override
-			public void clicked(InputEvent event, float x, float y) {
-				direction++;
-				if (direction >= Direction.TOTAL)
-					direction = 0;
-				super.clicked(event, x, y);
-			}
-		});
+		
+		if (allowDirectionChange) {
+			this.addListener(new ClickListener() {
+				@Override
+				public void clicked(InputEvent event, float x, float y) {
+					//When clicked, change direction
+					direction++;
+					if (direction >= Direction.TOTAL)
+						direction = 0;
+					super.clicked(event, x, y);
+				}
+			});
+		}
 	}
 	
 	public void setEquippedInventory (Item[] equippedInventory) {

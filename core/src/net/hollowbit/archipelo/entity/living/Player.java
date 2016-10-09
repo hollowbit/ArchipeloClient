@@ -233,7 +233,7 @@ public class Player extends LivingEntity {
 		if (!loaded)
 			return;
 		
-		drawPlayer(batch, location.getDirection(), loaded, isRolling(), location.getX(), location.getY(), rollingStateTime, rollingStateTime, equippedInventory, isSprinting, ArchipeloClient.PLAYER_SIZE, ArchipeloClient.PLAYER_SIZE);
+		drawPlayer(batch, location.getDirection(), loaded, isRolling(), location.getX(), location.getY(), movingStateTime, rollingStateTime, equippedInventory, isSprinting, ArchipeloClient.PLAYER_SIZE, ArchipeloClient.PLAYER_SIZE);
 		
 		super.render(batch);
 	}
@@ -387,7 +387,7 @@ public class Player extends LivingEntity {
 	 * @param width
 	 * @param height
 	 */
-	public static void drawPlayer (Batch batch, Direction direction, boolean isMoving, boolean isRolling, float x, float y, float movingStateTime, float rollingStateTime, Item[] equippedInventory, boolean isSprinting, int width, int height) {
+	public static void drawPlayer (Batch batch, Direction direction, boolean isMoving, boolean isRolling, float x, float y, float movingStateTime, float rollingStateTime, Item[] equippedInventory, boolean isSprinting, float width, float height) {
 		boolean drawUseableOnBottom = direction == Direction.DOWN_LEFT || direction == Direction.LEFT || direction == Direction.UP_LEFT || direction == Direction.UP; 
 		
 		if (isMoving) {

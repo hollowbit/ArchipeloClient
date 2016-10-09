@@ -12,8 +12,8 @@ public class PlayerListPacket extends Packet {
 	public Item[][] playerEquippedInventories;
 	public String[] names;
 	public String[] islands;
-	public double[] lastPlayedDateTimes;
-	public double[] creationDateTimes;
+	public String[] lastPlayedDateTimes;
+	public String[] creationDateTimes;
 	public int[] levels;
 	
 	public String name;

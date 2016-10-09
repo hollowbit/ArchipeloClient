@@ -24,6 +24,7 @@ public class LoginPacket extends Packet {
 		this.username = username;
 		this.password = password;
 		this.version = ArchipeloClient.VERSION;
+		this.version = ArchipeloClient.VERSION;
 	}
 
 }

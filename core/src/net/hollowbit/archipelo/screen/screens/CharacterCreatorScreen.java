@@ -25,6 +25,7 @@ import net.hollowbit.archipelo.network.PacketType;
 import net.hollowbit.archipelo.network.packets.PlayerPickPacket;
 import net.hollowbit.archipelo.screen.Screen;
 import net.hollowbit.archipelo.screen.ScreenType;
+import net.hollowbit.archipelo.screen.screens.mainmenu.CharacterDisplay;
 import net.hollowbit.archipelo.screen.screens.playercreator.ColorPickListener;
 import net.hollowbit.archipelo.screen.screens.playercreator.ColorPicker;
 import net.hollowbit.archipelo.tools.GameCamera;
@@ -64,6 +65,8 @@ public class CharacterCreatorScreen extends Screen implements PacketHandler {
 	TextButton changeFaceLeftButton;
 	TextButton changeFaceRightButton;
 	
+	CharacterDisplay characterDisplay;
+	
 	TextField nameTextField;
 	
 	TextButton finishButton;
@@ -73,7 +76,6 @@ public class CharacterCreatorScreen extends Screen implements PacketHandler {
 	Button bodyColorButton;
 	Button pantsColorButton;
 	Button shirtColorButton;
-	Button changeDirectionButton;
 	
 	int selectedHair = 0;
 	int selectedFace = 0;
@@ -84,8 +86,7 @@ public class CharacterCreatorScreen extends Screen implements PacketHandler {
 	//int shirtColor;
 	//int pantsColor;
 	
-	int direction = Direction.DOWN.ordinal();
-	float statetime = 0;
+	float stetime = 0;
 	
 	float camVelocityX = CAM_SPEED_X, camVelocityY = CAM_SPEED_Y;
 	GameCamera cam;
@@ -101,6 +102,7 @@ public class CharacterCreatorScreen extends Screen implements PacketHandler {
 	public void create () {
 		stage = new Stage(ArchipeloClient.getGame().getCameraUi().getScreenViewport(), ArchipeloClient.getGame().getBatch());
 		stageWindow = new Stage(ArchipeloClient.getGame().getCameraUi().getScreenViewport(), ArchipeloClient.getGame().getBatch());
+		ArchipeloClient.getGame().getNetworkManager().addPacketHandler(this);
 		
 		Gdx.input.setInputProcessor(new InputMultiplexer(stageWindow, stage));//Put stageWindow first so it has priority
 		
@@ -304,21 +306,10 @@ public class CharacterCreatorScreen extends Screen implements PacketHandler {
 		});
 		stage.addActor(finishButton);
 		
-		//Change Direction
-		changeDirectionButton = new Button(ArchipeloClient.getGame().getUiSkin());
-		changeDirectionButton.setBounds(0, 0, DISPLAY_SIZE, DISPLAY_SIZE);
-		changeDirectionButton.addListener(new ClickListener() {
-			
-			@Override
-			public void clicked(InputEvent event, float x, float y) {
-				direction++;
-				if (direction >= Direction.TOTAL)
-					direction = 0;
-				super.clicked(event, x, y);
-			}
-			
-		});
-		stage.addActor(changeDirectionButton);
+		//Character display
+		characterDisplay = new CharacterDisplay(getEquppedInventory());
+		characterDisplay.setBounds(0, 0, DISPLAY_SIZE, DISPLAY_SIZE);
+		stage.addActor(characterDisplay);
 		
 		nameTextField = new TextField("", ArchipeloClient.getGame().getUiSkin());
 		nameTextField.setBounds(0, 0, DISPLAY_SIZE, nameTextField.getHeight());
@@ -345,7 +336,6 @@ public class CharacterCreatorScreen extends Screen implements PacketHandler {
 	public void update (float deltaTime) {
 		stage.act();
 		stageWindow.act();
-		statetime += deltaTime;
 		
 		//Update game camera to move around map
 		CollisionRect rect = cam.getViewRect();
@@ -413,14 +403,6 @@ public class CharacterCreatorScreen extends Screen implements PacketHandler {
 		batch.setColor(1, 1, 1, 1);
 		batch.draw(PANTS.getType().getWalkFrame(Direction.DOWN, 0), width - ARROW_BUTTON_WIDTH - PADDING - PART_BUTTON_SIZE - PADDING, height - PADDING_FROM_TOP - (PADDING_FROM_EACH_OTHER + PART_BUTTON_SIZE) * 4, PART_BUTTON_SIZE, PART_BUTTON_SIZE);
 		
-		
-		/////////////Draw display player///////////////////
-		HAIR_STYLES[selectedHair].color = Color.rgba8888(HAIR_COLORS[hairColor]);
-		FACE_STYLES[selectedFace].color = Color.rgba8888(EYE_COLORS[eyeColor]);
-		Item[] equipInventory = Player.createEquipInventory(BODY, null, PANTS, SHIRT, null, null, FACE_STYLES[selectedFace], HAIR_STYLES[selectedHair], null, null);
-		
-		Player.drawPlayer(batch, Direction.values()[direction], true, false, width / 2 - DISPLAY_SIZE / 2, height / 2 - DISPLAY_SIZE / 2, statetime, 0, equipInventory, false, DISPLAY_SIZE, DISPLAY_SIZE);
-		
 		batch.end();
 		stageWindow.draw();
 		batch.begin();
@@ -452,12 +434,18 @@ public class CharacterCreatorScreen extends Screen implements PacketHandler {
 		finishButton.setPosition(width - PADDING_FROM_EACH_OTHER - finishButton.getWidth(), PADDING_FROM_EACH_OTHER);
 		
 		//Change direction
-		changeDirectionButton.setPosition(width / 2 - changeDirectionButton.getWidth() / 2, height / 2 - changeDirectionButton.getHeight() / 2);
+		characterDisplay.setPosition(width / 2 - characterDisplay.getWidth() / 2, height / 2 - characterDisplay.getHeight() / 2);
 		
 		//Name Textfield
-		nameTextField.setPosition(width / 2 - nameTextField.getWidth() / 2, height / 2 - changeDirectionButton.getHeight() / 2 - nameTextField.getHeight() - 5);
+		nameTextField.setPosition(width / 2 - nameTextField.getWidth() / 2, height / 2 - characterDisplay.getHeight() / 2 - nameTextField.getHeight() - 5);
 	}
-
+	
+	private Item[] getEquppedInventory () {
+		HAIR_STYLES[selectedHair].color = Color.rgba8888(HAIR_COLORS[hairColor]);
+		FACE_STYLES[selectedFace].color = Color.rgba8888(EYE_COLORS[eyeColor]);
+		return Player.createEquipInventory(BODY, null, PANTS, SHIRT, null, null, FACE_STYLES[selectedFace], HAIR_STYLES[selectedHair], null, null);
+	}
+	
 	@Override
 	public void dispose () {
 		stage.dispose();

@@ -97,9 +97,10 @@ public class GameScreen extends Screen implements PacketHandler, InputProcessor 
 		chatButton.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
-				ChatWindow chatWindow = new ChatWindow(chatManager, stage);
+				ChatWindow chatWindow = new ChatWindow(chatManager, stage, controlsManager);
 				chatWindow.setPosition(Gdx.graphics.getWidth() / 2 - chatWindow.getWidth() / 2, Gdx.graphics.getHeight() / 2 - chatWindow.getHeight() / 2);
 				stage.addActor(chatWindow);//Open a chat window
+				
 				super.clicked(event, x, y);
 			}
 		});
@@ -110,18 +111,16 @@ public class GameScreen extends Screen implements PacketHandler, InputProcessor 
 			chatTextField = new TextField("", ArchipeloClient.getGame().getUiSkin(), "chat");
 			chatTextField.setBounds(0, 0, ChatMessage.WIDTH, 25);
 			chatTextField.setPosition(2, 270);
-			chatTextField.setText("Tap to chat!");
 		} else {
 			chatTextField = new TextField("", ArchipeloClient.getGame().getUiSkin());
 			chatTextField.setBounds(0, 0, ChatMessage.WIDTH, 40);
 			chatTextField.setPosition(2, 2);
-			chatTextField.setText("Click to chat!");
 		}
 		QuickUi.makeTextFieldMobileCompatible("Chat", chatTextField, stage, new TextFieldMessageListener() {
 			
 			@Override
-			public void messageReceived (String message) {
-				if (!QuickUi.isMessageEmpty(message)) {
+			public void messageReceived (String message, boolean isEmpty) {
+				if (!isEmpty) {
 					chatManager.sendMessage(message);
 					chatTextField.setText("");
 				}
@@ -288,7 +287,10 @@ public class GameScreen extends Screen implements PacketHandler, InputProcessor 
 	public boolean keyTyped(char character) { return false;}
 
 	@Override
-	public boolean touchDown(int screenX, int screenY, int pointer, int button) { return false;}
+	public boolean touchDown(int screenX, int screenY, int pointer, int button) { 
+		stage.setKeyboardFocus(null);
+		return false;
+	}
 
 	@Override
 	public boolean touchUp(int screenX, int screenY, int pointer, int button) { return false;}

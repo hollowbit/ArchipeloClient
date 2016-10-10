@@ -14,11 +14,11 @@ public class AssetManager {
 	
 	public static final TextureFilter TEXTURE_FILTER = TextureFilter.Linear;
 	
-	HashMap<String, Texture> textureMap;
-	HashMap<String, TextureRegion[][]> textureRegionMap;
-	HashMap<String, Animation> animationMap;
-	HashMap<String, Sound> soundMap;
-	HashMap<String, Music> musicMap;
+	private HashMap<String, Texture> textureMap;
+	private HashMap<String, TextureRegion[][]> textureRegionMap;
+	private HashMap<String, Animation> animationMap;
+	private HashMap<String, Sound> soundMap;
+	private HashMap<String, Music> musicMap;
 	
 	public AssetManager () {
 		textureMap = new HashMap<String, Texture>();

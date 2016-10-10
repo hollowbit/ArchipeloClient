@@ -14,6 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 
 import net.hollowbit.archipelo.ArchipeloClient;
+import net.hollowbit.archipelo.tools.ControlsManager;
 import net.hollowbit.archipelo.tools.QuickUi;
 import net.hollowbit.archipelo.tools.QuickUi.TextFieldMessageListener;
 
@@ -30,7 +31,7 @@ public class ChatWindow extends Window implements ChatListener {
 	
 	float heightOfMessages = 0;
 	
-	public ChatWindow (final ChatManager chatManager, Stage stage) {
+	public ChatWindow (final ChatManager chatManager, Stage stage, ControlsManager controlsManager) {
 		super("Chat", ArchipeloClient.getGame().getUiSkin());
 		this.chatManager = chatManager;
 		this.setStage(stage);
@@ -49,8 +50,8 @@ public class ChatWindow extends Window implements ChatListener {
 		QuickUi.makeTextFieldMobileCompatible("Chat", chatTextField, getStage(), new TextFieldMessageListener() {
 			
 			@Override
-			public void messageReceived (String message) {
-				if (!QuickUi.isMessageEmpty(message)) {
+			public void messageReceived (String message, boolean isEmpty) {
+				if (!isEmpty) {
 					chatManager.sendMessage(message);
 					chatTextField.setText("");
 				}

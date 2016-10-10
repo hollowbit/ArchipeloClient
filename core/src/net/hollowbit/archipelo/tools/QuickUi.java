@@ -36,36 +36,29 @@ public class QuickUi {
 	}
 	
 	public static void makeTextFieldMobileCompatible (final String usage, final TextField textField, final Stage stage, final TextFieldMessageListener listener) {
+		if (ArchipeloClient.IS_MOBILE)
+			textField.setMessageText("Tap to " + usage + " !");
+		else
+			textField.setMessageText("Click to " + usage + " !");
 		textField.addListener(new FocusListener() {
 			
 			@Override
 			public void keyboardFocusChanged (FocusEvent event, Actor actor, boolean focused) {
 				if (actor == textField) {
-					if (focused) {
-						textField.setText("");
-						if (ArchipeloClient.IS_MOBILE) {
-							Gdx.input.getTextInput(new TextInputListener() {
-								
-								@Override
-								public void input (String text) {//When the mobile user finishes entering a text, send it
-									listener.messageReceived(text);
-									stage.setKeyboardFocus(null);
-								}
-								
-								@Override
-								public void canceled () {
-									stage.setKeyboardFocus(null);
-								}//No event for canceled
-							}, "Enter a message for: " + usage, "", "Write here!");
-						}
-					} else {
-						if (ArchipeloClient.IS_MOBILE) {
-							textField.setText("Tap to " + usage + "!");
-						} else {
-							//When unfocused, put back hint message if textfield is empty
-							if (isTextFieldEmpty(textField))
-								textField.setText("Click to " + usage + "!");
-						}
+					if (ArchipeloClient.IS_MOBILE) {
+						Gdx.input.getTextInput(new TextInputListener() {
+							
+							@Override
+							public void input (String text) {//When the mobile user finishes entering a text, send it
+								listener.messageReceived(text, isMessageEmpty(text));
+								stage.setKeyboardFocus(null);
+							}
+							
+							@Override
+							public void canceled () {
+								stage.setKeyboardFocus(null);
+							}//No event for canceled
+						}, "Enter a message for: " + usage, "", "Write here!");
 					}
 				}
 				super.keyboardFocusChanged(event, actor, focused);
@@ -79,12 +72,12 @@ public class QuickUi {
 	}
 	
 	public static boolean isMessageEmpty (String message) {
-		message = message.trim();
+		message = message.replaceAll(" ", "");
 		return message.equals("") || message.equals(".") || message.equals("/") || message.equals("!");
 	}
 	
 	public interface TextFieldMessageListener {
-		public abstract void messageReceived (String message);
+		public abstract void messageReceived (String message, boolean isEmpty);
 	}
 	
 	public enum IconType {

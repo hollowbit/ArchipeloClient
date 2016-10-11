@@ -45,20 +45,22 @@ public class QuickUi {
 			@Override
 			public void keyboardFocusChanged (FocusEvent event, Actor actor, boolean focused) {
 				if (actor == textField) {
-					if (ArchipeloClient.IS_MOBILE) {
-						Gdx.input.getTextInput(new TextInputListener() {
-							
-							@Override
-							public void input (String text) {//When the mobile user finishes entering a text, send it
-								listener.messageReceived(text, isMessageEmpty(text));
-								stage.setKeyboardFocus(null);
-							}
-							
-							@Override
-							public void canceled () {
-								stage.setKeyboardFocus(null);
-							}//No event for canceled
-						}, "Enter a message for: " + usage, "", "Write here!");
+					if (focused) {
+						if (ArchipeloClient.IS_MOBILE) {
+							Gdx.input.getTextInput(new TextInputListener() {
+								
+								@Override
+								public void input (String text) {//When the mobile user finishes entering a text, send it
+									listener.messageReceived(text, isMessageEmpty(text));
+									stage.setKeyboardFocus(null);
+								}
+								
+								@Override
+								public void canceled () {
+									stage.setKeyboardFocus(null);
+								}//No event for canceled
+							}, "Enter a message for: " + usage, "", "Write here!");
+						}
 					}
 				}
 				super.keyboardFocusChanged(event, actor, focused);

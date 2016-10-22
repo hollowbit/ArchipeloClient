@@ -7,14 +7,14 @@ public class Prefs {
 	
 	private Preferences prefs;
 	private boolean loggedIn, serverPicked, showedDisclaimer;
-	private String username, password, serverName;
+	private String email, password, serverName;
 	
 	public Prefs () {
 		prefs = Gdx.app.getPreferences("archipelo");
 		
 		//Login
 		this.loggedIn = prefs.getBoolean("logged-in", false);
-		this.username = prefs.getString("username", "");
+		this.email = prefs.getString("email", "");
 		this.password = prefs.getString("password", "");
 		
 		//Server
@@ -27,20 +27,20 @@ public class Prefs {
 	
 	public void resetLogin () {
 		this.loggedIn = false;
-		this.username = "";
+		this.email = "";
 		this.password = "";
 		prefs.putBoolean("logged-in", false);
-		prefs.putString("username", "");
+		prefs.putString("email", "");
 		prefs.putString("password", "");
 		prefs.flush();
 	}
 	
 	public void setLogin (String username, String password) {
 		this.loggedIn = true;
-		this.username = username;
+		this.email = username;
 		this.password = password;
 		prefs.putBoolean("logged-in", true);
-		prefs.putString("username", username);
+		prefs.putString("email", username);
 		prefs.putString("password", password);
 		prefs.flush();
 	}
@@ -69,8 +69,8 @@ public class Prefs {
 		return serverPicked;
 	}
 	
-	public String getUsername () {
-		return username;
+	public String getEmail () {
+		return email;
 	}
 	
 	public String getPassword () {

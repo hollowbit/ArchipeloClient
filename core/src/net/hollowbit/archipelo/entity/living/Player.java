@@ -393,6 +393,23 @@ public class Player extends LivingEntity {
 		if (isMoving) {
 			if (isRolling) {
 				batch.draw(EntityType.PLAYER.getAnimationFrame("rolling", direction, rollingStateTime), x, y, width, height);
+			} else {
+				if (isSprinting) {
+					batch.draw(EntityType.PLAYER.getAnimationFrame("sprinting", direction, movingStateTime), x, y, width, height);
+				} else {
+					batch.draw(EntityType.PLAYER.getAnimationFrame("default", direction, movingStateTime), x, y, width, height);
+				}
+			}
+		} else {
+			batch.draw(EntityType.PLAYER.getAnimationFrame("default", direction, 0), x, y);
+		}
+		
+		if (!ArchipeloClient.PLACEHOLDER_ART_MODE)
+			return;
+		
+		//Placeholder art:
+		if (isMoving) {
+			if (isRolling) {
 				if (drawUseableOnBottom && equippedInventory[EQUIP_INDEX_USABLE] != null) {
 					batch.setColor(new Color(equippedInventory[EQUIP_INDEX_USABLE].color));
 					batch.draw(ItemType.getItemTypeByItem(equippedInventory[EQUIP_INDEX_USABLE]).getRollFrame(direction, rollingStateTime, equippedInventory[EQUIP_INDEX_USABLE].style), x, y, width, height);
@@ -425,7 +442,6 @@ public class Player extends LivingEntity {
 				}
 			} else {
 				if (isSprinting) {
-					batch.draw(EntityType.PLAYER.getAnimationFrame("default", direction, movingStateTime), x, y, width, height);
 					if (drawUseableOnBottom && equippedInventory[EQUIP_INDEX_USABLE] != null) {
 						batch.setColor(new Color(equippedInventory[EQUIP_INDEX_USABLE].color));
 						batch.draw(ItemType.getItemTypeByItem(equippedInventory[EQUIP_INDEX_USABLE]).getRollFrame(direction, rollingStateTime, equippedInventory[EQUIP_INDEX_USABLE].style), x, y, width, height);
@@ -457,7 +473,6 @@ public class Player extends LivingEntity {
 						batch.setColor(1, 1, 1, 1);
 					}
 				 } else {
-					batch.draw(EntityType.PLAYER.getAnimationFrame("sprinting", direction, movingStateTime), x, y, width, height);
 					if (drawUseableOnBottom && equippedInventory[EQUIP_INDEX_USABLE] != null) {
 						batch.setColor(new Color(equippedInventory[EQUIP_INDEX_USABLE].color));
 						batch.draw(ItemType.getItemTypeByItem(equippedInventory[EQUIP_INDEX_USABLE]).getRollFrame(direction, rollingStateTime, equippedInventory[EQUIP_INDEX_USABLE].style), x, y, width, height);
@@ -491,7 +506,6 @@ public class Player extends LivingEntity {
 				 }
 			}
 		} else {
-			batch.draw(EntityType.PLAYER.getAnimationFrame("default", direction, 0), x, y);
 			if (drawUseableOnBottom && equippedInventory[EQUIP_INDEX_USABLE] != null) {
 				batch.setColor(new Color(equippedInventory[EQUIP_INDEX_USABLE].color));
 				batch.draw(ItemType.getItemTypeByItem(equippedInventory[EQUIP_INDEX_USABLE]).getRollFrame(direction, rollingStateTime, equippedInventory[EQUIP_INDEX_USABLE].style), x, y, width, height);

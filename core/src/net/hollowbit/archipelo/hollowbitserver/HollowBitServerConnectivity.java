@@ -19,6 +19,32 @@ public class HollowBitServerConnectivity {
 	public static final String ADDRESS = "localhost";
 	private static final int PORT = 22123;
 	
+	public static final int CREATE_PACKET_ID = 0;
+	public static final int UPDATE_PACKET_ID = 1;
+	public static final int VERIFY_PACKET_ID = 2;
+	public static final int FORGOT_PASSWORD_PACKET_ID = 3;
+	public static final int GET_USER_DATA_PACKET_ID = 4;
+	public static final int GET_SERVER_LIST_PACKET_ID = 5;
+	public static final int GET_SERVER_BY_NAME_PACKET_ID = 6;
+	
+	//Response packet ids
+	public static final int CORRECT_LOGIN_RESPONSE_PACKET_ID = 0;
+	public static final int CREATE_SUCCESSFUL_RESPONSE_PACKET_ID = 1;
+	public static final int UPDATE_SUCCESSFUL_RESPONSE_PACKET_ID = 2;
+	public static final int USER_DATA_RESPONSE_PACKET_ID = 3;
+	public static final int SERVER_LIST_RESPONSE_PACKET_ID = 4;
+	public static final int SERVER_GET_RESPONSE_PACKET_ID = 5;
+	
+	public static final int INVALID_PACKET_REPONSE_PACKET_ID = 6;
+	public static final int USER_ALREADY_EXISTS_ERROR_RESPONSE_PACKET_ID = 7;
+	public static final int USER_DOESNT_EXIST_ERROR_RESPONSE_PACKET_ID = 8;
+	public static final int WRONG_PASSWORD_RESPONSE_PACKET_ID = 9;
+	public static final int REQUEST_IGNORED_RESPONSE_PACKET_ID = 10;
+	public static final int INVALID_EMAIL_RESPONSE_PACKET_ID = 11;
+	public static final int INVALID_PASSWORD_RESPONSE_PACKET_ID = 12;
+	public static final int SERVER_NOT_FOUND_RESPONSE_PACKET_ID = 13;
+	public static final int TEMP_BAN_RESPONSE_PACKET_ID = 15;
+	
 	private HashMap<String, HollowBitServerQueryResponseHandler> handlerMap;
 	private WebSocket socket;
 	
@@ -61,49 +87,46 @@ public class HollowBitServerConnectivity {
 	
 	/**
 	 * Send query to HollowBit server to create a new user.
-	 * @param name Name of HollowBit user
+	 * @param email Email of user
 	 * @param password Password for user used to authenticate
-	 * @param email E-mail address of user
 	 * @param handler Handles response to queries
 	 */
-	public void sendCreateQuery (String name, String password, String email, HollowBitServerQueryResponseHandler handler) {
-		String query = "0;" + name + ";" + password + ";" + email;
+	public void sendCreateQuery (String email, String password, HollowBitServerQueryResponseHandler handler) {
+		String query = CREATE_PACKET_ID + ";" + email + ";" + password;
 		sendQuery(query, handler);
 	}
 	
 	/**
 	 * Send query to HollowBit server to update user data, such as password, email & name.
-	 * @param name Name of HollowBit user
+	 * @param email Email of user
+	 * @param newEmail New email of user
 	 * @param password Password for user used to authenticate
 	 * @param newPassword New password, if it is different
-	 * @param email E-mail address of user
-	 * @param newName New name of user, if it is different
 	 * @param handler Handles response to queries
 	 */
-	public void sendUpdateQuery (String name, String password, String newPassword, String email, String newName, HollowBitServerQueryResponseHandler handler) {
-		String query = "1;" + name + ";" + password + ";" + newPassword + ";" + email + ";" + newName;
+	public void sendUpdateQuery (String email, String newEmail, String password, String newPassword, HollowBitServerQueryResponseHandler handler) {
+		String query = UPDATE_PACKET_ID + ";" + email + ";" + newEmail + ";" + password + ";" + newPassword;
 		sendQuery(query, handler);
 	}
 	
 	/**
 	 * Send query to HollowBit server to see if login credentials are correct.
-	 * @param name Name of HollowBit user
+	 * @param email Email of user
 	 * @param password Password for user used to authenticate
 	 * @param handler Handles response to queries
 	 */
-	public void sendVerifyQuery (String name, String password, HollowBitServerQueryResponseHandler handler) {
-		String query = "2;" + name + ";" + password;
+	public void sendVerifyQuery (String email, String password, HollowBitServerQueryResponseHandler handler) {
+		String query = VERIFY_PACKET_ID + ";" + email + ";" + password;
 		sendQuery(query, handler);
 	}
 	
 	/**
 	 * Send query to HollowBit server to request a new temporary password if password was forgotten
-	 * @param name Name of HollowBit user
-	 * @param email E-mail address of user
+	 * @param email Email of user
 	 * @param handler Handles response to queries
 	 */
-	public void sendForgotQuery (String name, String email, HollowBitServerQueryResponseHandler handler) {
-		String query = "3;" + name + ";" + email;
+	public void sendForgotQuery (String email, HollowBitServerQueryResponseHandler handler) {
+		String query = FORGOT_PASSWORD_PACKET_ID + ";" + email;
 		sendQuery(query, handler);
 	}
 	
@@ -112,23 +135,28 @@ public class HollowBitServerConnectivity {
 	 * @param handler Handles response to queries
 	 */
 	public void sendGetServerListQuery (HollowBitServerQueryResponseHandler handler) {
-		String query = "4;0";//Archipelo game id is 0
+		String query =  GET_SERVER_LIST_PACKET_ID + ";0";//Archipelo game id is 0
 		sendQuery(query, handler);
 	}
 	
+	/**
+	 * Get server address by name
+	 * @param name
+	 * @param handler
+	 */
 	public void sendGetServerByNameQuery (String name, HollowBitServerQueryResponseHandler handler) {
-		String query = "6;0;" + name;
+		String query = GET_SERVER_BY_NAME_PACKET_ID + ";0;" + name;
 		sendQuery(query, handler);
 	}
 	
 	/**
 	 * Send query to HollowBit server to get data about a user.
-	 * @param name Name of HollowBit user
+	 * @param email Email of user
 	 * @param password Password for user used to authenticate
 	 * @param handler Handles response to queries
 	 */
-	public void sendGetUserDataQuery (String name, String password, HollowBitServerQueryResponseHandler handler) {
-		String query = "5;" + name + ";" + password;
+	public void sendGetUserDaQuery (String email, String password, HollowBitServerQueryResponseHandler handler) {
+		String query = GET_USER_DATA_PACKET_ID + ";" + email + ";" + password;
 		sendQuery(query, handler);
 	}
 	

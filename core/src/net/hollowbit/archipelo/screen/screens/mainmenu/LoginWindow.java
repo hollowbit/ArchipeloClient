@@ -13,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 
 import net.hollowbit.archipelo.ArchipeloClient;
+import net.hollowbit.archipelo.hollowbitserver.HollowBitServerConnectivity;
 import net.hollowbit.archipelo.hollowbitserver.HollowBitServerQueryResponseHandler;
 import net.hollowbit.archipelo.tools.Prefs;
 import net.hollowbit.archipeloshared.StringValidator;
@@ -20,15 +21,13 @@ import net.hollowbit.archipeloshared.StringValidator;
 public class LoginWindow extends Window {
 	
 	//Ui
-	Label usernameLbl;
-	Label passwordLbl;
 	TextButton loginBtn;
 	TextButton cancelBtn;
-	TextField usernameFld;
+	TextField emailFld;
 	TextField passwordFld;
 	CheckBox rememberChkBx;
 	
-	String username = "", password = "";
+	String email = "", password = "";
 	Prefs prefs = ArchipeloClient.getGame().getPrefs();
 	
 	public LoginWindow (final LoginRegisterWindow loginRegisterWindow, Stage stage) {
@@ -43,19 +42,16 @@ public class LoginWindow extends Window {
 		add(instructionsLabel).width(400).pad(10).colspan(2);
 		row();
 		
-		usernameLbl = new Label("Username: ", getSkin());
-		add(usernameLbl).width(usernameLbl.getWidth());
-		usernameFld = new TextField(prefs.getUsername(), getSkin());
-		stage.setKeyboardFocus(usernameFld);
-		add(usernameFld).pad(10);
+		emailFld = new TextField(prefs.getEmail(), getSkin());
+		emailFld.setMessageText("Email");
+		add(emailFld).width(400).pad(10).colspan(2);
 		row();
 		
-		passwordLbl = new Label("Password: ", getSkin());
-		add(passwordLbl).width(passwordLbl.getWidth());
 		passwordFld = new TextField(prefs.getPassword(), getSkin());
 		passwordFld.setPasswordCharacter('*');
 		passwordFld.setPasswordMode(true);
-		add(passwordFld).pad(10);
+		passwordFld.setMessageText("Password");
+		add(passwordFld).width(400).pad(10).colspan(2);
 		row();
 		
 		rememberChkBx = new CheckBox(" Remember?", getSkin());
@@ -68,19 +64,19 @@ public class LoginWindow extends Window {
 			
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
-				if (usernameFld.getText().equals("") || passwordFld.getText().equals("")) {
+				if (emailFld.getText().equals("") || passwordFld.getText().equals("")) {
 					showErrorWindow("Please don't leave fields blank!");
-				} else if (!StringValidator.isStringValid(usernameFld.getText(), StringValidator.USERNAME)) {
-					showErrorWindow("Please only use a-zA-Z0-9 and _ for usernames.");
+				} else if (!StringValidator.isEmailValid(emailFld.getText())) {
+					showErrorWindow("Please enter a valid email.");
 				} else if (!StringValidator.isStringValid(passwordFld.getText(), StringValidator.PASSWORD)) {
 					showErrorWindow("Please only use a-zA-Z0-9 and !@#$%^&*()-_+= for passwords.");
 				} else {
 					//Put data in variables for later and send login packet
-					username = usernameFld.getText();
+					email = emailFld.getText();
 					password = passwordFld.getText();
                 	//ArchipeloClient.getGame().getNetworkManager().sendPacket(new LoginPacket(username, password, false));
 					
-					ArchipeloClient.getGame().getHollowBitServerConnectivity().sendVerifyQuery(username, password, getHollowBitServerQueryResponseHandler());
+					ArchipeloClient.getGame().getHollowBitServerConnectivity().sendVerifyQuery(email, password, getHollowBitServerQueryResponseHandler());
 				}
 
 				super.clicked(event, x, y);
@@ -111,28 +107,26 @@ public class LoginWindow extends Window {
 			
 			@Override
 			public void responseReceived(int id, String[] data) {
+				System.out.println("LoginWindow.java " + id);
 				switch (id) {
-				case 5://Verify too fast
-					showErrorWindow("You are verifying too fast. Wait " + data[0] + " before logins.");
+				case HollowBitServerConnectivity.TEMP_BAN_RESPONSE_PACKET_ID://Verify too fast
+					showErrorWindow(data[0]);
 					break;
-				case 1://User doesn't exist
-					showErrorWindow("User with this name doesn't exist.");
+				case HollowBitServerConnectivity.USER_DOESNT_EXIST_ERROR_RESPONSE_PACKET_ID://User doesn't exist
+					showErrorWindow("User with this email doesn't exist.");
 					break;
-				case 2://Wrong password
+				case HollowBitServerConnectivity.WRONG_PASSWORD_RESPONSE_PACKET_ID://Wrong password
 					showErrorWindow("User exists but the password is incorrect.");
 					break;
-				case 13://Invalid username
-					showErrorWindow("Please only use a-zA-Z0-9 and _ for usernames.");
+				case HollowBitServerConnectivity.INVALID_EMAIL_RESPONSE_PACKET_ID://Invalid email
+					showErrorWindow("Please enter a valid email.");
 					break;
-				case 12://Invalid password
+				case HollowBitServerConnectivity.INVALID_PASSWORD_RESPONSE_PACKET_ID://Invalid password
 					showErrorWindow("Please only use a-zA-Z0-9 and !@#$%^&*()-_+= for passwords.");
 					break;
-				case 11://Invalid email
-					showErrorWindow("Email address entered is invalid.");
-					break;
-				case 3://Correct login!
+				case HollowBitServerConnectivity.CORRECT_LOGIN_RESPONSE_PACKET_ID://Correct login!
 					if (rememberChkBx.isChecked())//Save login if remember is on
-						prefs.setLogin(username, password);
+						prefs.setLogin(email, password);
 					else
 						prefs.resetLogin();
 					remove();

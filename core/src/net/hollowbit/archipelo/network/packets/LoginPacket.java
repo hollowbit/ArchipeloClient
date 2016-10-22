@@ -10,7 +10,7 @@ public class LoginPacket extends Packet {
 	public static final int RESULT_LOGIN_ERROR = 1;
 	public static final int RESULT_BAD_VERSION = 2;
 	
-	public String username;
+	public String email;
 	public String password;
 	public int result;
 	public String version;
@@ -19,9 +19,9 @@ public class LoginPacket extends Packet {
 		super(PacketType.LOGIN);
 	}
 	
-	public LoginPacket (String username, String password) {
+	public LoginPacket (String email, String password) {
 		super(PacketType.LOGIN);
-		this.username = username;
+		this.email = email;
 		this.password = password;
 		this.version = ArchipeloClient.VERSION;
 		this.version = ArchipeloClient.VERSION;

@@ -16,16 +16,16 @@ public class PlayerListPacket extends Packet {
 	public String[] creationDateTimes;
 	public int[] levels;
 	
-	public String name;
+	public String email;
 	public int result = 0;
 	
 	public PlayerListPacket () {
 		super(PacketType.PLAYER_LIST);
 	}
 	
-	public PlayerListPacket (String name) {
+	public PlayerListPacket (String email) {
 		this();
-		this.name = name;
+		this.email = email;
 	}
 
 }

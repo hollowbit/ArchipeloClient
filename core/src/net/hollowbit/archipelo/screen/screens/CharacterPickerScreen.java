@@ -55,7 +55,7 @@ public class CharacterPickerScreen extends Screen implements PacketHandler {
 		stage.addActor(backButton);
 		
 		//Send character list packet
-		new PlayerListPacket(ArchipeloClient.getGame().getPrefs().getUsername()).send();
+		new PlayerListPacket(ArchipeloClient.getGame().getPrefs().getEmail()).send();
 	}
 
 	@Override

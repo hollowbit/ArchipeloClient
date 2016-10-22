@@ -44,6 +44,7 @@ public class ArchipeloClient extends ApplicationAdapter {
 	public static float DELTA_TIME = 0;
 	public static float STATE_TIME = 0;//this is for looping animations where it doesn't matter where it starts.
 	public static boolean DEBUGMODE = true;
+	public static boolean PLACEHOLDER_ART_MODE = DEBUGMODE;
 	
 	private static ArchipeloClient game;
 	
@@ -137,6 +138,10 @@ public class ArchipeloClient extends ApplicationAdapter {
 		//Enable/disable debug mode
 		if (Gdx.input.isKeyJustPressed(Keys.F3))
 			DEBUGMODE = !DEBUGMODE;
+		
+		//Enable/disable placeholder art mode
+		if (Gdx.input.isKeyJustPressed(Keys.F4))
+			PLACEHOLDER_ART_MODE = !PLACEHOLDER_ART_MODE;
 		
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);

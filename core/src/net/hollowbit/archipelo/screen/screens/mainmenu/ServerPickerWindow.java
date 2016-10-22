@@ -13,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 import net.hollowbit.archipelo.ArchipeloClient;
+import net.hollowbit.archipelo.hollowbitserver.HollowBitServerConnectivity;
 import net.hollowbit.archipelo.hollowbitserver.HollowBitServerQueryResponseHandler;
 import net.hollowbit.archipelo.network.PingGetter;
 
@@ -76,9 +77,8 @@ public class ServerPickerWindow extends Window {
 			
 			@Override
 			public void responseReceived(int id, String[] data) {
-				if (id != 6) {
+				if (id != HollowBitServerConnectivity.SERVER_LIST_RESPONSE_PACKET_ID) {
 					infoLabel.setText("Could not get server info!");
-					System.out.println("ServerPickerWindow.java" + id);
 					pack();
 					return;
 				}

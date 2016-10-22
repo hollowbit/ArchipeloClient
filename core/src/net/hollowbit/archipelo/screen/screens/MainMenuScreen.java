@@ -16,6 +16,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 import net.hollowbit.archipelo.ArchipeloClient;
+import net.hollowbit.archipelo.hollowbitserver.HollowBitServerConnectivity;
 import net.hollowbit.archipelo.hollowbitserver.HollowBitServerQueryResponseHandler;
 import net.hollowbit.archipelo.network.Packet;
 import net.hollowbit.archipelo.network.PacketHandler;
@@ -112,11 +113,11 @@ public class MainMenuScreen extends Screen {
 		
 		//If login info was saved, verify it.
 		if (prefs.isLoggedIn()) {
-			ArchipeloClient.getGame().getHollowBitServerConnectivity().sendVerifyQuery(prefs.getUsername(), prefs.getPassword(), new HollowBitServerQueryResponseHandler() {
+			ArchipeloClient.getGame().getHollowBitServerConnectivity().sendVerifyQuery(prefs.getEmail(), prefs.getPassword(), new HollowBitServerQueryResponseHandler() {
 				
 				@Override
 				public void responseReceived(int id, String[] data) {
-					if (id != 3)//3 means there was a correct login. If it's not 3, it failed.
+					if (id != HollowBitServerConnectivity.CORRECT_LOGIN_RESPONSE_PACKET_ID)//Correct login.
 						prefs.resetLogin();//Reset info to let the game know that there is no login credentials at the moment
 				}
 			});
@@ -299,7 +300,7 @@ public class MainMenuScreen extends Screen {
 				if (prefs.isLoggedIn()) {
 					if (prefs.isServerPicked()) {
 						//Connected and logged in, so send packet
-						ArchipeloClient.getGame().getNetworkManager().sendPacket(new LoginPacket(prefs.getUsername(), prefs.getPassword()));
+						ArchipeloClient.getGame().getNetworkManager().sendPacket(new LoginPacket(prefs.getEmail(), prefs.getPassword()));
 					} else {
 						showErrorWindow("Please connect to a server before joining the game.");
 					}

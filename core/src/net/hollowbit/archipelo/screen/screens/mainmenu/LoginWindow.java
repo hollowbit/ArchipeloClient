@@ -107,7 +107,6 @@ public class LoginWindow extends Window {
 			
 			@Override
 			public void responseReceived(int id, String[] data) {
-				System.out.println("LoginWindow.java " + id);
 				switch (id) {
 				case HollowBitServerConnectivity.TEMP_BAN_RESPONSE_PACKET_ID://Verify too fast
 					showErrorWindow(data[0]);

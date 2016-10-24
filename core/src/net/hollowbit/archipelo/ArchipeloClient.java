@@ -19,6 +19,7 @@ import net.hollowbit.archipelo.hollowbitserver.HollowBitServerConnectivity;
 import net.hollowbit.archipelo.items.ItemType;
 import net.hollowbit.archipelo.network.NetworkManager;
 import net.hollowbit.archipelo.screen.ScreenManager;
+import net.hollowbit.archipelo.screen.screens.ErrorScreen;
 import net.hollowbit.archipelo.screen.screens.MainMenuScreen;
 import net.hollowbit.archipelo.tools.AssetManager;
 import net.hollowbit.archipelo.tools.FontManager;
@@ -114,7 +115,11 @@ public class ArchipeloClient extends ApplicationAdapter {
 		fontManager = new FontManager();
 		screenManager = new ScreenManager();
 		hollowBitServerConnectivity = new HollowBitServerConnectivity();
-		screenManager.setScreen(new MainMenuScreen());
+		
+		if (hollowBitServerConnectivity.connect())
+			screenManager.setScreen(new MainMenuScreen());
+		else
+			screenManager.setScreen(new ErrorScreen("Could not connect to HollowBit server! Try again another time."));
 		
 		//For testing purposes
 		IS_MOBILE = true;
@@ -129,7 +134,7 @@ public class ArchipeloClient extends ApplicationAdapter {
 		
 		world = new World();
 	}
-
+	
 	@Override
 	public void render () {
 		/*if (!networkManager.isConnected())
@@ -151,8 +156,6 @@ public class ArchipeloClient extends ApplicationAdapter {
 		
 		if (batch.isDrawing())
 			batch.end();
-		
-		hollowBitServerConnectivity.udpate();
 		
 		cameraGame.update(DELTA_TIME);
 		batch.setProjectionMatrix(cameraGame.combined());

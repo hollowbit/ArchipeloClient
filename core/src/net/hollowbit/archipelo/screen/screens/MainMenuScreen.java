@@ -123,13 +123,17 @@ public class MainMenuScreen extends Screen {
 			});
 		}
 		
+		try {
+			Thread.sleep(2000);
+		} catch (Exception e) {}
+		
 		//If there is a server saved, try to connect to it, if possible.
 		if (prefs.isServerPicked()) {
 			ArchipeloClient.getGame().getHollowBitServerConnectivity().sendGetServerByNameQuery(prefs.getServerName(), new HollowBitServerQueryResponseHandler() {
 				
 				@Override
 				public void responseReceived(int id, String[] data) {
-					if (id == 15) {//If we found the server we last connected to, try to connect to it again.
+					if (id == HollowBitServerConnectivity.SERVER_GET_RESPONSE_PACKET_ID) {//If we found the server we last connected to, try to connect to it again.
 						String hostname = data[0];
 						ArchipeloClient.getGame().getNetworkManager().connect(hostname, ArchipeloClient.PORT);
 					} else

@@ -1,6 +1,5 @@
 package net.hollowbit.archipelo.hollowbitserver;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -18,6 +17,7 @@ public class HollowBitServerConnectivity {
 	
 	public static final String ADDRESS = "localhost";
 	private static final int PORT = 22123;
+	private static final int TIMEOUT_LENGTH = 2000;//Time in milliseconds to wait to connect to HollowBitServer
 	
 	public static final int CREATE_PACKET_ID = 0;
 	public static final int UPDATE_PACKET_ID = 1;
@@ -50,26 +50,28 @@ public class HollowBitServerConnectivity {
 	
 	private volatile boolean isConnected = false;
 	
-	private ArrayList<String> queries;
+	private long startTime;
 	
 	public HollowBitServerConnectivity () {
 		handlerMap = new HashMap<String, HollowBitServerQueryResponseHandler>();//Create map for handlers
-		queries = new ArrayList<String>();
+	}
+	
+	public boolean connect () {
 		try {
 			//Connect to HollowBit server and set listener
 			socket = ExtendedNet.getNet().newSecureWebSocket(ADDRESS, PORT, Gdx.files, "keystore", (Gdx.app.getType() == ApplicationType.Android ? "BKS" : "JKS"), "changeit", "changeit");
 			socket.addListener(getWebSocketListener());
 			socket.connect();
+			
+			startTime = System.currentTimeMillis();
+			while (!isConnected) {//Wait until connected or until timeout
+				if (System.currentTimeMillis() - startTime > TIMEOUT_LENGTH)
+					return false;
+			}
+			return true;
 		} catch (Exception e) {
-			ArchipeloClient.getGame().getScreenManager().setScreen(new ErrorScreen("Unable to connect to HollowBit login server!", e));
-		}
-	}
-	
-	public synchronized void udpate () {
-		if (isConnected) {
-			for (String query : queries)
-				socket.send(query);
-			queries.clear();
+			//ArchipeloClient.getGame().getScreenManager().setScreen(new ErrorScreen("Unable to connect to HollowBit login server!", e));
+			return false;
 		}
 	}
 	
@@ -78,11 +80,11 @@ public class HollowBitServerConnectivity {
 	 * @param query Query string to send to server
 	 * @param handler Handles response to queries
 	 */
-	private synchronized void sendQuery (String query, HollowBitServerQueryResponseHandler handler) {
+	private void sendQuery (String query, HollowBitServerQueryResponseHandler handler) {
 		String uuid = UUID.randomUUID().toString();
 		handlerMap.put(uuid, handler);
 		String finalQuery = uuid + "/" + query;
-		queries.add(finalQuery);
+		socket.send(finalQuery);
 	}
 	
 	/**
@@ -155,7 +157,7 @@ public class HollowBitServerConnectivity {
 	 * @param password Password for user used to authenticate
 	 * @param handler Handles response to queries
 	 */
-	public void sendGetUserDaQuery (String email, String password, HollowBitServerQueryResponseHandler handler) {
+	public void sendGetUserDataQuery (String email, String password, HollowBitServerQueryResponseHandler handler) {
 		String query = GET_USER_DATA_PACKET_ID + ";" + email + ";" + password;
 		sendQuery(query, handler);
 	}
@@ -212,5 +214,9 @@ public class HollowBitServerConnectivity {
             
         };
     }
+	
+	public boolean isConnected () {
+		return isConnected;
+	}
 	
 }

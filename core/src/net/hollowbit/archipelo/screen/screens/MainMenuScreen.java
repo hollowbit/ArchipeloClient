@@ -33,6 +33,7 @@ import net.hollowbit.archipelo.screen.screens.mainmenu.ServerPickerWindow;
 import net.hollowbit.archipelo.tools.FontManager.Fonts;
 import net.hollowbit.archipelo.tools.FontManager.Sizes;
 import net.hollowbit.archipelo.tools.Prefs;
+import net.hollowbit.archipelo.tools.QuickUi;
 
 public class MainMenuScreen extends Screen {
 	
@@ -280,10 +281,10 @@ public class MainMenuScreen extends Screen {
 							//Handle packet results
 							switch (loginPacket.result) {
 							case LoginPacket.RESULT_BAD_VERSION:
-								showErrorWindow("Your client version does not match the server's version (" + loginPacket.version + ").");
+								QuickUi.showErrorWindow("Please Update!", "Your client version does not match the server's version (" + loginPacket.version + "). Please update!", stage);
 								break;
 							case LoginPacket.RESULT_LOGIN_ERROR:
-								showErrorWindow("Login error occured. Logout and log back in again please.");
+								QuickUi.showErrorWindow("Incorrect Login", "Login error occured. Logout and log back in again please.", stage);
 								break;
 							case LoginPacket.RESULT_LOGIN_SUCCESSFUL:
 								ArchipeloClient.getGame().getScreenManager().setScreen(new CharacterPickerScreen());
@@ -303,10 +304,10 @@ public class MainMenuScreen extends Screen {
 						//Connected and logged in, so send packet
 						ArchipeloClient.getGame().getNetworkManager().sendPacket(new LoginPacket(prefs.getEmail(), prefs.getPassword()));
 					} else {
-						showErrorWindow("Please connect to a server before joining the game.");
+						QuickUi.showErrorWindow("Not Connected", "Please connect to a server before joining the game.", stage);
 					}
 				} else {
-					showErrorWindow("Please login before joining the game.");
+					QuickUi.showErrorWindow("Not Logged In", "Please login before joining the game.", stage);
 				}
 					
 				super.clicked(event, x, y);
@@ -418,19 +419,6 @@ public class MainMenuScreen extends Screen {
 	
 	public boolean isServerPickerWindowOpen () {
 		return serverPickerWndw != null && stage.getActors().contains(serverPickerWndw, true);
-	}
-	
-	private void showErrorWindow (String error) {
-		Dialog dialog = new Dialog("Login Error", ArchipeloClient.getGame().getUiSkin(), "dialog") {
-		    public void result(Object obj) {
-		        remove();
-		    }
-		};
-		dialog.text(error);
-		dialog.button("Close", true);
-		dialog.key(Keys.ENTER, true);
-		dialog.key(Keys.ESCAPE, true);
-		dialog.show(stage);
 	}
 	
 }

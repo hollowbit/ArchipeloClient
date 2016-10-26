@@ -1,7 +1,6 @@
 package net.hollowbit.archipelo.screen.screens;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -9,7 +8,6 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
-import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -296,10 +294,10 @@ public class CharacterCreatorScreen extends Screen implements PacketHandler {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				if (nameTextField.getText().equals("")) {
-					showErrorWindow("Please enter a name.");
+					QuickUi.showErrorWindow("Name Empty", "Please enter a name.", stage);
 					return;
-				} else if (!StringValidator.isStringValid(nameTextField.getText(), StringValidator.USERNAME)) {
-					showErrorWindow("Please only use a-zA-Z0-9 and _ for names.");
+				} else if (!StringValidator.isStringValid(nameTextField.getText(), StringValidator.USERNAME, StringValidator.MAX_USERNAME_LENGTH)) {
+					QuickUi.showErrorWindow("Invalid Username", "Please only use a-zA-Z0-9 and _ for names. Max Length: 20", stage);
 				}
 				
 				new PlayerPickPacket(nameTextField.getText(), selectedHair, selectedFace, hairColor, eyeColor, bodyColor).send();
@@ -314,6 +312,7 @@ public class CharacterCreatorScreen extends Screen implements PacketHandler {
 		stage.addActor(characterDisplay);
 		
 		nameTextField = new TextField("", ArchipeloClient.getGame().getUiSkin());
+		nameTextField.setMaxLength(StringValidator.MAX_USERNAME_LENGTH);
 		nameTextField.setBounds(0, 0, DISPLAY_SIZE, nameTextField.getHeight());
 		nameTextField.setMessageText("Name");
 		stage.addActor(nameTextField);
@@ -448,13 +447,13 @@ public class CharacterCreatorScreen extends Screen implements PacketHandler {
 			//Handle packet result
 			switch(playerPickPacket.result) {
 			case PlayerPickPacket.RESULT_NAME_ALREADY_TAKEN:
-				showErrorWindow("Name already taken. Sorry.");
+				QuickUi.showErrorWindow("Name Taken", "Name already taken. Sorry.", stage);
 				break;
 			case PlayerPickPacket.RESULT_INVALID_USERNAME:
-				showErrorWindow("Please only use a-zA-Z0-9 and _ for names.");
+				QuickUi.showErrorWindow("Invalid Username", "Please only use a-zA-Z0-9 and _ for names.", stage);
 				break;
 			case PlayerPickPacket.RESULT_TOO_MANY_CHARACTERS:
-				showErrorWindow("You should not be in this menu. You have too many characters.");
+				QuickUi.showErrorWindow("Too Many Character", "You should not be in this menu. You have too many characters.", stage);
 				break;
 			case PlayerPickPacket.RESULT_SUCCESSFUL:
 				ArchipeloClient.getGame().getScreenManager().setScreen(new GameScreen(playerPickPacket.name));
@@ -464,19 +463,6 @@ public class CharacterCreatorScreen extends Screen implements PacketHandler {
 			return true;
 		}
 		return false;
-	}
-	
-	private void showErrorWindow (String error) {
-		Dialog dialog = new Dialog("Creation Error", ArchipeloClient.getGame().getUiSkin(), "dialog") {
-		    public void result(Object obj) {
-		        remove();
-		    }
-		};
-		dialog.text(error);
-		dialog.button("Close", true);
-		dialog.key(Keys.ENTER, true);
-		dialog.key(Keys.ESCAPE, true);
-		dialog.show(stage);
 	}
 
 }

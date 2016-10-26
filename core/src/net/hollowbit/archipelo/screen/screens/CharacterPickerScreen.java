@@ -1,11 +1,9 @@
 package net.hollowbit.archipelo.screen.screens;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
@@ -96,7 +94,7 @@ public class CharacterPickerScreen extends Screen implements PacketHandler {
 			PlayerListPacket playerListPacket = (PlayerListPacket) packet;
 			switch (playerListPacket.result) {
 			case PlayerListPacket.RESULT_INVALID_LOGIN://If request was invalid, show error
-				showErrorWindow("Login was invalid. Only pick characters belonging to your account.");
+				QuickUi.showErrorWindow("Invalid Login", "Login was invalid. Only pick characters belonging to your account.", stage);
 				break;
 			case PlayerListPacket.RESULT_SUCCESSFUL:
 				characterPickWindow.reloadList(playerListPacket);
@@ -107,13 +105,13 @@ public class CharacterPickerScreen extends Screen implements PacketHandler {
 			PlayerPickPacket playerPickPacket = (PlayerPickPacket) packet;
 			switch (playerPickPacket.result) {
 			case PlayerPickPacket.RESULT_ALREADY_LOGGED_IN:
-				showErrorWindow("Character already logged in.");
+				QuickUi.showErrorWindow("Character Taken", "This character is already logged in.", stage);
 				break;
 			case PlayerPickPacket.RESULT_NO_PLAYER_WITH_NAME:
-				showErrorWindow("No character with this name was found.");
+				QuickUi.showErrorWindow("Character Not Found", "No character with this name was found.", stage);
 				break;
 			case PlayerPickPacket.RESULT_PLAYER_BELONGS_TO_ANOTHER_HBU:
-				showErrorWindow("This character belongs to another user, not you!");
+				QuickUi.showErrorWindow("Wrong Login", "This character belongs to another user, not you!", stage);
 				break;
 			case PlayerPickPacket.RESULT_SUCCESSFUL:
 				ArchipeloClient.getGame().getScreenManager().setScreen(new GameScreen(playerPickPacket.name));
@@ -122,19 +120,6 @@ public class CharacterPickerScreen extends Screen implements PacketHandler {
 			return true;
 		}
 		return false;
-	}
-	
-	private void showErrorWindow (String error) {
-		Dialog dialog = new Dialog("Pick Error", ArchipeloClient.getGame().getUiSkin(), "dialog") {
-		    public void result(Object obj) {
-		        remove();
-		    }
-		};
-		dialog.text(error);
-		dialog.button("Close", true);
-		dialog.key(Keys.ENTER, true);
-		dialog.key(Keys.ESCAPE, true);
-		dialog.show(stage);
 	}
 
 }

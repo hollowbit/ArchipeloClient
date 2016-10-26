@@ -1,23 +1,28 @@
 package net.hollowbit.archipelo.tools;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.Input.TextInputListener;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.FocusListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.Align;
 
 import net.hollowbit.archipelo.ArchipeloClient;
 
 public class QuickUi {
 	
 	public static final int ICON_SIZE = 100;
+	public static final int ERROR_DIALOG_WRAP_WIDTH = 500;
 	
 	public static void addCloseButtonToWindow (final Window window) {
 		TextButton closeButton = new TextButton("X", ArchipeloClient.getGame().getUiSkin());
@@ -29,6 +34,24 @@ public class QuickUi {
 			}
 		});
 		window.getTitleTable().add(closeButton);
+	}
+	
+	public static void showErrorWindow (String title, String error, Stage stage) {
+		Dialog dialog = new Dialog(title, ArchipeloClient.getGame().getUiSkin(), "dialog") {
+		    public void result(Object obj) {
+		        remove();
+		    }
+		};
+		
+		Label label = new Label(error, ArchipeloClient.getGame().getUiSkin());
+		label.setWrap(true);
+		label.setAlignment(Align.center);
+		dialog.getContentTable().add(label).width(ERROR_DIALOG_WRAP_WIDTH);
+		
+		dialog.button("Close", true);
+		dialog.key(Keys.ENTER, true);
+		dialog.key(Keys.ESCAPE, true);
+		dialog.show(stage);
 	}
 	
 	public static ImageButton getIconButton (IconType iconType) {

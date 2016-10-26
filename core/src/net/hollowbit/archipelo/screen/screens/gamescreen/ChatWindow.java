@@ -47,6 +47,7 @@ public class ChatWindow extends Window implements ChatListener {
 		row();
 		
 		chatTextField = new TextField("", getSkin());
+		chatTextField.setMaxLength(140);//Like Twitter!
 		QuickUi.makeTextFieldMobileCompatible("Chat", chatTextField, getStage(), new TextFieldMessageListener() {
 			
 			@Override

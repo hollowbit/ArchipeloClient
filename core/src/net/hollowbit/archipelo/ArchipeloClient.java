@@ -157,6 +157,8 @@ public class ArchipeloClient extends ApplicationAdapter {
 		if (batch.isDrawing())
 			batch.end();
 		
+		hollowBitServerConnectivity.update(DELTA_TIME);
+		
 		cameraGame.update(DELTA_TIME);
 		batch.setProjectionMatrix(cameraGame.combined());
 		batch.begin();

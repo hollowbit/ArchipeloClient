@@ -12,9 +12,10 @@ public class PingGetter {
 	private WebSocket socket;
 	private volatile boolean gotPing = false;
 	private long timeSent = 0;
-	private int ping = 0;
+	private PingGetterListener listener;
 	
-	public int getPing (String address, int port) {
+	public void getPing (String address, int port, PingGetterListener listener) {
+		this.listener = listener;
 		try {
 			gotPing = false;
 			timeSent = 0;
@@ -22,12 +23,7 @@ public class PingGetter {
 			//socket = ExtendedNet.getNet().newWebSocket(address, port);
 			socket.addListener(getWebSocketListener());
 			socket.connect();
-			
-			while (!gotPing) {}//Wait until we get a ping
-			return ping;
-		} catch (Exception e) {
-			return -1;
-		}
+		} catch (Exception e) {}
 	}
 	
 	private WebSocketAdapter getWebSocketListener() {
@@ -42,8 +38,7 @@ public class PingGetter {
             @Override
             public boolean onClose(final WebSocket webSocket, final WebSocketCloseCode code, final String reason) {
             	if (!gotPing) {
-            		ping = -1;
-            		gotPing = true;
+            		listener.pingRecieved(-1);
             	}
                 return FULLY_HANDLED;
             }
@@ -51,8 +46,8 @@ public class PingGetter {
 			@Override
             public boolean onMessage(final WebSocket webSocket, final String message) {
         		if (message.equals("pong")) {
-        			ping = (int) (System.currentTimeMillis() - timeSent);
         			gotPing = true;
+        			listener.pingRecieved((int) (System.currentTimeMillis() - timeSent));
         			socket.close();
         		}
         		return FULLY_HANDLED;
@@ -61,13 +56,18 @@ public class PingGetter {
             @Override
             public boolean onError(WebSocket webSocket, Throwable error) {
             	if (!gotPing) {
-            		ping = -1;
-            		gotPing = true;
+            		listener.pingRecieved(-1);
             	}
             	return FULLY_HANDLED;
             }
             
         };
     }
+	
+	public interface PingGetterListener {
+		
+		public abstract void pingRecieved (int ping);
+		
+	}
 	
 }

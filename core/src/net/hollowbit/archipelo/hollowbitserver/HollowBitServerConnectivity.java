@@ -1,5 +1,6 @@
 package net.hollowbit.archipelo.hollowbitserver;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -18,6 +19,8 @@ public class HollowBitServerConnectivity {
 	public static final String ADDRESS = "localhost";
 	private static final int PORT = 22123;
 	private static final int TIMEOUT_LENGTH = 2000;//Time in milliseconds to wait to connect to HollowBitServer
+	
+	private static final float TIME_BETWEEN_QUERIES = 0.15f;
 	
 	public static final int CREATE_PACKET_ID = 0;
 	public static final int UPDATE_PACKET_ID = 1;
@@ -46,14 +49,17 @@ public class HollowBitServerConnectivity {
 	public static final int TEMP_BAN_RESPONSE_PACKET_ID = 15;
 	
 	private HashMap<String, HollowBitServerQueryResponseHandler> handlerMap;
+	private ArrayList<String> queries;
 	private WebSocket socket;
 	
 	private volatile boolean isConnected = false;
 	
 	private long startTime;
+	private float timer = 0;
 	
 	public HollowBitServerConnectivity () {
 		handlerMap = new HashMap<String, HollowBitServerQueryResponseHandler>();//Create map for handlers
+		queries = new ArrayList<String>();
 	}
 	
 	public boolean connect () {
@@ -70,8 +76,26 @@ public class HollowBitServerConnectivity {
 			}
 			return true;
 		} catch (Exception e) {
-			//ArchipeloClient.getGame().getScreenManager().setScreen(new ErrorScreen("Unable to connect to HollowBit login server!", e));
 			return false;
+		}
+	}
+	
+	/**
+	 * Executes queries in order to avoid a too many queries ban
+	 * @param deltaTime
+	 */
+	public synchronized void update (float deltaTime) {
+		//If not connected by this point, open ErrorScreen
+		if (!isConnected)
+			ArchipeloClient.getGame().getScreenManager().setScreen(new ErrorScreen("Could not connect to login server. Try another time."));
+		
+		timer += deltaTime;
+		if (timer >= TIME_BETWEEN_QUERIES && queries.size() > 0) {
+			timer -= TIME_BETWEEN_QUERIES;
+			
+			//Execute next query
+			socket.send(queries.get(0));
+			queries.remove(0);
 		}
 	}
 	
@@ -80,11 +104,14 @@ public class HollowBitServerConnectivity {
 	 * @param query Query string to send to server
 	 * @param handler Handles response to queries
 	 */
-	private void sendQuery (String query, HollowBitServerQueryResponseHandler handler) {
+	private synchronized void sendQuery (String query, HollowBitServerQueryResponseHandler handler) {
 		String uuid = UUID.randomUUID().toString();
 		handlerMap.put(uuid, handler);
 		String finalQuery = uuid + "/" + query;
-		socket.send(finalQuery);
+		if (isConnected)
+			queries.add(finalQuery);
+		else
+			handler.responseReceived(-1, new String[]{"No data"});
 	}
 	
 	/**
@@ -174,7 +201,6 @@ public class HollowBitServerConnectivity {
             @Override
             public boolean onClose(final WebSocket webSocket, final WebSocketCloseCode code, final String reason) {
                 isConnected = false;
-				ArchipeloClient.getGame().getScreenManager().setScreen(new ErrorScreen("Could not connect to login server. Try another time."));
                 return FULLY_HANDLED;
             }
             

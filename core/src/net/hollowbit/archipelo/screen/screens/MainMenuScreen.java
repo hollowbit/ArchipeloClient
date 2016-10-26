@@ -22,6 +22,7 @@ import net.hollowbit.archipelo.network.Packet;
 import net.hollowbit.archipelo.network.PacketHandler;
 import net.hollowbit.archipelo.network.PacketType;
 import net.hollowbit.archipelo.network.packets.LoginPacket;
+import net.hollowbit.archipelo.network.packets.LogoutPacket;
 import net.hollowbit.archipelo.screen.Screen;
 import net.hollowbit.archipelo.screen.ScreenType;
 import net.hollowbit.archipelo.screen.screens.mainmenu.LoginRegisterWindow;
@@ -122,10 +123,6 @@ public class MainMenuScreen extends Screen {
 				}
 			});
 		}
-		
-		try {
-			Thread.sleep(2000);
-		} catch (Exception e) {}
 		
 		//If there is a server saved, try to connect to it, if possible.
 		if (prefs.isServerPicked()) {
@@ -302,7 +299,7 @@ public class MainMenuScreen extends Screen {
 				//Send login packet
 				Prefs prefs = ArchipeloClient.getGame().getPrefs();
 				if (prefs.isLoggedIn()) {
-					if (prefs.isServerPicked()) {
+					if (prefs.isServerPicked() && ArchipeloClient.getGame().getNetworkManager().isConnected()) {
 						//Connected and logged in, so send packet
 						ArchipeloClient.getGame().getNetworkManager().sendPacket(new LoginPacket(prefs.getEmail(), prefs.getPassword()));
 					} else {
@@ -346,6 +343,8 @@ public class MainMenuScreen extends Screen {
 				if (loginRegisterWndw == null || loginRegisterWndw.getStage() == null) {
 					//Reset login credentials
 					prefs.resetLogin();
+					if (ArchipeloClient.getGame().getNetworkManager().isConnected())
+						ArchipeloClient.getGame().getNetworkManager().sendPacket(new LogoutPacket());
 					
 					loginRegisterWndw = new LoginRegisterWindow(mainMenuScreen, stage);
 					loginRegisterWndw.setPosition(Gdx.graphics.getWidth() / 2 - loginRegisterWndw.getWidth() / 2, Gdx.graphics.getHeight() / 2 - loginRegisterWndw.getHeight() / 2);

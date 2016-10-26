@@ -460,6 +460,8 @@ public class CharacterCreatorScreen extends Screen implements PacketHandler {
 				ArchipeloClient.getGame().getScreenManager().setScreen(new GameScreen(playerPickPacket.name));
 				break;
 			}
+			
+			return true;
 		}
 		return false;
 	}

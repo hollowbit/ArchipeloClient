@@ -92,11 +92,7 @@ public class ServerPickerWindow extends Window {
 						int traffic = Integer.parseInt(serverData[2]);
 						String hostname = serverData[3];
 						
-						int ping = pingGetter.getPing(hostname, ArchipeloClient.PORT);
-						if (ping < 0)//Means there was an error and could not connect to this server at all
-							continue;
-						
-						servers.add(new ServerListing(name, region, traffic, ping, hostname, getSkin()));
+						servers.add(new ServerListing(name, region, traffic, hostname, getSkin()));
 					}
 					
 					if (servers.size() > 0) {

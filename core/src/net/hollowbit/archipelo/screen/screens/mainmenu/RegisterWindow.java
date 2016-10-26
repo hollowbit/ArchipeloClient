@@ -113,7 +113,6 @@ public class RegisterWindow extends Window {
 			
 			@Override
 			public void responseReceived(int id, String[] data) {
-				System.out.println("RegisterWindow.java " + id);
 				switch (id) {
 				case HollowBitServerConnectivity.TEMP_BAN_RESPONSE_PACKET_ID://Ban
 					showErrorWindow(data[0]);

@@ -8,6 +8,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 import net.hollowbit.archipelo.ArchipeloClient;
+import net.hollowbit.archipelo.network.PingGetter;
+import net.hollowbit.archipelo.network.PingGetter.PingGetterListener;
 
 public class ServerListing extends Table implements Comparable<ServerListing>{
 	
@@ -21,25 +23,18 @@ public class ServerListing extends Table implements Comparable<ServerListing>{
 	private TextButton connectButton;
 	private int ping;
 	
-	public ServerListing (final String name, int region, int traffic, int ping, final String address, Skin skin) {
+	public ServerListing (final String name, int region, int traffic, final String address, Skin skin) {
 		setBounds(0, 0, 300, 25);
-		this.ping = ping;
+		
+		new PingGetter().getPing(address, ArchipeloClient.PORT, getPingGetterListener());
 		
 		//Initialize labels
 		nameLabel = new Label(name, skin);
 		add(nameLabel).width(250);
 		
-		String color = "";
-		if (ping < 50)
-			color = "[GREEN]";
-		else if (ping < 300)
-			color = "[ORANGE]";
-		else
-			color = "[RED]";
-		
-		pingLabel = new Label(color + "" + ping + "ms", skin, "small");
+		pingLabel = new Label("Connecting...", skin, "small");
 		add(pingLabel).fill();
-
+		
 		connectButton = new TextButton("Connect", skin);
 		connectButton.addListener(new ClickListener() {
 			@Override
@@ -53,6 +48,7 @@ public class ServerListing extends Table implements Comparable<ServerListing>{
 		
 		row();
 		
+		String color = "";
 		if (traffic == 0)
 			color = "[GREEN]";
 		else if (traffic == 1)
@@ -65,7 +61,6 @@ public class ServerListing extends Table implements Comparable<ServerListing>{
 		
 		regionLabel = new Label("Region: " + REGION_NAME[region], skin, "small");
 		add(regionLabel);
-		
 	}
 	
 	@Override
@@ -76,5 +71,29 @@ public class ServerListing extends Table implements Comparable<ServerListing>{
 			return -1;
 		return 0;
 	}
+	
+	public PingGetter.PingGetterListener getPingGetterListener () {
+		return new PingGetterListener() {
+			
+			@Override
+			public void pingRecieved (int ping) {
+				if (ping >= 0) {
+					String color = "";
+					if (ping < 50)
+						color = "[GREEN]";
+					else if (ping < 300)
+						color = "[ORANGE]";
+					else
+						color = "[RED]";
+					pingLabel.setText(color + "" + ping + "ms");
+				} else {
+					pingLabel.setText("Error.");
+					connectButton.setDisabled(true);
+				}
+			}
+		};
+	}
+	
+	
 	
 }

@@ -37,27 +37,21 @@ public class NetworkManager {
 	public void update () {
 		ArrayList<Packet> currentPackets = new ArrayList<Packet>();
 		currentPackets.addAll(packets);
-		ArrayList<Packet> packetsToRemove = new ArrayList<Packet>();
+		
 		for (Packet packet : currentPackets) {
 			ArrayList<PacketHandler> currentPacketHandlers = new ArrayList<PacketHandler>();
 			currentPacketHandlers.addAll(packetHandlers);
 			
-			//Only remove handled packets, keep unhandled ones for the next cycle
-			boolean packetHandled = false;
 			for (PacketHandler packetHandler : currentPacketHandlers) {
-				if (packetHandler.handlePacket(packet))
-					packetHandled = true;
+				packetHandler.handlePacket(packet);
 			}
-			
-			if (packetHandled) 
-				packetsToRemove.add(packet);
 		}
 
-		removeAllPackets(packetsToRemove);
+		removeAllPackets();
 	}
 	
-	private synchronized void removeAllPackets (ArrayList<Packet> packets) {
-		this.packets.removeAll(packets);
+	private synchronized void removeAllPackets () {
+		this.packets.clear();;
 	}
 	
 	private synchronized void addPacket (Packet packet) {

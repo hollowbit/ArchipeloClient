@@ -3,11 +3,14 @@ package net.hollowbit.archipelo.tools;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
 
+import net.hollowbit.archipelo.tools.LanguageSpecificMessageManager.Language;
+
 public class Prefs {
 	
 	private Preferences prefs;
 	private boolean loggedIn, serverPicked, showedDisclaimer;
 	private String email, password, serverName;
+	private int chosenLanguage;
 	
 	public Prefs () {
 		prefs = Gdx.app.getPreferences("archipelo");
@@ -23,6 +26,7 @@ public class Prefs {
 		
 		//Other
 		this.showedDisclaimer = prefs.getBoolean("showed-disclaimer", false);
+		this.chosenLanguage = prefs.getInteger("chosen-language", 0);
 	}
 	
 	public void resetLogin () {
@@ -89,6 +93,18 @@ public class Prefs {
 		this.showedDisclaimer = true;
 		prefs.putBoolean("showed-disclaimer", true);
 		prefs.flush();
+	}
+	
+	public Language getChosenLanguage () {
+		return LanguageSpecificMessageManager.Language.values()[this.chosenLanguage];
+	}
+	
+	public void setChosenLanguage (int chosenLanguage) {
+		this.chosenLanguage = chosenLanguage;
+	}
+	
+	public int getChosenLanguageRaw () {
+		return this.chosenLanguage;
 	}
 	
 }

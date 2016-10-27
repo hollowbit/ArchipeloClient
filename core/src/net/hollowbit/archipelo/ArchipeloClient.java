@@ -24,6 +24,7 @@ import net.hollowbit.archipelo.screen.screens.MainMenuScreen;
 import net.hollowbit.archipelo.tools.AssetManager;
 import net.hollowbit.archipelo.tools.FontManager;
 import net.hollowbit.archipelo.tools.GameCamera;
+import net.hollowbit.archipelo.tools.LanguageSpecificMessageManager;
 import net.hollowbit.archipelo.tools.Prefs;
 import net.hollowbit.archipelo.tools.QuickUi;
 import net.hollowbit.archipelo.tools.UiCamera;
@@ -58,6 +59,7 @@ public class ArchipeloClient extends ApplicationAdapter {
 	FontManager fontManager;
 	Skin skin;
 	HollowBitServerConnectivity hollowBitServerConnectivity;
+	LanguageSpecificMessageManager languageSpecificMessageManager;
 	Prefs prefs;
 	
 	GameCamera cameraGame;
@@ -114,6 +116,7 @@ public class ArchipeloClient extends ApplicationAdapter {
 		networkManager = new NetworkManager();
 		fontManager = new FontManager();
 		screenManager = new ScreenManager();
+		languageSpecificMessageManager = new LanguageSpecificMessageManager();
 		hollowBitServerConnectivity = new HollowBitServerConnectivity();
 		
 		if (hollowBitServerConnectivity.connect())
@@ -214,6 +217,10 @@ public class ArchipeloClient extends ApplicationAdapter {
 	
 	public FontManager getFontManager () {
 		return fontManager;
+	}
+	
+	public LanguageSpecificMessageManager getLanguageSpecificMessageManager () {
+		return languageSpecificMessageManager;
 	}
 	
 	public HollowBitServerConnectivity getHollowBitServerConnectivity () {

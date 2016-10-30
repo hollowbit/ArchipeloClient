@@ -1,6 +1,7 @@
 package net.hollowbit.archipelo.screen.screens.characterpicker;
 
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -16,8 +17,9 @@ public class CharacterPickWindow extends Window {
 	Table characterTable;
 	ScrollPane characterScrollPane;
 	
-	public CharacterPickWindow () {
+	public CharacterPickWindow (Stage stage) {
 		super("Pick Character", ArchipeloClient.getGame().getUiSkin());
+		this.setStage(stage);
 		
 		setMovable(false);
 		
@@ -34,10 +36,11 @@ public class CharacterPickWindow extends Window {
 	 */
 	public void reloadList (PlayerListPacket playerListPacket) {
 		characterTable.clear();
+		pack();
 		
 		//Add character profiles to table
 		for (int i = 0; i < playerListPacket.names.length; i++)
-			characterTable.add(new CharacterProfile(playerListPacket.names[i], playerListPacket.playerEquippedInventories[i], playerListPacket.islands[i], playerListPacket.lastPlayedDateTimes[i], playerListPacket.creationDateTimes[i], 0)).pad(25);//Add proper levels after
+			characterTable.add(new CharacterProfile(getStage(), playerListPacket.names[i], playerListPacket.playerEquippedInventories[i], playerListPacket.islands[i], playerListPacket.lastPlayedDateTimes[i], playerListPacket.creationDateTimes[i], 0)).pad(25);//Add proper levels after
 		
 		//If user has another character slot available, add button to create a new one
 		if (playerListPacket.names.length < ArchipeloClient.MAX_CHARACTERS_PER_PLAYER) {
@@ -52,7 +55,7 @@ public class CharacterPickWindow extends Window {
 			});
 			characterTable.add(createNewButton).pad(25);
 		}
-		characterTable.pack();
+		//characterTable.pack();
 		
 		//Make scrollpane height match he height of the profiles inside
 		getCell(characterScrollPane).height(characterTable.getHeight() + 25);

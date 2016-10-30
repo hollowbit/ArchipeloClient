@@ -37,7 +37,7 @@ public class CharacterPickerScreen extends Screen implements PacketHandler {
 
 	@Override
 	public void create () {
-		characterPickWindow = new CharacterPickWindow();
+		characterPickWindow = new CharacterPickWindow(stage);
 		characterPickWindow.setPosition(Gdx.graphics.getWidth() / 2 - characterPickWindow.getWidth() / 2, Gdx.graphics.getHeight() / 2 - characterPickWindow.getHeight() / 2);
 		stage.addActor(characterPickWindow);
 		

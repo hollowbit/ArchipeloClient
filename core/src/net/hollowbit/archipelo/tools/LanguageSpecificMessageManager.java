@@ -29,7 +29,7 @@ public class LanguageSpecificMessageManager {
 			for (Cat category : Cat.values()) {
 				HashMap<String, String> messages = new HashMap<String, String>();
 				try {
-					HashMap<String, String> tempMessages = ((MessageDatas) json.fromJson(ClassReflection.forName("net.hollowbit.archipeloshared.MessageDatas"), Gdx.files.internal("messages/" + language.getId() + "/" + category.getId() + ".json"))).messages;
+					HashMap<String, String> tempMessages = ((MessageDatas) json.fromJson(ClassReflection.forName("net.hollowbit.archipeloshared.MessageDatas"), Gdx.files.internal("languages/" + language.getId() + "/" + category.getId() + ".json"))).messages;
 					
 					//Loop though map and add them to messages with upper case keys
 					Iterator<Map.Entry<String, String>> it = tempMessages.entrySet().iterator();

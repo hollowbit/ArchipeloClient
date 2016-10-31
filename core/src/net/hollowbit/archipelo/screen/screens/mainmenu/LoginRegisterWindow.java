@@ -11,6 +11,7 @@ import com.badlogic.gdx.utils.Align;
 
 import net.hollowbit.archipelo.ArchipeloClient;
 import net.hollowbit.archipelo.screen.screens.MainMenuScreen;
+import net.hollowbit.archipelo.tools.LM;
 
 public class LoginRegisterWindow extends Window {
 
@@ -28,7 +29,7 @@ public class LoginRegisterWindow extends Window {
 		
 		setMovable(false);
 		
-		instructionsLabel = new Label("Create an account or login to an existing one.", getSkin(), "small");
+		instructionsLabel = new Label(LM.ui("loginRegisterInstructions"), getSkin(), "small");
 		instructionsLabel.setWrap(true);
 		instructionsLabel.setAlignment(Align.center);
 		add(instructionsLabel).width(350).pad(15);
@@ -38,7 +39,7 @@ public class LoginRegisterWindow extends Window {
 		final LoginRegisterWindow loginRegisterWindow = this;
 		
 		//Initialize buttons
-		loginButton = new TextButton("Login", getSkin());
+		loginButton = new TextButton(LM.ui("login"), getSkin());
 		loginButton.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
@@ -56,7 +57,7 @@ public class LoginRegisterWindow extends Window {
 		
 		row();
 		
-		registerButton = new TextButton("Register", getSkin());
+		registerButton = new TextButton(LM.ui("register"), getSkin());
 		registerButton.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
@@ -75,7 +76,7 @@ public class LoginRegisterWindow extends Window {
 		row();
 		
 		if (!ArchipeloClient.IS_GWT) {
-			exitButton = new TextButton("Exit", getSkin());
+			exitButton = new TextButton(LM.ui("exit"), getSkin());
 			exitButton.addListener(new ClickListener() {
 				@Override
 				public void clicked(InputEvent event, float x, float y) {

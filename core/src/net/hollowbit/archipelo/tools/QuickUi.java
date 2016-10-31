@@ -48,7 +48,7 @@ public class QuickUi {
 		label.setAlignment(Align.center);
 		dialog.getContentTable().add(label).width(ERROR_DIALOG_WRAP_WIDTH);
 		
-		dialog.button("Close", true);
+		dialog.button(LM.ui("close"), true);
 		dialog.key(Keys.ENTER, true);
 		dialog.key(Keys.ESCAPE, true);
 		dialog.show(stage);
@@ -60,9 +60,9 @@ public class QuickUi {
 	
 	public static void makeTextFieldMobileCompatible (final String usage, final TextField textField, final Stage stage, final TextFieldMessageListener listener) {
 		if (ArchipeloClient.IS_MOBILE)
-			textField.setMessageText("Tap to " + usage + " !");
+			textField.setMessageText(LM.ui("tapTo") + " " + usage);
 		else
-			textField.setMessageText("Click to " + usage + " !");
+			textField.setMessageText(LM.ui("clickTo") + " " + usage);
 		textField.addListener(new FocusListener() {
 			
 			@Override
@@ -82,7 +82,7 @@ public class QuickUi {
 								public void canceled () {
 									stage.setKeyboardFocus(null);
 								}//No event for canceled
-							}, "Enter a message for: " + usage, "", "Write here!");
+							}, LM.ui("enterAMessageFor") + ": " + usage, "", LM.ui("writeHere"));
 						}
 					}
 				}

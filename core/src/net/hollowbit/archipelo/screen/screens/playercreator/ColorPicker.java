@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 
 import net.hollowbit.archipelo.ArchipeloClient;
+import net.hollowbit.archipelo.tools.LM;
 
 public class ColorPicker extends Window {
 	
@@ -20,7 +21,7 @@ public class ColorPicker extends Window {
 	ButtonGroup<Button> colorButtons;
 	
 	public ColorPicker (String nameOfThingColorIsFor, int currentlySelected, Color[] colors, final ColorPickListener listener) {
-		super("Pick " + nameOfThingColorIsFor + " Color", ArchipeloClient.getGame().getUiSkin());
+		super(LM.ui("pick") + " " + nameOfThingColorIsFor + " " + LM.ui("color"), ArchipeloClient.getGame().getUiSkin());
 		colorButtons = new ButtonGroup<Button>();
 		
 		//Loop through each color and add a button for it
@@ -60,7 +61,7 @@ public class ColorPicker extends Window {
 		row();
 		
 		//Cancel button to cancel color selection
-		TextButton cancelButton = new TextButton("Cancel", getSkin());
+		TextButton cancelButton = new TextButton(LM.ui("cancel"), getSkin());
 		cancelButton.addListener(new ClickListener(){
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
@@ -71,7 +72,7 @@ public class ColorPicker extends Window {
 		add(cancelButton);
 		
 		//Ok button to confirm color selection
-		TextButton okButton = new TextButton("Ok", getSkin());
+		TextButton okButton = new TextButton(LM.ui("ok"), getSkin());
 		okButton.addListener(new ClickListener(){
 			@Override
 			public void clicked(InputEvent event, float x, float y) {

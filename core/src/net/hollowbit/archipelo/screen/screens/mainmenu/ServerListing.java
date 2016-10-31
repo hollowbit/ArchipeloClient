@@ -10,11 +10,9 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import net.hollowbit.archipelo.ArchipeloClient;
 import net.hollowbit.archipelo.network.PingGetter;
 import net.hollowbit.archipelo.network.PingGetter.PingGetterListener;
+import net.hollowbit.archipelo.tools.LM;
 
 public class ServerListing extends Table implements Comparable<ServerListing>{
-	
-	private static final String[] REGION_NAME = {"World", "North America East", "North America West", "South America East", "South America West", "East Asia", "West Asia", "South Asia", "Eastern Europe", "Western Europe", "Northern Africa", "Southern Africa", "Oceania"};
-	private static final String[] TRAFFIC_NAME = {"Low", "Medium", "High"};
 	
 	private Label nameLabel;
 	private Label regionLabel;
@@ -32,10 +30,10 @@ public class ServerListing extends Table implements Comparable<ServerListing>{
 		nameLabel = new Label(name, skin);
 		add(nameLabel).width(250);
 		
-		pingLabel = new Label("Connecting...", skin, "small");
+		pingLabel = new Label(LM.ui("connecting"), skin, "small");
 		add(pingLabel).fill();
 		
-		connectButton = new TextButton("Connect", skin);
+		connectButton = new TextButton(LM.ui("connect"), skin);
 		connectButton.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
@@ -56,10 +54,10 @@ public class ServerListing extends Table implements Comparable<ServerListing>{
 		else
 			color = "[RED]";
 		
-		trafficLabel = new Label("Traffic: " + color + "" + TRAFFIC_NAME[traffic], skin, "small");
+		trafficLabel = new Label(LM.ui("traffic") + ": " + color + "" + LM.ui("traffic" + traffic), skin, "small");
 		add(trafficLabel).width(250);
 		
-		regionLabel = new Label("Region: " + REGION_NAME[region], skin, "small");
+		regionLabel = new Label(LM.ui("region") + "Region: " + LM.ui("region" + region), skin, "small");
 		add(regionLabel);
 	}
 	
@@ -85,7 +83,7 @@ public class ServerListing extends Table implements Comparable<ServerListing>{
 						color = "[ORANGE]";
 					else
 						color = "[RED]";
-					pingLabel.setText(color + "" + ping + "ms");
+					pingLabel.setText(color + "" + ping + "" + LM.ui("ms"));
 				} else {
 					pingLabel.setText("Error.");
 					connectButton.setDisabled(true);

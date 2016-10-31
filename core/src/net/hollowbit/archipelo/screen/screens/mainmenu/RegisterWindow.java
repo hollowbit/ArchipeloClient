@@ -13,6 +13,7 @@ import com.badlogic.gdx.utils.Align;
 import net.hollowbit.archipelo.ArchipeloClient;
 import net.hollowbit.archipelo.hollowbitserver.HollowBitServerConnectivity;
 import net.hollowbit.archipelo.hollowbitserver.HollowBitServerQueryResponseHandler;
+import net.hollowbit.archipelo.tools.LM;
 import net.hollowbit.archipelo.tools.QuickUi;
 import net.hollowbit.archipeloshared.StringValidator;
 
@@ -29,19 +30,19 @@ public class RegisterWindow extends Window {
 	String password = "", email = "";
 	
 	public RegisterWindow(final LoginRegisterWindow loginRegisterWindow, Stage stage) {
-		super("Register", ArchipeloClient.getGame().getUiSkin());
+		super(LM.ui("register"), ArchipeloClient.getGame().getUiSkin());
 		this.setStage(stage);
 		this.setMovable(false);
 		
 		//Load ui elements
-		Label instructionsLabel = new Label("Register a new account.", getSkin(), "small");
+		Label instructionsLabel = new Label(LM.ui("registerInstructions"), getSkin(), "small");
 		instructionsLabel.setWrap(true);
 		instructionsLabel.setAlignment(Align.center);
 		add(instructionsLabel).width(400).pad(10).colspan(2);
 		row();
 		
 		emailFld = new TextField("", getSkin());
-		emailFld.setMessageText("Email");
+		emailFld.setMessageText(LM.ui("email"));
 		emailFld.setMaxLength(StringValidator.MAX_EMAIL_LENGTH);
 		add(emailFld).width(400).pad(10).colspan(2);
 		row();
@@ -50,7 +51,7 @@ public class RegisterWindow extends Window {
 		passwordFld.setPasswordCharacter('*');
 		passwordFld.setMaxLength(StringValidator.MAX_PASSWORD_LENGTH);
 		passwordFld.setPasswordMode(true);
-		passwordFld.setMessageText("Password");
+		passwordFld.setMessageText(LM.ui("password"));
 		add(passwordFld).width(400).pad(10).colspan(2);
 		row();
 		
@@ -58,28 +59,28 @@ public class RegisterWindow extends Window {
 		remPasswordFld.setPasswordCharacter('*');
 		remPasswordFld.setMaxLength(StringValidator.MAX_PASSWORD_LENGTH);
 		remPasswordFld.setPasswordMode(true);
-		remPasswordFld.setMessageText("Confirm Password");
+		remPasswordFld.setMessageText(LM.ui("confirmPassword"));
 		add(remPasswordFld).width(400).pad(10).colspan(2);
 		row();
 		
-		rememberChkBx = new CheckBox(" Remember?", getSkin());
+		rememberChkBx = new CheckBox(" " + LM.ui("remember"), getSkin());
 		rememberChkBx.setChecked(ArchipeloClient.getGame().getPrefs().isLoggedIn());
 		add(rememberChkBx).pad(10);
 		row();
 		
-		loginBtn = new TextButton("Login", getSkin());
+		loginBtn = new TextButton(LM.ui("login"), getSkin());
 		loginBtn.addListener(new ClickListener() {
 			
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				if (emailFld.getText().equals("") || passwordFld.getText().equals("") || remPasswordFld.getText().equals("")) {
-					QuickUi.showErrorWindow("Fields Empty", "Please don't leave fields blank!", getStage());
+					QuickUi.showErrorWindow(LM.error("fieldsEmptyTitle"), LM.error("fieldsEmpty"), getStage());
 				} else if (!StringValidator.isEmailValid(emailFld.getText()) || emailFld.getText().contains(" ")) {
-					QuickUi.showErrorWindow("Invalid Email", "Please enter a valid email.", getStage());
+					QuickUi.showErrorWindow(LM.error("loginHBInvalidEmailTitle"), LM.error("loginHBInvalidEmail"), getStage());
 				} else if (!StringValidator.isStringValid(passwordFld.getText(), StringValidator.PASSWORD, StringValidator.MAX_PASSWORD_LENGTH)) {
-					QuickUi.showErrorWindow("Invalid Password", "Please only use a-zA-Z0-9 and !@#$%^&*()-_+= for passwords.", getStage());
+					QuickUi.showErrorWindow(LM.error("loginInvalidPasswordTitle"), LM.error("loginInvalidPasswordTitle"), getStage());
 				} else if (!remPasswordFld.getText().equals(passwordFld.getText())) {
-					QuickUi.showErrorWindow("Confirm Password", "Confirm password does not match password.", getStage());
+					QuickUi.showErrorWindow(LM.error("registerHBConfirmPasswordWrongTitle"), LM.error("registerHBConfirmPasswordWrong"), getStage());
 				} else {
 					//Put data in variables for later and send login packet
 					email = emailFld.getText();
@@ -93,7 +94,7 @@ public class RegisterWindow extends Window {
 		});
 		add(loginBtn).pad(10);
 		
-		cancelBtn = new TextButton("Cancel", getSkin());
+		cancelBtn = new TextButton(LM.ui("cancel"), getSkin());
 		cancelBtn.addListener(new ClickListener() {
 			
 			@Override
@@ -117,16 +118,16 @@ public class RegisterWindow extends Window {
 			public void responseReceived(int id, String[] data) {
 				switch (id) {
 				case HollowBitServerConnectivity.TEMP_BAN_RESPONSE_PACKET_ID://Ban
-					QuickUi.showErrorWindow("You Are Banned!", data[0], getStage());
+					QuickUi.showErrorWindow(LM.error("youAreBanned"), data[0], getStage());
 					break;
 				case HollowBitServerConnectivity.USER_ALREADY_EXISTS_ERROR_RESPONSE_PACKET_ID://User already exists
-					QuickUi.showErrorWindow("User Already Exists", "User with this email already exist.", getStage());
+					QuickUi.showErrorWindow(LM.error("loginHBAlreadyExistsTitle"), LM.error("loginHBAlreadyExists"), getStage());
 					break;
 				case HollowBitServerConnectivity.INVALID_EMAIL_RESPONSE_PACKET_ID://Invalid email
-					QuickUi.showErrorWindow("Invalid Email", "Please enter a valid email.", getStage());
+					QuickUi.showErrorWindow(LM.error("loginHBInvalidEmailTitle"), LM.error("loginHBInvalidEmail"), getStage());
 					break;
 				case HollowBitServerConnectivity.INVALID_PASSWORD_RESPONSE_PACKET_ID://Invalid password
-					QuickUi.showErrorWindow("Invalid Password", "Please only use a-zA-Z0-9 and !@#$%^&*()-_+= for passwords.", getStage());
+					QuickUi.showErrorWindow(LM.error("loginInvalidPasswordTitle"), LM.error("loginInvalidPassword"), getStage());
 					break;
 				case HollowBitServerConnectivity.CREATE_SUCCESSFUL_RESPONSE_PACKET_ID://Creation successful
 					if (rememberChkBx.isChecked())//Save login settings

@@ -16,6 +16,7 @@ import net.hollowbit.archipelo.ArchipeloClient;
 import net.hollowbit.archipelo.hollowbitserver.HollowBitServerConnectivity;
 import net.hollowbit.archipelo.hollowbitserver.HollowBitServerQueryResponseHandler;
 import net.hollowbit.archipelo.network.PingGetter;
+import net.hollowbit.archipelo.tools.LM;
 
 public class ServerPickerWindow extends Window {
 	
@@ -27,12 +28,12 @@ public class ServerPickerWindow extends Window {
 	Table serverListTable;
 	
 	public ServerPickerWindow () {
-		super("Pick Server", ArchipeloClient.getGame().getUiSkin());
+		super(LM.ui("pickServer"), ArchipeloClient.getGame().getUiSkin());
 		pingGetter = new PingGetter();
 		
 		setMovable(false);
 		
-		infoLabel = new Label("Getting server info...", getSkin(), "small");
+		infoLabel = new Label(LM.ui("gettingServerInfo"), getSkin(), "small");
 		add(infoLabel).pad(5).colspan(2);
 		
 		row();
@@ -44,7 +45,7 @@ public class ServerPickerWindow extends Window {
 		
 		row();
 		
-		refreshButton = new TextButton("Refresh", getSkin());
+		refreshButton = new TextButton(LM.ui("refresh"), getSkin());
 		refreshButton.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
@@ -55,7 +56,7 @@ public class ServerPickerWindow extends Window {
 		add(refreshButton).pad(5);
 		
 		if (!ArchipeloClient.IS_GWT) {
-			exitButton = new TextButton("Exit", getSkin());
+			exitButton = new TextButton(LM.ui("exit"), getSkin());
 			exitButton.addListener(new ClickListener() {
 				@Override
 				public void clicked(InputEvent event, float x, float y) {
@@ -78,7 +79,7 @@ public class ServerPickerWindow extends Window {
 			@Override
 			public void responseReceived(int id, String[] data) {
 				if (id != HollowBitServerConnectivity.SERVER_LIST_RESPONSE_PACKET_ID) {
-					infoLabel.setText("Could not get server info!");
+					infoLabel.setText(LM.ui("couldNotGetServerInfo"));
 					pack();
 					return;
 				}
@@ -121,15 +122,15 @@ public class ServerPickerWindow extends Window {
 						}
 						serverListTable.pack();
 						
-						infoLabel.setText("Pick server to connect to:");
+						infoLabel.setText(LM.ui("pickServerToCon") + ":");
 					} else {
-						infoLabel.setText("Could not find any servers.");
+						infoLabel.setText(LM.ui("couldNotfindServers"));
 					}
 					
 					getCell(serverListScrollPane).width(serverListTable.getWidth() + 5);
 					pack();
 				} catch (Exception e) {
-					infoLabel.setText("Could not get server info!");
+					infoLabel.setText(LM.ui("couldNotGetServerInfo"));
 					pack();
 				}
 			}

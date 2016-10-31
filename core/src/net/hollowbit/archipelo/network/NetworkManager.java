@@ -19,6 +19,7 @@ import net.hollowbit.archipelo.ArchipeloClient;
 import net.hollowbit.archipelo.screen.ScreenType;
 import net.hollowbit.archipelo.screen.screens.ErrorScreen;
 import net.hollowbit.archipelo.screen.screens.MainMenuScreen;
+import net.hollowbit.archipelo.tools.LM;
 
 public class NetworkManager {
 	
@@ -65,7 +66,7 @@ public class NetworkManager {
 			socket.addListener(getWebSocketListener());
 			socket.connect();
 		} catch (Exception e) {
-			ArchipeloClient.getGame().getScreenManager().setScreen(new ErrorScreen("Unable to connect to server!", e));
+			ArchipeloClient.getGame().getScreenManager().setScreen(new ErrorScreen(LM.error("unableToConnect"), e));
 		}
 	}
 	

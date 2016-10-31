@@ -15,6 +15,7 @@ import net.hollowbit.archipelo.items.Item;
 import net.hollowbit.archipelo.network.packets.PlayerDeletePacket;
 import net.hollowbit.archipelo.network.packets.PlayerPickPacket;
 import net.hollowbit.archipelo.screen.screens.mainmenu.CharacterDisplay;
+import net.hollowbit.archipelo.tools.LM;
 import net.hollowbit.archipelo.tools.QuickUi;
 
 public class CharacterProfile extends Table {
@@ -50,22 +51,22 @@ public class CharacterProfile extends Table {
 		
 		row();
 		
-		islandLabel = new Label("Location: " + island, getSkin(), "small");
+		islandLabel = new Label(LM.ui("location") + ": " + island, getSkin(), "small");
 		add(islandLabel).left().padTop(10);
 		
 		row();
 		
-		lastPlayedLabel = new Label("Last Played:\n" + lastPlayedDateTime, getSkin(), "small");
+		lastPlayedLabel = new Label(LM.ui("lastPlayed") + ":\n" + lastPlayedDateTime, getSkin(), "small");
 		add(lastPlayedLabel).left().padTop(10);
 		
 		row();
 		
-		creationDateLabel = new Label("Created:\n" + creationDateTime, getSkin(), "small");
+		creationDateLabel = new Label(LM.ui("create") + ":\n" + creationDateTime, getSkin(), "small");
 		add(creationDateLabel).left().padTop(10);
 		
 		row();
 		
-		pickButton = new TextButton("Pick!", getSkin());
+		pickButton = new TextButton(LM.ui("pick"), getSkin());
 		pickButton.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
@@ -79,7 +80,7 @@ public class CharacterProfile extends Table {
 		
 		pack();//Pack before adding delete button so it is hidden
 		
-		deleteButton = new TextButton("Delete", getSkin());
+		deleteButton = new TextButton(LM.ui("delete"), getSkin());
 		deleteButton.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
@@ -93,7 +94,7 @@ public class CharacterProfile extends Table {
 	
 	public void showConfirmWindow () {
 		final CharacterProfile charProfile = this;
-		Dialog dialog = new Dialog("Delete Player?", ArchipeloClient.getGame().getUiSkin(), "dialog") {
+		Dialog dialog = new Dialog(LM.ui("deletePlayerTitle"), ArchipeloClient.getGame().getUiSkin(), "dialog") {
 		    public void result(Object obj) {
 		    	boolean delete = (Boolean) obj;
 		    	
@@ -106,15 +107,15 @@ public class CharacterProfile extends Table {
 		    }
 		};
 		
-		Label label = new Label("Deletion is permanent. Are you sure you wish to proceed?", ArchipeloClient.getGame().getUiSkin());
+		Label label = new Label(LM.ui("deletePlayerWarning"), ArchipeloClient.getGame().getUiSkin());
 		label.setWrap(true);
 		label.setAlignment(Align.center);
 		dialog.getContentTable().add(label).width(QuickUi.ERROR_DIALOG_WRAP_WIDTH);
 		
 		QuickUi.addCloseButtonToWindow(dialog);
 		
-		dialog.button("Yes", true);
-		dialog.button("No", false);
+		dialog.button(LM.ui("yes"), true);
+		dialog.button(LM.ui("no"), false);
 		dialog.key(Keys.ENTER, false);
 		dialog.key(Keys.ESCAPE, false);
 		dialog.show(getStage());

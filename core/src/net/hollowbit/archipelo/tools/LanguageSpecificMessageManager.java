@@ -1,6 +1,8 @@
 package net.hollowbit.archipelo.tools;
 
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Json;
@@ -13,30 +15,47 @@ import net.hollowbit.archipeloshared.MessageDatas;
 public class LanguageSpecificMessageManager {
 	
 	//Language, Category, ID
-	private HashMap<Language, HashMap<Category, HashMap<String, String>>> messages;
+	private HashMap<Language, HashMap<Cat, HashMap<String, String>>> messages;
 	
 	@SuppressWarnings("unchecked")
 	public LanguageSpecificMessageManager () {
-		messages = new HashMap<Language, HashMap<Category, HashMap<String, String>>>();
+		messages = new HashMap<Language, HashMap<Cat, HashMap<String, String>>>();
 		
 		Json json = new Json();
 		
 		//Load all messages and put in maps
 		for (Language language : Language.values()) {
-			HashMap<Category, HashMap<String, String>> categories = new HashMap<Category, HashMap<String, String>>();
-			for (Category category : Category.values()) {
-				HashMap<String, String> messages = null;
+			HashMap<Cat, HashMap<String, String>> categories = new HashMap<Cat, HashMap<String, String>>();
+			for (Cat category : Cat.values()) {
+				HashMap<String, String> messages = new HashMap<String, String>();
 				try {
-					messages = ((MessageDatas) json.fromJson(ClassReflection.forName("net.hollowbit.archipeloshared.MessageDatas"), Gdx.files.internal("messages/" + language.getId() + "/" + category.getId() + ".json"))).messages;
+					HashMap<String, String> tempMessages = ((MessageDatas) json.fromJson(ClassReflection.forName("net.hollowbit.archipeloshared.MessageDatas"), Gdx.files.internal("messages/" + language.getId() + "/" + category.getId() + ".json"))).messages;
+					
+					//Loop though map and add them to messages with upper case keys
+					Iterator<Map.Entry<String, String>> it = tempMessages.entrySet().iterator();
+					while (it.hasNext()) {
+						Map.Entry<String, String> pair = (Map.Entry<String, String>) it.next();
+						messages.put(pair.getKey().toUpperCase(), pair.getValue());
+						it.remove();
+					}
 				} catch (ReflectionException e) {}
-				categories.put(category, messages);
+				categories.put(category, messages);//Add messages to category map
 			}
-			messages.put(language, categories);
+			messages.put(language, categories);//Add categories to corresponding language map
 		}
 	}
 	
-	public String getMessage (Category category, String id) {
-		return messages.get(ArchipeloClient.getGame().getPrefs().getChosenLanguage()).get(category).get(id);
+	/**
+	 * Get a message from a specified category using the chosen language. Returns error string if key not found.
+	 * @param category
+	 * @param id Case insensitive
+	 * @return
+	 */
+	public String getMessage (Cat category, String id) {
+		if (messages.get(ArchipeloClient.getGame().getPrefs().getChosenLanguage()).get(category).containsKey(id.toUpperCase()))
+			return messages.get(ArchipeloClient.getGame().getPrefs().getChosenLanguage()).get(category).get(id.toUpperCase());//Uses toUpperCase to make it case insensitivity
+		else
+			return "KEY NOT FOUND!";
 	}
 	
 	public enum Language {
@@ -60,12 +79,13 @@ public class LanguageSpecificMessageManager {
 		
 	}
 	
-	public enum Category {
-		UI("ui");
+	public enum Cat {
+		UI("ui"),
+		ERROR("error");
 		
 		private String id;
 		
-		private Category (String id) {
+		private Cat (String id) {
 			this.id = id;
 		}
 		

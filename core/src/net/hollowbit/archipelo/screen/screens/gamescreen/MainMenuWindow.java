@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import net.hollowbit.archipelo.ArchipeloClient;
 import net.hollowbit.archipelo.network.packets.LogoutPacket;
 import net.hollowbit.archipelo.screen.screens.GameScreen;
+import net.hollowbit.archipelo.tools.LM;
 
 public class MainMenuWindow extends Window {
 	
@@ -19,18 +20,18 @@ public class MainMenuWindow extends Window {
 	TextButton returnBtn;
 	
 	public MainMenuWindow (GameScreen screen, Stage stage) {
-		super("Main Menu", ArchipeloClient.getGame().getUiSkin());
+		super(LM.ui("mainMenu"), ArchipeloClient.getGame().getUiSkin());
 		this.screen = screen;
 		this.setStage(stage);
 		this.setBounds(0, 0, 350, 200);
 		this.setMovable(false);
 		
-		logoutBtn = new TextButton("Logout", getSkin());
+		logoutBtn = new TextButton(LM.ui("logout"), getSkin());
 		logoutBtn.addListener(new ClickListener() {
 			
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
-				ArchipeloClient.getGame().getNetworkManager().sendPacket(new LogoutPacket());//Will receive a logout packet in responce and then go to menu
+				ArchipeloClient.getGame().getNetworkManager().sendPacket(new LogoutPacket());//Will receive a logout packet in response and then go to menu
 				super.clicked(event, x, y);
 			}
 			
@@ -38,7 +39,7 @@ public class MainMenuWindow extends Window {
 		add(logoutBtn);
 		row();
 		
-		returnBtn = new TextButton("Return to Game", getSkin());
+		returnBtn = new TextButton(LM.ui("returnToGame"), getSkin());
 		returnBtn.addListener(new ClickListener() {
 			
 			@Override

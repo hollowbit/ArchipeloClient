@@ -15,6 +15,7 @@ import com.badlogic.gdx.utils.Align;
 
 import net.hollowbit.archipelo.ArchipeloClient;
 import net.hollowbit.archipelo.tools.ControlsManager;
+import net.hollowbit.archipelo.tools.LM;
 import net.hollowbit.archipelo.tools.QuickUi;
 import net.hollowbit.archipelo.tools.QuickUi.TextFieldMessageListener;
 
@@ -32,7 +33,7 @@ public class ChatWindow extends Window implements ChatListener {
 	float heightOfMessages = 0;
 	
 	public ChatWindow (final ChatManager chatManager, Stage stage, ControlsManager controlsManager) {
-		super("Chat", ArchipeloClient.getGame().getUiSkin());
+		super(LM.ui("chat"), ArchipeloClient.getGame().getUiSkin());
 		this.chatManager = chatManager;
 		this.setStage(stage);
 		
@@ -48,7 +49,7 @@ public class ChatWindow extends Window implements ChatListener {
 		
 		chatTextField = new TextField("", getSkin());
 		chatTextField.setMaxLength(140);//Like Twitter!
-		QuickUi.makeTextFieldMobileCompatible("Chat", chatTextField, getStage(), new TextFieldMessageListener() {
+		QuickUi.makeTextFieldMobileCompatible(LM.ui("chat"), chatTextField, getStage(), new TextFieldMessageListener() {
 			
 			@Override
 			public void messageReceived (String message, boolean isEmpty) {
@@ -63,7 +64,7 @@ public class ChatWindow extends Window implements ChatListener {
 		if (!ArchipeloClient.IS_MOBILE)//If not on mobile, set focus to chat text field
 			stage.setKeyboardFocus(chatTextField);
 		
-		sendButton = new TextButton("Send", getSkin());
+		sendButton = new TextButton(LM.ui("send"), getSkin());
 		sendButton.addListener(new ClickListener () {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {

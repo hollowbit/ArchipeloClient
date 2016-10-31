@@ -15,6 +15,8 @@ import net.hollowbit.archipelo.ArchipeloClient;
 import net.hollowbit.archipelo.screen.Screen;
 import net.hollowbit.archipelo.screen.ScreenType;
 import net.hollowbit.archipelo.screen.screens.mainmenu.ScrollingBackground;
+import net.hollowbit.archipelo.tools.LM;
+import net.hollowbit.archipelo.tools.LanguageSpecificMessageManager.Cat;
 import net.hollowbit.archipelo.tools.FontManager.Fonts;
 import net.hollowbit.archipelo.tools.FontManager.Sizes;
 
@@ -78,7 +80,7 @@ public class ErrorScreen extends Screen {
 
 	@Override
 	public void renderUi(SpriteBatch batch, float width, float height) {
-		GlyphLayout layoutTitle = new GlyphLayout(ArchipeloClient.getGame().getFontManager().getFont(Fonts.PIXELATED, Sizes.MEDIUM), "Error: " + title, Color.WHITE, width - 20, Align.left, true);
+		GlyphLayout layoutTitle = new GlyphLayout(ArchipeloClient.getGame().getFontManager().getFont(Fonts.PIXELATED, Sizes.MEDIUM), LM.getMsg(Cat.UI, "error") + ": " + title, Color.WHITE, width - 20, Align.left, true);
 		ArchipeloClient.getGame().getFontManager().getFont(Fonts.PIXELATED, Sizes.MEDIUM).draw(batch, layoutTitle, width / 2 - layoutTitle.width / 2, height - 50);
 		
 		BitmapFont fontSmall = ArchipeloClient.getGame().getFontManager().getFont(Fonts.PIXELATED, Sizes.SMALL);
@@ -86,7 +88,7 @@ public class ErrorScreen extends Screen {
 			GlyphLayout layoutErrorTitle = new GlyphLayout(ArchipeloClient.getGame().getFontManager().getFont(Fonts.PIXELATED, Sizes.SMALL), e.getMessage(), Color.RED, width - 100, Align.left, true);
 			ArchipeloClient.getGame().getFontManager().getFont(Fonts.PIXELATED, Sizes.SMALL).draw(batch, layoutErrorTitle, width / 2 - layoutErrorTitle.width / 2, height - layoutTitle.height - 60);
 			
-			GlyphLayout layoutDev = new GlyphLayout(ArchipeloClient.getGame().getFontManager().getFont(Fonts.PIXELATED, Sizes.SMALL), "Error has been sent to the developers.");
+			GlyphLayout layoutDev = new GlyphLayout(ArchipeloClient.getGame().getFontManager().getFont(Fonts.PIXELATED, Sizes.SMALL), LM.getMsg(Cat.UI, "errorSent"));
 			ArchipeloClient.getGame().getFontManager().getFont(Fonts.PIXELATED, Sizes.SMALL).draw(batch, layoutDev, width / 2 - layoutDev.width / 2, 60);
 			
 			//Put exception on screen
@@ -96,7 +98,7 @@ public class ErrorScreen extends Screen {
 			//Send exception to us :P*/
 		}
 		if (!ArchipeloClient.IS_GWT) {
-			GlyphLayout layoutExit = new GlyphLayout(fontSmall, (ArchipeloClient.IS_MOBILE ? "Tap to exit" : "Press ESC to exit"));
+			GlyphLayout layoutExit = new GlyphLayout(fontSmall, (ArchipeloClient.IS_MOBILE ? LM.getMsg(Cat.UI, "tapExit") : LM.getMsg(Cat.UI, "pressEscExit")));
 			fontSmall.draw(batch, layoutExit, width / 2 - layoutExit.width / 2, 20 + layoutExit.height);
 		}
 	}

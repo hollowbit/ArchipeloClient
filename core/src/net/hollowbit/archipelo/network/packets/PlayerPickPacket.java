@@ -10,11 +10,10 @@ public class PlayerPickPacket extends Packet {
 	
 	public static final int RESULT_SUCCESSFUL = 0;
 	public static final int RESULT_NAME_ALREADY_TAKEN = 1;
-	public static final int RESULT_PLAYER_BELONGS_TO_ANOTHER_HBU = 2;
-	public static final int RESULT_INVALID_USERNAME = 3;
-	public static final int RESULT_ALREADY_LOGGED_IN = 4;
-	public static final int RESULT_NO_PLAYER_WITH_NAME = 5;
-	public static final int RESULT_TOO_MANY_CHARACTERS = 6;
+	public static final int RESULT_INVALID_USERNAME = 2;
+	public static final int RESULT_ALREADY_LOGGED_IN = 3;
+	public static final int RESULT_NO_PLAYER_WITH_NAME = 4;
+	public static final int RESULT_TOO_MANY_CHARACTERS = 5;
 	
 	public static final ItemType[] HAIR_STYLES = {ItemType.HAIR1};
 	public static final ItemType[] FACE_STYLES = {ItemType.FACE1};

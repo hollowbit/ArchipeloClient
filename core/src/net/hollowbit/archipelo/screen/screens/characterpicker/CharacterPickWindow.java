@@ -11,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import net.hollowbit.archipelo.ArchipeloClient;
 import net.hollowbit.archipelo.network.packets.PlayerListPacket;
 import net.hollowbit.archipelo.screen.screens.CharacterCreatorScreen;
+import net.hollowbit.archipelo.tools.LM;
 
 public class CharacterPickWindow extends Window {
 	
@@ -44,7 +45,7 @@ public class CharacterPickWindow extends Window {
 		
 		//If user has another character slot available, add button to create a new one
 		if (playerListPacket.names.length < ArchipeloClient.MAX_CHARACTERS_PER_PLAYER) {
-			TextButton createNewButton = new TextButton("Create new...", ArchipeloClient.getGame().getUiSkin());
+			TextButton createNewButton = new TextButton(LM.ui("createNew"), ArchipeloClient.getGame().getUiSkin());
 			createNewButton.addListener(new ClickListener() {
 				@Override
 				public void clicked(InputEvent event, float x, float y) {

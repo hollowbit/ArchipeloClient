@@ -32,6 +32,8 @@ import net.hollowbit.archipelo.screen.screens.mainmenu.ScrollingBackground;
 import net.hollowbit.archipelo.screen.screens.mainmenu.ServerPickerWindow;
 import net.hollowbit.archipelo.tools.FontManager.Fonts;
 import net.hollowbit.archipelo.tools.FontManager.Sizes;
+import net.hollowbit.archipelo.tools.LanguageSpecificMessageManager.Cat;
+import net.hollowbit.archipelo.tools.LM;
 import net.hollowbit.archipelo.tools.Prefs;
 import net.hollowbit.archipelo.tools.QuickUi;
 
@@ -81,7 +83,7 @@ public class MainMenuScreen extends Screen {
 		logo = ArchipeloClient.getGame().getAssetManager().getTexture("logo");
 		scrollingBackground  = new ScrollingBackground();
 		
-		pressAnyGlyphLayout = new GlyphLayout(ArchipeloClient.getGame().getFontManager().getFont(Fonts.PIXELATED, Sizes.MEDIUM), ArchipeloClient.IS_MOBILE ? "Tap to Start!" : "Press Any Key!");
+		pressAnyGlyphLayout = new GlyphLayout(ArchipeloClient.getGame().getFontManager().getFont(Fonts.PIXELATED, Sizes.MEDIUM), ArchipeloClient.IS_MOBILE ? LM.getMsg(Cat.UI, "tapStart") : LM.getMsg(Cat.UI, "pressAnyStart"));
 		flashOn = true;
 		InputMultiplexer inputMultiplexer = new InputMultiplexer(stage, new InputAdapter() {
 			
@@ -219,7 +221,7 @@ public class MainMenuScreen extends Screen {
 			font.draw(batch, layoutFPS, 10, height - layoutFPS.height);
 		}
 		
-		GlyphLayout layoutCon = new GlyphLayout(font, "Connection (" + prefs.getServerName() + "): " + (ArchipeloClient.getGame().getNetworkManager().isConnected() ? "[GREEN]Connected!" : "[RED]Not Connected."));
+		GlyphLayout layoutCon = new GlyphLayout(font, LM.getMsg(Cat.UI, "connected") + " (" + prefs.getServerName() + "): " + (ArchipeloClient.getGame().getNetworkManager().isConnected() ? "[GREEN]" + LM.getMsg(Cat.UI, "connected") : "[RED]" + LM.getMsg(Cat.UI, "notConnected")));
 		font.draw(batch, layoutCon, 4, 4 + layoutCon.height);
 		
 		if (flashOn && progression == 0)//Render flashing "Press Start" text
@@ -266,7 +268,7 @@ public class MainMenuScreen extends Screen {
 		progression = 3;
 		
 		//Load ui for main menu
-		playBtn = new TextButton("Play", ArchipeloClient.getGame().getUiSkin());
+		playBtn = new TextButton(LM.getMsg(Cat.UI, "play"), ArchipeloClient.getGame().getUiSkin());
 		playBtn.addListener(new ClickListener() {
 			
 			@Override
@@ -281,10 +283,10 @@ public class MainMenuScreen extends Screen {
 							//Handle packet results
 							switch (loginPacket.result) {
 							case LoginPacket.RESULT_BAD_VERSION:
-								QuickUi.showErrorWindow("Please Update!", "Your client version does not match the server's version (" + loginPacket.version + "). Please update!", stage);
+								QuickUi.showErrorWindow(LM.getMsg(Cat.ERROR, "outOfDateTitle"), LM.getMsg(Cat.ERROR, "outOfDate") + "(" + loginPacket.version + ")", stage);
 								break;
 							case LoginPacket.RESULT_LOGIN_ERROR:
-								QuickUi.showErrorWindow("Incorrect Login", "Login error occured. Logout and log back in again please.", stage);
+								QuickUi.showErrorWindow(LM.getMsg(Cat.ERROR, "loginHBInvalidTitle"), LM.getMsg(Cat.ERROR, "loginHBInvalid"), stage);
 								break;
 							case LoginPacket.RESULT_LOGIN_SUCCESSFUL:
 								ArchipeloClient.getGame().getScreenManager().setScreen(new CharacterPickerScreen());
@@ -304,10 +306,10 @@ public class MainMenuScreen extends Screen {
 						//Connected and logged in, so send packet
 						ArchipeloClient.getGame().getNetworkManager().sendPacket(new LoginPacket(prefs.getEmail(), prefs.getPassword()));
 					} else {
-						QuickUi.showErrorWindow("Not Connected", "Please connect to a server before joining the game.", stage);
+						QuickUi.showErrorWindow(LM.getMsg(Cat.UI, "notConnected"), LM.getMsg(Cat.ERROR, "notConnected"), stage);
 					}
 				} else {
-					QuickUi.showErrorWindow("Not Logged In", "Please login before joining the game.", stage);
+					QuickUi.showErrorWindow(LM.getMsg(Cat.ERROR, "loginNotSetTitle"), LM.getMsg(Cat.ERROR, "loginNotSet"), stage);
 				}
 					
 				super.clicked(event, x, y);
@@ -317,7 +319,7 @@ public class MainMenuScreen extends Screen {
 		playBtn.setPosition(Gdx.graphics.getWidth() / 2 - playBtn.getWidth() / 2, Gdx.graphics.getHeight() / 2 - playBtn.getHeight() / 2 + 20);
 		stage.addActor(playBtn);
 		
-		changeServerBtn = new TextButton("Change Server", ArchipeloClient.getGame().getUiSkin());
+		changeServerBtn = new TextButton(LM.getMsg(Cat.UI, "changeServer"), ArchipeloClient.getGame().getUiSkin());
 		changeServerBtn.addListener(new ClickListener() {
 			
 			@Override
@@ -337,7 +339,7 @@ public class MainMenuScreen extends Screen {
 		
 		final MainMenuScreen mainMenuScreen = this;
 		
-		logoutBtn = new TextButton("Logout", ArchipeloClient.getGame().getUiSkin());
+		logoutBtn = new TextButton(LM.getMsg(Cat.UI, "logout"), ArchipeloClient.getGame().getUiSkin());
 		logoutBtn.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
@@ -358,7 +360,7 @@ public class MainMenuScreen extends Screen {
 		stage.addActor(logoutBtn);
 		
 		if (!ArchipeloClient.IS_GWT) {
-			exitBtn = new TextButton("Exit", ArchipeloClient.getGame().getUiSkin());
+			exitBtn = new TextButton(LM.getMsg(Cat.UI, "exit"), ArchipeloClient.getGame().getUiSkin());
 			exitBtn.addListener(new ClickListener() {
 				
 				@Override
@@ -374,16 +376,16 @@ public class MainMenuScreen extends Screen {
 	}
 	
 	private void showDisclaimerWindow () {
-		final Dialog dialog = new Dialog("Disclaimer", ArchipeloClient.getGame().getUiSkin(), "dialog") {
+		final Dialog dialog = new Dialog(LM.getMsg(Cat.UI, "disclaimerTitle"), ArchipeloClient.getGame().getUiSkin(), "dialog") {
 		    public void result(Object obj) {
 		        remove();
 		    }
 		};
-		Label label = new Label("Please note that Archipelo is very early in development. Please judge it accordingly. Also note that server-wide account deletion is a possibility during this development stage. Thank you.", ArchipeloClient.getGame().getUiSkin());
+		Label label = new Label(LM.getMsg(Cat.UI, "disclaimer"), ArchipeloClient.getGame().getUiSkin());
 		label.setWrap(true);
 		dialog.add(label).width(500);
 		dialog.row();
-		TextButton closeButton = new TextButton("Okay", ArchipeloClient.getGame().getUiSkin());
+		TextButton closeButton = new TextButton(LM.getMsg(Cat.UI, "okay"), ArchipeloClient.getGame().getUiSkin());
 		closeButton.addListener(new ClickListener(){
 			@Override
 			public void clicked(InputEvent event, float x, float y) {

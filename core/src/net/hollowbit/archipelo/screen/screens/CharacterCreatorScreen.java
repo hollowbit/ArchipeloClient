@@ -28,6 +28,8 @@ import net.hollowbit.archipelo.screen.screens.mainmenu.CharacterDisplay;
 import net.hollowbit.archipelo.screen.screens.mainmenu.ScrollingBackground;
 import net.hollowbit.archipelo.screen.screens.playercreator.ColorPickListener;
 import net.hollowbit.archipelo.screen.screens.playercreator.ColorPicker;
+import net.hollowbit.archipelo.tools.LM;
+import net.hollowbit.archipelo.tools.LanguageSpecificMessageManager.Cat;
 import net.hollowbit.archipelo.tools.QuickUi;
 import net.hollowbit.archipelo.tools.QuickUi.IconType;
 import net.hollowbit.archipeloshared.Direction;
@@ -131,7 +133,7 @@ public class CharacterCreatorScreen extends Screen implements PacketHandler {
 				if (colorPickerWindow != null)//If a color picker window is already open, don't opena  new one
 					return;
 				
-				ColorPicker colorPicker = new ColorPicker("Hair", hairColor, HAIR_COLORS, new ColorPickListener() {
+				ColorPicker colorPicker = new ColorPicker(LM.getMsg(Cat.UI, "hair"), hairColor, HAIR_COLORS, new ColorPickListener() {
 					@Override
 					public void colorPicked(int indexOfColor) {
 						hairColor = indexOfColor;
@@ -186,7 +188,7 @@ public class CharacterCreatorScreen extends Screen implements PacketHandler {
 				if (colorPickerWindow != null)//If a color picker window is already open, don't opena  new one
 					return;
 				
-				ColorPicker colorPicker = new ColorPicker("Eye", eyeColor, EYE_COLORS, new ColorPickListener() {
+				ColorPicker colorPicker = new ColorPicker(LM.getMsg(Cat.UI, "eye"), eyeColor, EYE_COLORS, new ColorPickListener() {
 					@Override
 					public void colorPicked(int indexOfColor) {
 						eyeColor = indexOfColor;
@@ -225,7 +227,7 @@ public class CharacterCreatorScreen extends Screen implements PacketHandler {
 				if (colorPickerWindow != null)//If a color picker window is already open, don't opena  new one
 					return;
 				
-				ColorPicker colorPicker = new ColorPicker("Skin", bodyColor, BODY_COLORS, new ColorPickListener() {
+				ColorPicker colorPicker = new ColorPicker(LM.getMsg(Cat.UI, "skin"), bodyColor, BODY_COLORS, new ColorPickListener() {
 					@Override
 					public void colorPicked(int indexOfColor) {
 						bodyColor = indexOfColor;
@@ -288,16 +290,16 @@ public class CharacterCreatorScreen extends Screen implements PacketHandler {
 		stage.addActor(pantsColorButton);
 		
 		//Finish
-		finishButton = new TextButton("Play Game!", ArchipeloClient.getGame().getUiSkin(), "large");
+		finishButton = new TextButton(LM.getMsg(Cat.UI, "playGame"), ArchipeloClient.getGame().getUiSkin(), "large");
 		finishButton.setBounds(0, 0, 300, 60);
 		finishButton.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				if (nameTextField.getText().equals("")) {
-					QuickUi.showErrorWindow("Name Empty", "Please enter a name.", stage);
+					QuickUi.showErrorWindow(LM.getMsg(Cat.ERROR, "nameEmptyTitle"), LM.getMsg(Cat.UI, "nameEmpty"), stage);
 					return;
 				} else if (!StringValidator.isStringValid(nameTextField.getText(), StringValidator.USERNAME, StringValidator.MAX_USERNAME_LENGTH)) {
-					QuickUi.showErrorWindow("Invalid Username", "Please only use a-zA-Z0-9 and _ for names. Max Length: 20", stage);
+					QuickUi.showErrorWindow(LM.getMsg(Cat.ERROR, "nameInvalidTitle"), LM.getMsg(Cat.UI, "nameInvalid"), stage);
 				}
 				
 				new PlayerPickPacket(nameTextField.getText(), selectedHair, selectedFace, hairColor, eyeColor, bodyColor).send();
@@ -447,13 +449,13 @@ public class CharacterCreatorScreen extends Screen implements PacketHandler {
 			//Handle packet result
 			switch(playerPickPacket.result) {
 			case PlayerPickPacket.RESULT_NAME_ALREADY_TAKEN:
-				QuickUi.showErrorWindow("Name Taken", "Name already taken. Sorry.", stage);
+				QuickUi.showErrorWindow(LM.getMsg(Cat.ERROR, "nameTakenTitle"), LM.getMsg(Cat.ERROR, "nameTaken"), stage);
 				break;
 			case PlayerPickPacket.RESULT_INVALID_USERNAME:
-				QuickUi.showErrorWindow("Invalid Username", "Please only use a-zA-Z0-9 and _ for names.", stage);
+				QuickUi.showErrorWindow(LM.getMsg(Cat.ERROR, "nameInvalidTitle"), LM.getMsg(Cat.ERROR, "nameInvalid"), stage);
 				break;
 			case PlayerPickPacket.RESULT_TOO_MANY_CHARACTERS:
-				QuickUi.showErrorWindow("Too Many Character", "You should not be in this menu. You have too many characters.", stage);
+				QuickUi.showErrorWindow(LM.getMsg(Cat.ERROR, "playerTooManyTitle"), LM.getMsg(Cat.ERROR, "playerTooMany"), stage);
 				break;
 			case PlayerPickPacket.RESULT_SUCCESSFUL:
 				ArchipeloClient.getGame().getScreenManager().setScreen(new GameScreen(playerPickPacket.name));

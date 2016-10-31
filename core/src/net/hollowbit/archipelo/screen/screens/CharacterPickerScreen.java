@@ -17,7 +17,9 @@ import net.hollowbit.archipelo.screen.Screen;
 import net.hollowbit.archipelo.screen.ScreenType;
 import net.hollowbit.archipelo.screen.screens.characterpicker.CharacterPickWindow;
 import net.hollowbit.archipelo.screen.screens.mainmenu.ScrollingBackground;
+import net.hollowbit.archipelo.tools.LM;
 import net.hollowbit.archipelo.tools.QuickUi;
+import net.hollowbit.archipelo.tools.LanguageSpecificMessageManager.Cat;
 import net.hollowbit.archipelo.tools.QuickUi.IconType;
 
 public class CharacterPickerScreen extends Screen implements PacketHandler {
@@ -94,7 +96,7 @@ public class CharacterPickerScreen extends Screen implements PacketHandler {
 			PlayerListPacket playerListPacket = (PlayerListPacket) packet;
 			switch (playerListPacket.result) {
 			case PlayerListPacket.RESULT_INVALID_LOGIN://If request was invalid, show error
-				QuickUi.showErrorWindow("Invalid Login", "Login was invalid. Only pick characters belonging to your account.", stage);
+				QuickUi.showErrorWindow(LM.getMsg(Cat.ERROR, "loginInvalidTitle"), LM.getMsg(Cat.ERROR, "loginInvalid"), stage);
 				break;
 			case PlayerListPacket.RESULT_SUCCESSFUL:
 				characterPickWindow.reloadList(playerListPacket);
@@ -105,13 +107,10 @@ public class CharacterPickerScreen extends Screen implements PacketHandler {
 			PlayerPickPacket playerPickPacket = (PlayerPickPacket) packet;
 			switch (playerPickPacket.result) {
 			case PlayerPickPacket.RESULT_ALREADY_LOGGED_IN:
-				QuickUi.showErrorWindow("Character Taken", "This character is already logged in.", stage);
+				QuickUi.showErrorWindow(LM.getMsg(Cat.ERROR, "loginAlreadyTitle"), LM.getMsg(Cat.ERROR, "loginAlready"), stage);
 				break;
 			case PlayerPickPacket.RESULT_NO_PLAYER_WITH_NAME:
-				QuickUi.showErrorWindow("Character Not Found", "No character with this name was found.", stage);
-				break;
-			case PlayerPickPacket.RESULT_PLAYER_BELONGS_TO_ANOTHER_HBU:
-				QuickUi.showErrorWindow("Wrong Login", "This character belongs to another user, not you!", stage);
+				QuickUi.showErrorWindow(LM.getMsg(Cat.ERROR, "playerNotFoundTitle"), LM.getMsg(Cat.ERROR, "playerNotFound"), stage);
 				break;
 			case PlayerPickPacket.RESULT_SUCCESSFUL:
 				ArchipeloClient.getGame().getScreenManager().setScreen(new GameScreen(playerPickPacket.name));

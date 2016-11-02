@@ -1,5 +1,6 @@
 package net.hollowbit.archipelo.tools;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -10,38 +11,47 @@ import com.badlogic.gdx.utils.reflect.ClassReflection;
 import com.badlogic.gdx.utils.reflect.ReflectionException;
 
 import net.hollowbit.archipelo.ArchipeloClient;
+import net.hollowbit.archipelo.screen.screens.ErrorScreen;
 import net.hollowbit.archipeloshared.MessageDatas;
 
 public class LanguageSpecificMessageManager {
 	
 	//Language, Category, ID
-	private HashMap<Language, HashMap<Cat, HashMap<String, String>>> messages;
+	private HashMap<Cat, HashMap<String, String>> messages;
+	private HashMap<String, NpcDialog> npcDialogs;
 	
 	@SuppressWarnings("unchecked")
-	public LanguageSpecificMessageManager () {
-		messages = new HashMap<Language, HashMap<Cat, HashMap<String, String>>>();
-		
+	public void reloadWithNewLanguage() {
+		messages = new HashMap<Cat, HashMap<String, String>>();
 		Json json = new Json();
 		
 		//Load all messages and put in maps
-		for (Language language : Language.values()) {
-			HashMap<Cat, HashMap<String, String>> categories = new HashMap<Cat, HashMap<String, String>>();
-			for (Cat category : Cat.values()) {
-				HashMap<String, String> messages = new HashMap<String, String>();
-				try {
-					HashMap<String, String> tempMessages = ((MessageDatas) json.fromJson(ClassReflection.forName("net.hollowbit.archipeloshared.MessageDatas"), Gdx.files.internal("languages/" + language.getId() + "/" + category.getId() + ".json"))).messages;
-					
-					//Loop though map and add them to messages with upper case keys
-					Iterator<Map.Entry<String, String>> it = tempMessages.entrySet().iterator();
-					while (it.hasNext()) {
-						Map.Entry<String, String> pair = (Map.Entry<String, String>) it.next();
-						messages.put(pair.getKey().toUpperCase(), pair.getValue());
-						it.remove();
-					}
-				} catch (ReflectionException e) {}
-				categories.put(category, messages);//Add messages to category map
+		for (Cat category : Cat.values()) {
+			HashMap<String, String> catMessages = new HashMap<String, String>();
+			try {
+				HashMap<String, String> tempMessages = ((MessageDatas) json.fromJson(ClassReflection.forName("net.hollowbit.archipeloshared.MessageDatas"), Gdx.files.internal("languages/" + ArchipeloClient.getGame().getPrefs().getChosenLanguage().getId() + "/" + category.getId() + ".json"))).messages;
+				
+				//Loop though map and add them to messages with upper case keys
+				Iterator<Map.Entry<String, String>> it = tempMessages.entrySet().iterator();
+				while (it.hasNext()) {
+					Map.Entry<String, String> pair = (Map.Entry<String, String>) it.next();
+					catMessages.put(pair.getKey().toUpperCase(), pair.getValue());
+					it.remove();
+				}
+			} catch (ReflectionException e) {
+				ArchipeloClient.getGame().getScreenManager().setScreen(new ErrorScreen("Unable to load NPC Dialogs", e));
 			}
-			messages.put(language, categories);//Add categories to corresponding language map
+			messages.put(category, catMessages);//Add messages to category map
+		}
+		
+		//Load Npc dialogs
+		try {
+			for (String dialogName : ((NpcDialogsList) json.fromJson(ClassReflection.forName("net.hollowbit.tools.LanguageSpecificMessageManager.NpcDialogsList"), Gdx.files.internal("languages/npc_dialogs_list.json"))).npcDialogs) {
+				for (NpcDialog dialog : ((NpcDialogs) json.fromJson(ClassReflection.forName("net.hollowbit.tools.LanguageSpecificMessageManager.NpcDialogs"), Gdx.files.internal("languages/npc_dialogs/" + dialogName + ".json"))).dialogs)
+					npcDialogs.put(dialog.id, dialog);
+			}
+		} catch (ReflectionException e) {
+			ArchipeloClient.getGame().getScreenManager().setScreen(new ErrorScreen("Unable to load NPC Dialogs", e));
 		}
 	}
 	
@@ -52,10 +62,39 @@ public class LanguageSpecificMessageManager {
 	 * @return
 	 */
 	public String getMessage (Cat category, String id) {
-		if (messages.get(ArchipeloClient.getGame().getPrefs().getChosenLanguage()).get(category).containsKey(id.toUpperCase()))
-			return messages.get(ArchipeloClient.getGame().getPrefs().getChosenLanguage()).get(category).get(id.toUpperCase());//Uses toUpperCase to make it case insensitivity
+		if (messages.get(category).containsKey(id.toUpperCase()))
+			return messages.get(category).get(id.toUpperCase());//Uses toUpperCase to make it case insensitivity
 		else
 			return "KEY NOT FOUND!";
+	}
+	
+	/**
+	 * Gets an NPC dialog by id
+	 * @param id
+	 * @return
+	 */
+	public NpcDialog getNpcDialogById (String id) {
+		if (npcDialogs.containsKey(id))
+			return npcDialogs.get(id);
+		else
+			return new NpcDialog();
+	}
+	
+	public class NpcDialog {
+		//Npc dialog with some default messages
+		public String id = "";
+		public String name = "?";//Npc's name
+		public String message = "!?!!?";
+		public ArrayList<String> choices;
+		public boolean interruptable = false;
+	}
+	
+	public class NpcDialogs {
+		public ArrayList<NpcDialog> dialogs;
+	}
+	
+	public class NpcDialogsList {
+		public ArrayList<String> npcDialogs;
 	}
 	
 	public enum Language {

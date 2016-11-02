@@ -117,6 +117,7 @@ public class ArchipeloClient extends ApplicationAdapter {
 		fontManager = new FontManager();
 		screenManager = new ScreenManager();
 		languageSpecificMessageManager = new LanguageSpecificMessageManager();
+		languageSpecificMessageManager.reloadWithNewLanguage();
 		hollowBitServerConnectivity = new HollowBitServerConnectivity();
 		
 		if (hollowBitServerConnectivity.connect())

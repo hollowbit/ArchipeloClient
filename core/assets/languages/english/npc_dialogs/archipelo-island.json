@@ -1,0 +1,7 @@
+{dialogs:[
+
+{id:"sign1Start", name:"Welcome", message:"Welcome to Archipelo!"},
+{id:"sign1End", name:"Welcome", message:"Please enjoy your stay! There isn't much in the game yet but soon there will be :)."},
+{id:"sign1StopIt", name:"Welcome", message:"What do you want from me? You already saw what I had to say.",}
+
+]}

@@ -46,8 +46,8 @@ public class LanguageSpecificMessageManager {
 		
 		//Load Npc dialogs
 		try {
-			for (String dialogName : ((NpcDialogsList) json.fromJson(ClassReflection.forName("net.hollowbit.tools.LanguageSpecificMessageManager.NpcDialogsList"), Gdx.files.internal("languages/npc_dialogs_list.json"))).npcDialogs) {
-				for (NpcDialog dialog : ((NpcDialogs) json.fromJson(ClassReflection.forName("net.hollowbit.tools.LanguageSpecificMessageManager.NpcDialogs"), Gdx.files.internal("languages/npc_dialogs/" + dialogName + ".json"))).dialogs)
+			for (String dialogName : ((NpcDialogsList) json.fromJson(ClassReflection.forName("net.hollowbit.tools.LanguageSpecificMessageManager.NpcDialogsList"), Gdx.files.internal("npc_dialogs_list.json"))).npcDialogs) {
+				for (NpcDialog dialog : ((NpcDialogs) json.fromJson(ClassReflection.forName("net.hollowbit.tools.LanguageSpecificMessageManager.NpcDialogs"), Gdx.files.internal("languages/" + ArchipeloClient.getGame().getPrefs().getChosenLanguage().getId() + "/npc_dialogs/" + dialogName + ".json"))).dialogs)
 					npcDialogs.put(dialog.id, dialog);
 			}
 		} catch (ReflectionException e) {
@@ -86,7 +86,7 @@ public class LanguageSpecificMessageManager {
 		public String name = "?";//Npc's name
 		public String message = "!?!!?";
 		public ArrayList<String> choices;
-		public boolean interruptable = false;
+		public boolean interruptable = true;
 	}
 	
 	public class NpcDialogs {

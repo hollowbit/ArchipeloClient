@@ -8,7 +8,6 @@ import net.hollowbit.archipelo.network.PacketType;
 public class NpcDialogPacket extends Packet {
 
 	public String messageId;
-	public ArrayList<String> choices;
 	public ArrayList<String> links;
 	
 	public String name;

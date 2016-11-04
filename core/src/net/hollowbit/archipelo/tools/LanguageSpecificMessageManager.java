@@ -1,6 +1,5 @@
 package net.hollowbit.archipelo.tools;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -12,6 +11,9 @@ import com.badlogic.gdx.utils.reflect.ReflectionException;
 
 import net.hollowbit.archipelo.ArchipeloClient;
 import net.hollowbit.archipelo.screen.screens.ErrorScreen;
+import net.hollowbit.archipelo.tools.npcdialogs.NpcDialog;
+import net.hollowbit.archipelo.tools.npcdialogs.NpcDialogs;
+import net.hollowbit.archipelo.tools.npcdialogs.NpcDialogsList;
 import net.hollowbit.archipeloshared.MessageDatas;
 
 public class LanguageSpecificMessageManager {
@@ -45,10 +47,11 @@ public class LanguageSpecificMessageManager {
 		}
 		
 		//Load Npc dialogs
+		npcDialogs = new HashMap<String, NpcDialog>();
 		try {
-			for (String dialogName : ((NpcDialogsList) json.fromJson(ClassReflection.forName("net.hollowbit.tools.LanguageSpecificMessageManager.NpcDialogsList"), Gdx.files.internal("npc_dialogs_list.json"))).npcDialogs) {
-				for (NpcDialog dialog : ((NpcDialogs) json.fromJson(ClassReflection.forName("net.hollowbit.tools.LanguageSpecificMessageManager.NpcDialogs"), Gdx.files.internal("languages/" + ArchipeloClient.getGame().getPrefs().getChosenLanguage().getId() + "/npc_dialogs/" + dialogName + ".json"))).dialogs)
-					npcDialogs.put(dialog.id, dialog);
+			for (String dialogName : ((NpcDialogsList) json.fromJson(ClassReflection.forName("net.hollowbit.archipelo.tools.npcdialogs.NpcDialogsList"), Gdx.files.internal("npc_dialogs_list.json"))).npcDialogs) {
+				for (NpcDialog dialog : ((NpcDialogs) json.fromJson(ClassReflection.forName("net.hollowbit.archipelo.tools.npcdialogs.NpcDialogs"), Gdx.files.internal("languages/" + ArchipeloClient.getGame().getPrefs().getChosenLanguage().getId() + "/npc_dialogs/" + dialogName + ".json"))).dialogs)
+					npcDialogs.put(dialog.id.toUpperCase(), dialog);
 			}
 		} catch (ReflectionException e) {
 			ArchipeloClient.getGame().getScreenManager().setScreen(new ErrorScreen("Unable to load NPC Dialogs", e));
@@ -74,27 +77,10 @@ public class LanguageSpecificMessageManager {
 	 * @return
 	 */
 	public NpcDialog getNpcDialogById (String id) {
-		if (npcDialogs.containsKey(id))
-			return npcDialogs.get(id);
+		if (npcDialogs.containsKey(id.toUpperCase()))
+			return npcDialogs.get(id.toUpperCase());
 		else
 			return new NpcDialog();
-	}
-	
-	public class NpcDialog {
-		//Npc dialog with some default messages
-		public String id = "";
-		public String name = "?";//Npc's name
-		public String message = "!?!!?";
-		public ArrayList<String> choices;
-		public boolean interruptable = true;
-	}
-	
-	public class NpcDialogs {
-		public ArrayList<NpcDialog> dialogs;
-	}
-	
-	public class NpcDialogsList {
-		public ArrayList<String> npcDialogs;
 	}
 	
 	public enum Language {

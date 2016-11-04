@@ -12,9 +12,8 @@ import com.badlogic.gdx.utils.reflect.ClassReflection;
 import com.badlogic.gdx.utils.reflect.ReflectionException;
 
 import net.hollowbit.archipelo.ArchipeloClient;
-import net.hollowbit.archipelo.entity.lifeless.Door;
-import net.hollowbit.archipelo.entity.lifeless.Teleporter;
-import net.hollowbit.archipelo.entity.living.Player;
+import net.hollowbit.archipelo.entity.lifeless.*;
+import net.hollowbit.archipelo.entity.living.*;
 import net.hollowbit.archipelo.world.Map;
 import net.hollowbit.archipeloshared.CollisionRect;
 import net.hollowbit.archipeloshared.Direction;
@@ -26,14 +25,14 @@ public enum EntityType {
 	
 	PLAYER ("player", Player.class),
 	TELEPORTER ("teleporter", Teleporter.class),
-	DOOR ("door", Door.class);
+	DOOR ("door", Door.class),
+	SIGN ("sign", Sign.class);
 	
 	private String id;
 	private Class entityClass;
 	private HashMap<String, EntityAnimation> animations;
 	private int numberOfStyles;
 	private boolean hittable;
-	private boolean collidable;
 	private float speed;
 	
 	private int imgWidth;
@@ -53,7 +52,6 @@ public enum EntityType {
 		
 		this.numberOfStyles = data.numberOfStyles;
 		this.hittable = data.hittable;
-		this.collidable = data.collidable;
 		this.speed = data.speed;
 		
 		this.imgWidth = data.imgWidth;
@@ -107,10 +105,6 @@ public enum EntityType {
 	
 	public boolean isHittable () {
 		return hittable;
-	}
-	
-	public boolean isCollidable () {
-		return collidable;
 	}
 	
 	public float getSpeed () {

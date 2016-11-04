@@ -72,8 +72,15 @@ public class MainMenuScreen extends Screen {
 	
 	ScrollingBackground scrollingBackground;
 	
+	String error;
+	
 	public MainMenuScreen () {
 		super(ScreenType.MAIN_MENU);
+	}
+	
+	public MainMenuScreen (String error) {
+		this();
+		this.error = error;
 	}
 
 	@Override
@@ -141,6 +148,10 @@ public class MainMenuScreen extends Screen {
 				}
 			});
 		}
+		
+		//If there is an error, show it
+		if (error != null)
+			QuickUi.showErrorWindow("Wait, what?!", error, stage);
 	}
 
 	@Override

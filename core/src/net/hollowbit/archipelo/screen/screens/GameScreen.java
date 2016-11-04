@@ -19,6 +19,8 @@ import net.hollowbit.archipelo.network.PacketHandler;
 import net.hollowbit.archipelo.network.PacketType;
 import net.hollowbit.archipelo.network.packets.ChatMessagePacket;
 import net.hollowbit.archipelo.network.packets.ControlsPacket;
+import net.hollowbit.archipelo.network.packets.LogoutPacket;
+import net.hollowbit.archipelo.network.packets.NpcDialogPacket;
 import net.hollowbit.archipelo.network.packets.PopupTextPacket;
 import net.hollowbit.archipelo.screen.Screen;
 import net.hollowbit.archipelo.screen.ScreenType;
@@ -26,6 +28,7 @@ import net.hollowbit.archipelo.screen.screens.gamescreen.ChatManager;
 import net.hollowbit.archipelo.screen.screens.gamescreen.ChatMessage;
 import net.hollowbit.archipelo.screen.screens.gamescreen.ChatWindow;
 import net.hollowbit.archipelo.screen.screens.gamescreen.MainMenuWindow;
+import net.hollowbit.archipelo.screen.screens.gamescreen.NpcDialogBox;
 import net.hollowbit.archipelo.screen.screens.gamescreen.PopupTextManager;
 import net.hollowbit.archipelo.tools.ControlsManager;
 import net.hollowbit.archipelo.tools.FontManager.Fonts;
@@ -41,6 +44,7 @@ public class GameScreen extends Screen implements PacketHandler, InputProcessor 
 	
 	private static final int MENU_BUTTON_SIZE = 70;
 	private static final int MENU_BUTTON_PADDING = 2;
+	private static final int NPC_DIALOG_BOX_HEIGHT = 20;
 	
 	Stage stage;
 	World world;
@@ -48,6 +52,7 @@ public class GameScreen extends Screen implements PacketHandler, InputProcessor 
 	ControlsManager controlsManager;
 	PopupTextManager popupTextManager;
 	ChatManager chatManager;
+	NpcDialogBox npcDialogBox;
 	
 	boolean[] controls;
 	
@@ -216,12 +221,32 @@ public class GameScreen extends Screen implements PacketHandler, InputProcessor 
 			chatManager.addChatMessage((ChatMessagePacket) packet);
 			return true;
 		case PacketType.LOGOUT:
-			ArchipeloClient.getGame().getScreenManager().setScreen(new MainMenuScreen());
+			LogoutPacket logoutPacket = (LogoutPacket) packet;
+			if (logoutPacket.reason == LogoutPacket.REASON_KICK)
+				ArchipeloClient.getGame().getScreenManager().setScreen(new MainMenuScreen("You were kicked from the server!\n" + logoutPacket.alt));
+			else
+				ArchipeloClient.getGame().getScreenManager().setScreen(new MainMenuScreen());
 			return true;
+		case PacketType.NPC_DIALOG:
+			NpcDialogPacket npcDialogPacket = (NpcDialogPacket) packet;
+			
+			if (npcDialogBox != null)//If there is a box open, close it
+				npcDialogBox.remove();
+			
+			String name = "";
+			if (npcDialogPacket.usesId)
+				name = ArchipeloClient.getGame().getLanguageSpecificMessageManager().getNpcDialogById(npcDialogPacket.name).name;
+			else
+				name = npcDialogPacket.name;
+				
+			npcDialogBox = new NpcDialogBox(name, npcDialogPacket);
+			npcDialogBox.setPosition(Gdx.graphics.getWidth() / 2 - npcDialogBox.getWidth() / 2, NPC_DIALOG_BOX_HEIGHT);
+			stage.addActor(npcDialogBox);
+			break;
 		}
 		return false;
 	}
-
+	
 	@Override
 	public void resize(int width, int height) {
 		if (mainMenuWndw != null)
@@ -231,6 +256,9 @@ public class GameScreen extends Screen implements PacketHandler, InputProcessor 
 		//Update positions of menu buttons on resize
 		homeButton.setPosition(MENU_BUTTON_PADDING + (MENU_BUTTON_SIZE + MENU_BUTTON_PADDING) * 0, Gdx.graphics.getHeight() - homeButton.getHeight() - MENU_BUTTON_PADDING);
 		chatButton.setPosition(MENU_BUTTON_PADDING + (MENU_BUTTON_SIZE + MENU_BUTTON_PADDING) * 1, Gdx.graphics.getHeight() - homeButton.getHeight() - MENU_BUTTON_PADDING);
+		
+		if (npcDialogBox != null)
+			npcDialogBox.setPosition(Gdx.graphics.getWidth() / 2 - npcDialogBox.getWidth() / 2, NPC_DIALOG_BOX_HEIGHT);
 	}
 	
 	public PopupTextManager getPopupTextManager () {

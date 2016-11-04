@@ -6,6 +6,7 @@ public class CollisionRect {
 	public float x, y;
 	public float offsetX, offsetY;
 	public float width, height;
+	public boolean hard = false;
 	
 	public CollisionRect (CollisionRectData data) {
 		this.name = data.name;
@@ -13,15 +14,21 @@ public class CollisionRect {
 		this.offsetY = data.offsetY;
 		this.width = data.width;
 		this.height = data.height;
+		this.hard = data.hard;
 	}
 	
 	public CollisionRect (float x, float y, float offsetX, float offsetY, float width, float height) {
+		this(x, y, offsetX, offsetY, width, height, false);
+	}
+	
+	public CollisionRect (float x, float y, float offsetX, float offsetY, float width, float height, boolean hard) {
 		this.x = x;
 		this.y = y;
 		this.offsetX = offsetX;
 		this.offsetY = offsetY;
 		this.width = width;
 		this.height = height;
+		this.hard = hard;
 	}
 	
 	public CollisionRect move (float x, float y) {

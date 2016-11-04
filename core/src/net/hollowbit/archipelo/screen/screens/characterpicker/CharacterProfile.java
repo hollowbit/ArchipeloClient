@@ -61,7 +61,7 @@ public class CharacterProfile extends Table {
 		
 		row();
 		
-		creationDateLabel = new Label(LM.ui("create") + ":\n" + creationDateTime, getSkin(), "small");
+		creationDateLabel = new Label(LM.ui("created") + ":\n" + creationDateTime, getSkin(), "small");
 		add(creationDateLabel).left().padTop(10);
 		
 		row();

@@ -32,6 +32,7 @@ import net.hollowbit.archipelo.tools.LM;
 import net.hollowbit.archipelo.tools.LanguageSpecificMessageManager.Cat;
 import net.hollowbit.archipelo.tools.QuickUi;
 import net.hollowbit.archipelo.tools.QuickUi.IconType;
+import net.hollowbit.archipelo.tools.QuickUi.TextFieldMessageListener;
 import net.hollowbit.archipeloshared.Direction;
 import net.hollowbit.archipeloshared.StringValidator;
 
@@ -316,7 +317,14 @@ public class CharacterCreatorScreen extends Screen implements PacketHandler {
 		nameTextField = new TextField("", ArchipeloClient.getGame().getUiSkin());
 		nameTextField.setMaxLength(StringValidator.MAX_USERNAME_LENGTH);
 		nameTextField.setBounds(0, 0, DISPLAY_SIZE, nameTextField.getHeight());
-		nameTextField.setMessageText("Name");
+		nameTextField.setMessageText(LM.ui("name"));
+		QuickUi.makeTextFieldMobileCompatible(LM.ui("name"), nameTextField, stage, new TextFieldMessageListener() {
+			
+			@Override
+			public void messageReceived (String message, boolean isEmpty) {
+				nameTextField.setText(message);
+			}
+		});
 		stage.addActor(nameTextField);
 		
 		backButton = QuickUi.getIconButton(IconType.BACK);

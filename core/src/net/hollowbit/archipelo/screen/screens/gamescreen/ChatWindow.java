@@ -43,7 +43,7 @@ public class ChatWindow extends Window implements ChatListener {
 		
 		chatPane = new ScrollPane(chatTable, getSkin());
 		chatPane.setFadeScrollBars(false);
-		add(chatPane).grow().colspan(2);
+		add(chatPane).grow().colspan(2).pad(3);
 		
 		row();
 		
@@ -59,7 +59,7 @@ public class ChatWindow extends Window implements ChatListener {
 				}
 			}
 		});
-		add(chatTextField).width(380).height(40);
+		add(chatTextField).width(380).height(40).pad(3);
 		
 		if (!ArchipeloClient.IS_MOBILE)//If not on mobile, set focus to chat text field
 			stage.setKeyboardFocus(chatTextField);
@@ -75,7 +75,7 @@ public class ChatWindow extends Window implements ChatListener {
 				}
 			}
 		});
-		add(sendButton).width(100).height(40);
+		add(sendButton).width(100).height(40).pad(3);
 		
 		QuickUi.addCloseButtonToWindow(this);//Adds a close button to the window
 		

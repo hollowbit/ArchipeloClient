@@ -60,9 +60,9 @@ public class QuickUi {
 	
 	public static void makeTextFieldMobileCompatible (final String usage, final TextField textField, final Stage stage, final TextFieldMessageListener listener) {
 		if (ArchipeloClient.IS_MOBILE)
-			textField.setMessageText(LM.ui("tapTo") + " " + usage);
+			textField.setMessageText(usage);
 		else
-			textField.setMessageText(LM.ui("clickTo") + " " + usage);
+			textField.setMessageText(usage);
 		textField.addListener(new FocusListener() {
 			
 			@Override
@@ -82,7 +82,7 @@ public class QuickUi {
 								public void canceled () {
 									stage.setKeyboardFocus(null);
 								}//No event for canceled
-							}, LM.ui("enterAMessageFor") + ": " + usage, "", LM.ui("writeHere"));
+							}, LM.ui("enterAMessageFor") + ": " + usage, (!isTextFieldEmpty(textField) ? textField.getText() : ""), (isTextFieldEmpty(textField) ? LM.ui("writeHere") : ""));
 						}
 					}
 				}

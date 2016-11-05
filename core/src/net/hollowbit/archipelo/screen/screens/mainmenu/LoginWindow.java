@@ -16,6 +16,7 @@ import net.hollowbit.archipelo.hollowbitserver.HollowBitServerQueryResponseHandl
 import net.hollowbit.archipelo.tools.LM;
 import net.hollowbit.archipelo.tools.Prefs;
 import net.hollowbit.archipelo.tools.QuickUi;
+import net.hollowbit.archipelo.tools.QuickUi.TextFieldMessageListener;
 import net.hollowbit.archipeloshared.StringValidator;
 
 public class LoginWindow extends Window {
@@ -45,6 +46,13 @@ public class LoginWindow extends Window {
 		emailFld = new TextField(prefs.getEmail(), getSkin());
 		emailFld.setMessageText(LM.ui("email"));
 		emailFld.setMaxLength(StringValidator.MAX_EMAIL_LENGTH);
+		QuickUi.makeTextFieldMobileCompatible(LM.ui("email"), emailFld, stage, new TextFieldMessageListener() {
+			
+			@Override
+			public void messageReceived (String message, boolean isEmpty) {
+				emailFld.setText(message);
+			}
+		});
 		add(emailFld).width(400).pad(10).colspan(2);
 		row();
 		
@@ -53,6 +61,13 @@ public class LoginWindow extends Window {
 		passwordFld.setMaxLength(StringValidator.MAX_PASSWORD_LENGTH);
 		passwordFld.setPasswordMode(true);
 		passwordFld.setMessageText(LM.ui("password"));
+		QuickUi.makeTextFieldMobileCompatible(LM.ui("password"), passwordFld, stage, new TextFieldMessageListener() {
+			
+			@Override
+			public void messageReceived (String message, boolean isEmpty) {
+				passwordFld.setText(message);
+			}
+		});
 		add(passwordFld).width(400).pad(10).colspan(2);
 		row();
 		

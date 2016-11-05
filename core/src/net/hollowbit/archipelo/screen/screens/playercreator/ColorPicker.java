@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Button.ButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
@@ -18,10 +19,13 @@ public class ColorPicker extends Window {
 	
 	int selectedColor;
 	
+	Table colorTable;
 	ButtonGroup<Button> colorButtons;
 	
 	public ColorPicker (String nameOfThingColorIsFor, int currentlySelected, Color[] colors, final ColorPickListener listener) {
 		super(LM.ui("pick") + " " + nameOfThingColorIsFor + " " + LM.ui("color"), ArchipeloClient.getGame().getUiSkin());
+
+		colorTable = new Table(getSkin());
 		colorButtons = new ButtonGroup<Button>();
 		
 		//Loop through each color and add a button for it
@@ -51,12 +55,13 @@ public class ColorPicker extends Window {
 				button.setChecked(true);
 			}
 
-			if (i % 4 == 0)//Every 4 colors, start a new row
-				row();
+			if (i % 5 == 0)//Every 4 colors, start a new row
+				colorTable.row();
 			
-			add(button).width(50).height(50);
+			colorTable.add(button).width(50).height(50);
 			colorButtons.add(button);
 		}
+		add(colorTable).colspan(2).pad(3);
 		
 		row();
 		
@@ -69,7 +74,7 @@ public class ColorPicker extends Window {
 				super.clicked(event, x, y);
 			}
 		});
-		add(cancelButton);
+		add(cancelButton).pad(3);
 		
 		//Ok button to confirm color selection
 		TextButton okButton = new TextButton(LM.ui("ok"), getSkin());
@@ -81,7 +86,7 @@ public class ColorPicker extends Window {
 				super.clicked(event, x, y);
 			}
 		});
-		add(okButton);
+		add(okButton).pad(3);
 		
 		pack();
 	}

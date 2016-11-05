@@ -15,6 +15,7 @@ import net.hollowbit.archipelo.hollowbitserver.HollowBitServerConnectivity;
 import net.hollowbit.archipelo.hollowbitserver.HollowBitServerQueryResponseHandler;
 import net.hollowbit.archipelo.tools.LM;
 import net.hollowbit.archipelo.tools.QuickUi;
+import net.hollowbit.archipelo.tools.QuickUi.TextFieldMessageListener;
 import net.hollowbit.archipeloshared.StringValidator;
 
 public class RegisterWindow extends Window {
@@ -24,7 +25,7 @@ public class RegisterWindow extends Window {
 	TextButton cancelBtn;
 	TextField emailFld;
 	TextField passwordFld;
-	TextField remPasswordFld;
+	TextField confirmPasswordFld;
 	CheckBox rememberChkBx;
 	
 	String password = "", email = "";
@@ -44,6 +45,13 @@ public class RegisterWindow extends Window {
 		emailFld = new TextField("", getSkin());
 		emailFld.setMessageText(LM.ui("email"));
 		emailFld.setMaxLength(StringValidator.MAX_EMAIL_LENGTH);
+		QuickUi.makeTextFieldMobileCompatible(LM.ui("email"), emailFld, stage, new TextFieldMessageListener() {
+			
+			@Override
+			public void messageReceived (String message, boolean isEmpty) {
+				emailFld.setText(message);
+			}
+		});
 		add(emailFld).width(400).pad(10).colspan(2);
 		row();
 		
@@ -52,15 +60,29 @@ public class RegisterWindow extends Window {
 		passwordFld.setMaxLength(StringValidator.MAX_PASSWORD_LENGTH);
 		passwordFld.setPasswordMode(true);
 		passwordFld.setMessageText(LM.ui("password"));
+		QuickUi.makeTextFieldMobileCompatible(LM.ui("password"), passwordFld, stage, new TextFieldMessageListener() {
+			
+			@Override
+			public void messageReceived (String message, boolean isEmpty) {
+				passwordFld.setText(message);
+			}
+		});
 		add(passwordFld).width(400).pad(10).colspan(2);
 		row();
 		
-		remPasswordFld = new TextField("", getSkin());
-		remPasswordFld.setPasswordCharacter('*');
-		remPasswordFld.setMaxLength(StringValidator.MAX_PASSWORD_LENGTH);
-		remPasswordFld.setPasswordMode(true);
-		remPasswordFld.setMessageText(LM.ui("confirmPassword"));
-		add(remPasswordFld).width(400).pad(10).colspan(2);
+		confirmPasswordFld = new TextField("", getSkin());
+		confirmPasswordFld.setPasswordCharacter('*');
+		confirmPasswordFld.setMaxLength(StringValidator.MAX_PASSWORD_LENGTH);
+		confirmPasswordFld.setPasswordMode(true);
+		confirmPasswordFld.setMessageText(LM.ui("confirmPassword"));
+		QuickUi.makeTextFieldMobileCompatible(LM.ui("confirmPassword"), confirmPasswordFld, stage, new TextFieldMessageListener() {
+			
+			@Override
+			public void messageReceived (String message, boolean isEmpty) {
+				confirmPasswordFld.setText(message);
+			}
+		});
+		add(confirmPasswordFld).width(400).pad(10).colspan(2);
 		row();
 		
 		rememberChkBx = new CheckBox(" " + LM.ui("remember"), getSkin());
@@ -73,13 +95,13 @@ public class RegisterWindow extends Window {
 			
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
-				if (emailFld.getText().equals("") || passwordFld.getText().equals("") || remPasswordFld.getText().equals("")) {
+				if (emailFld.getText().equals("") || passwordFld.getText().equals("") || confirmPasswordFld.getText().equals("")) {
 					QuickUi.showErrorWindow(LM.error("fieldsEmptyTitle"), LM.error("fieldsEmpty"), getStage());
 				} else if (!StringValidator.isEmailValid(emailFld.getText()) || emailFld.getText().contains(" ")) {
 					QuickUi.showErrorWindow(LM.error("loginHBInvalidEmailTitle"), LM.error("loginHBInvalidEmail"), getStage());
 				} else if (!StringValidator.isStringValid(passwordFld.getText(), StringValidator.PASSWORD, StringValidator.MAX_PASSWORD_LENGTH)) {
 					QuickUi.showErrorWindow(LM.error("loginInvalidPasswordTitle"), LM.error("loginInvalidPasswordTitle"), getStage());
-				} else if (!remPasswordFld.getText().equals(passwordFld.getText())) {
+				} else if (!confirmPasswordFld.getText().equals(passwordFld.getText())) {
 					QuickUi.showErrorWindow(LM.error("registerHBConfirmPasswordWrongTitle"), LM.error("registerHBConfirmPasswordWrong"), getStage());
 				} else {
 					//Put data in variables for later and send login packet

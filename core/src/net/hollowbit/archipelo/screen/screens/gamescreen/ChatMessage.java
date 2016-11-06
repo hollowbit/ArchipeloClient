@@ -10,6 +10,7 @@ import net.hollowbit.archipelo.ArchipeloClient;
 import net.hollowbit.archipelo.entity.living.Player;
 import net.hollowbit.archipelo.tools.FontManager.Fonts;
 import net.hollowbit.archipelo.tools.FontManager.Sizes;
+import net.hollowbit.archipelo.tools.QuickUi;
 
 public class ChatMessage {
 	
@@ -34,7 +35,7 @@ public class ChatMessage {
 	boolean remove = false;
 	
 	public ChatMessage (String message, String sender, ChatManager manager) {
-		this.message = message;
+		this.message = QuickUi.processMessageString(message);
 		this.sender = ArchipeloClient.getGame().getWorld().getPlayer(sender);
 		y = START_Y + (ArchipeloClient.IS_MOBILE ? MOBILE_BUMP : 0);
 		GlyphLayout layout = new GlyphLayout(ArchipeloClient.getGame().getFontManager().getFont(Fonts.PIXELATED, Sizes.VERY_SMALL), message, Color.WHITE, WIDTH, Align.bottomLeft, true);

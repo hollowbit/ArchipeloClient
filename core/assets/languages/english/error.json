@@ -37,4 +37,5 @@ fieldsEmpty: "Please don't leave fields blank!",
 registerHBConfirmPasswordWrongTitle: "Confirm Password",
 registerHBConfirmPasswordWrong: "Confirm password does not match password.",
 unableToConnect: "Unable to connect to server!",
+couldNotConnectToHB: "Could not connect to HollowBit server! Try again another time.",
 }}

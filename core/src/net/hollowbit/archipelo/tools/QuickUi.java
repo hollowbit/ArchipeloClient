@@ -1,5 +1,7 @@
 package net.hollowbit.archipelo.tools;
 
+import java.util.Date;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.Input.TextInputListener;
@@ -90,6 +92,51 @@ public class QuickUi {
 			}
 			
 		});
+	}
+	
+	@SuppressWarnings("deprecation")
+	public static String processMessageString (String message) {
+		if (ArchipeloClient.getGame().getWorld() != null && ArchipeloClient.getGame().getWorld().getPlayer() != null)
+			message.replaceAll("{n}", ArchipeloClient.getGame().getWorld().getPlayer().getName());
+		
+		message.replaceAll("{t}", new Date().toLocaleString());
+		
+		//Colors
+		//message.replaceAll("&", "[" + Color. + "]");
+		message.replaceAll("&h", "[CLEAR]");
+		message.replaceAll("&5", "[BLACK]");
+		message.replaceAll("&4", "[DARK_GRAY]");
+		message.replaceAll("&3", "[GRAY]");
+		message.replaceAll("&2", "[LIGHT_GRAY]");
+		message.replaceAll("&1", "[WHITE]");
+		
+		message.replaceAll("&B", "[NAVY]");
+		message.replaceAll("&b", "[.BLUE]");
+		message.replaceAll("&C", "[TEAL]");
+		message.replaceAll("&c", "[CYAN]");
+		message.replaceAll("&R", "[FIREBRICK]");
+		message.replaceAll("&r", "[RED]");
+		message.replaceAll("&P", "[MAGENTA]");
+		message.replaceAll("&p", "[PINK]");
+		message.replaceAll("&V", "[VIOLET]");
+		message.replaceAll("&v", "[ROYAL]");
+		message.replaceAll("&Y", "[GOLDENROD]");
+		message.replaceAll("&y", "[YELLOW]");
+		message.replaceAll("&G", "[FOREST]");
+		message.replaceAll("&g", "[GREEN]");
+		message.replaceAll("&O", "[ORANGE]");
+		message.replaceAll("&o", "[TAN]");
+		
+		message.replaceAll("&l", "[LIME]");
+		message.replaceAll("&e", "[OLIVE]");
+		message.replaceAll("&s", "[SCARLET]");
+		message.replaceAll("&m", "[MAROON]");
+		message.replaceAll("&c", "[CHARTREUSE]");
+		message.replaceAll("&b", "[BROWN]");
+		message.replaceAll("&n", "[SALMON]");
+		message.replaceAll("&t", "[SLATE]");
+		
+		return message;
 	}
 	
 	public static boolean isTextFieldEmpty (TextField textField) {

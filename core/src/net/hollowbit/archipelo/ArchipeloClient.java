@@ -28,6 +28,7 @@ import net.hollowbit.archipelo.tools.LanguageSpecificMessageManager;
 import net.hollowbit.archipelo.tools.Prefs;
 import net.hollowbit.archipelo.tools.QuickUi;
 import net.hollowbit.archipelo.tools.UiCamera;
+import net.hollowbit.archipelo.tools.LanguageSpecificMessageManager.Cat;
 import net.hollowbit.archipelo.world.MapElementManager;
 import net.hollowbit.archipelo.world.World;
 
@@ -123,10 +124,10 @@ public class ArchipeloClient extends ApplicationAdapter {
 		if (hollowBitServerConnectivity.connect())
 			screenManager.setScreen(new MainMenuScreen());
 		else
-			screenManager.setScreen(new ErrorScreen("Could not connect to HollowBit server! Try again another time."));
+			screenManager.setScreen(new ErrorScreen(languageSpecificMessageManager.getMessage(Cat.UI, "couldNotConnectToHB")));
 		
 		//For testing purposes
-		IS_MOBILE = true;
+		//IS_MOBILE = true;
 		//IS_GWT = true;
 		
 		//If on mobile device, set IS_MOBILE to true

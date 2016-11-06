@@ -13,6 +13,7 @@ import com.badlogic.gdx.utils.Align;
 import net.hollowbit.archipelo.ArchipeloClient;
 import net.hollowbit.archipelo.network.packets.NpcDialogPacket;
 import net.hollowbit.archipelo.network.packets.NpcDialogRequestPacket;
+import net.hollowbit.archipelo.tools.QuickUi;
 import net.hollowbit.archipelo.tools.npcdialogs.NpcDialog;
 
 public class NpcDialogBox extends Window {
@@ -47,7 +48,7 @@ public class NpcDialogBox extends Window {
 		this.usesId = packet.usesId;
 		if (this.usesId) {
 			NpcDialog npcDialog = ArchipeloClient.getGame().getLanguageSpecificMessageManager().getNpcDialogById(packet.prefix, packet.name);
-			this.message = npcDialog.message;
+			this.message = QuickUi.processMessageString(npcDialog.message);
 			this.choices = npcDialog.choices;
 			this.choiceLinks = packet.messages;
 		} else {
@@ -172,7 +173,7 @@ public class NpcDialogBox extends Window {
 		if (messageIndex >= messages.size())//If reached end of messages, close window
 			this.remove();
 		else {
-			this.message = messages.get(messageIndex);
+			this.message = QuickUi.processMessageString(messages.get(messageIndex));
 			
 			messageLabel.setText(message.substring(0, charsAdded));
 			this.updateSize();

@@ -41,6 +41,10 @@ public class ScreenManager {
 		newScreen = screen;
 	}
 	
+	public Screen getScreen () {
+		return currentScreen;
+	}
+	
 	public int getScreenType () {
 		return currentScreen.type;
 	}

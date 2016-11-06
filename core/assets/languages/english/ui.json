@@ -60,6 +60,7 @@ color: "Color",
 enterAMessageFor: "Enter a message for",
 writeHere: "Write Here!",
 name: "Name",
+lostConneciton: "You have lost connection with the server. Sorry for the inconvenience.",
 
 region: "Region",
 region0: "World",

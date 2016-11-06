@@ -50,8 +50,10 @@ public class LanguageSpecificMessageManager {
 		npcDialogs = new HashMap<String, NpcDialog>();
 		try {
 			for (String dialogName : ((NpcDialogsList) json.fromJson(ClassReflection.forName("net.hollowbit.archipelo.tools.npcdialogs.NpcDialogsList"), Gdx.files.internal("npc_dialogs_list.json"))).npcDialogs) {
-				for (NpcDialog dialog : ((NpcDialogs) json.fromJson(ClassReflection.forName("net.hollowbit.archipelo.tools.npcdialogs.NpcDialogs"), Gdx.files.internal("languages/" + ArchipeloClient.getGame().getPrefs().getChosenLanguage().getId() + "/npc_dialogs/" + dialogName + ".json"))).dialogs)
+				for (NpcDialog dialog : ((NpcDialogs) json.fromJson(ClassReflection.forName("net.hollowbit.archipelo.tools.npcdialogs.NpcDialogs"), Gdx.files.internal("languages/" + ArchipeloClient.getGame().getPrefs().getChosenLanguage().getId() + "/npc_dialogs/" + dialogName + ".json"))).dialogs) {
+					dialog.processIds(dialogName + "-");
 					npcDialogs.put(dialog.id.toUpperCase(), dialog);
+				}
 			}
 		} catch (ReflectionException e) {
 			ArchipeloClient.getGame().getScreenManager().setScreen(new ErrorScreen("Unable to load NPC Dialogs", e));
@@ -76,9 +78,10 @@ public class LanguageSpecificMessageManager {
 	 * @param id
 	 * @return
 	 */
-	public NpcDialog getNpcDialogById (String id) {
-		if (npcDialogs.containsKey(id.toUpperCase()))
-			return npcDialogs.get(id.toUpperCase());
+	public NpcDialog getNpcDialogById (String prefix, String id) {
+		id = (prefix + id).toUpperCase();
+		if (npcDialogs.containsKey(id))
+			return npcDialogs.get(id);
 		else
 			return new NpcDialog();
 	}

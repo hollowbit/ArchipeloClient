@@ -72,8 +72,18 @@ public class Map {
 		}
 	}
 	
-	public boolean collidesWithMap (CollisionRect rect) {
+	/**
+	 * Checks if entity and rect collide with map and world
+	 * @param rect
+	 * @param entity
+	 * @return
+	 */
+	public boolean collidesWithMap (CollisionRect rect, Entity entity) {
 		//See if collisionrect collides with map
+		if (rect.x < - ArchipeloClient.TILE_SIZE || rect.y < + ArchipeloClient.TILE_SIZE || rect.x + rect.width > getPixelWidth() - ArchipeloClient.TILE_SIZE || rect.y + rect.height > getPixelHeight() + ArchipeloClient.TILE_SIZE - rect.height)
+			return true;
+		
+		//See if it collides with tiles and elements
 		int collisionBoxSize = (int) ArchipeloClient.TILE_SIZE / TileData.COLLISION_MAP_SCALE;
 		CollisionRect tileRect = new CollisionRect(0, 0, 0, 0, collisionBoxSize, collisionBoxSize);
 		for (int row = (int) (rect.y / collisionBoxSize) - 1; row < (int) (rect.height / collisionBoxSize) + (rect.y / collisionBoxSize) + 2; row++) {
@@ -88,6 +98,10 @@ public class Map {
 				}
 			}
 		}
+		
+		if (world.collidesWithWorld(rect, entity))
+			return true;
+		
 		return false;
 	}
 	
@@ -182,6 +196,14 @@ public class Map {
 	
 	public int getHeight () {
 		return tileData.length;
+	}
+	
+	public int getPixelWidth () {
+		return getWidth() * ArchipeloClient.TILE_SIZE;
+	}
+	
+	public int getPixelHeight () {
+		return getHeight() * ArchipeloClient.TILE_SIZE;
 	}
 
 	public String getMusic() {

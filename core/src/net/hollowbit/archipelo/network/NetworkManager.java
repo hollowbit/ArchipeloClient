@@ -117,7 +117,7 @@ public class NetworkManager {
             public boolean onClose(final WebSocket webSocket, final WebSocketCloseCode code, final String reason) {
                 Gdx.app.log("WS", "Disconnected - status: " + code + ", reason: " + reason);
                 if (ArchipeloClient.getGame().getScreenManager().getScreenType() == ScreenType.GAME)
-                	ArchipeloClient.getGame().getScreenManager().setScreen(new MainMenuScreen());
+                	ArchipeloClient.getGame().getScreenManager().setScreen(new MainMenuScreen(LM.ui("lostConnection")));
                 return FULLY_HANDLED;
             }
 
@@ -128,8 +128,6 @@ public class NetworkManager {
         			Packet packet;
         			String[] packetWrapArray = packetString.split(";");
         			int type = Integer.parseInt(packetWrapArray[0]);
-        			if (type == 15 || type == 14)
-        				System.out.println("NetworkManager.java  " + packetString);
         			String newPacketString = packetWrapArray[1];
         			packet = (Packet) json.fromJson(PacketType.getPacketClassByType(type), newPacketString);
         			addPacket(packet);

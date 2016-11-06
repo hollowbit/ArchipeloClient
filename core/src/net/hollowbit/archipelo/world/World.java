@@ -19,6 +19,7 @@ import net.hollowbit.archipelo.network.packets.EntityRemovePacket;
 import net.hollowbit.archipelo.network.packets.TeleportPacket;
 import net.hollowbit.archipelo.screen.screens.GameScreen;
 import net.hollowbit.archipelo.screen.screens.gamescreen.MapTagPopupText;
+import net.hollowbit.archipeloshared.CollisionRect;
 import net.hollowbit.archipeloshared.Direction;
 
 public class World implements PacketHandler {
@@ -210,6 +211,29 @@ public class World implements PacketHandler {
 				return entity;
 		}
 		return null;
+	}
+	
+	/**
+	 * Checks if rect collides with entities
+	 * @param rect
+	 * @return
+	 */
+	public boolean collidesWithWorld (CollisionRect rect, Entity testEntity) {
+		//Check collisions with entities
+		for (Entity entity : entities) {
+			if (entity == testEntity)
+				continue;
+			
+			for (CollisionRect entityRect : entity.getCollisionRects()) {
+				if (!entityRect.hard)
+					continue;
+				
+				if (entityRect.collidesWith(rect))
+					return true;
+			}
+		}
+		
+		return false;
 	}
 
 	@Override

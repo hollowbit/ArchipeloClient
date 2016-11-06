@@ -1,8 +1,9 @@
 package net.hollowbit.archipelo.tools;
 
+import java.util.ArrayList;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
-import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -15,10 +16,13 @@ import net.hollowbit.archipelo.screen.screens.GameScreen;
 import net.hollowbit.archipeloshared.Controls;
 import net.hollowbit.archipeloshared.Direction;
 
-public class ControlsManager implements InputProcessor {
+public class ControlsManager {
 
 	private static final int IMAGE_OFF = 0;
 	private static final int IMAGE_ON = 1;
+	
+	private static final int[] KEYS_TO_CHECK = new int[] {Keys.UP, Keys.DOWN, Keys.LEFT, Keys.RIGHT, Keys.X, Keys.Z, Keys.CONTROL_LEFT};
+	private static final int POINTERS_TO_CHECK = 5;
 	
 	GameScreen game;
 	boolean[] controls;
@@ -52,8 +56,13 @@ public class ControlsManager implements InputProcessor {
 	private int dpadPointer = -1;
 	private int buttonPointer = -1;
 	
+	private ArrayList<Integer> keysDown;
+	private ArrayList<Integer> pointersDown;
+	
 	public ControlsManager (GameScreen game) {
 		this.game = game;
+		this.keysDown = new ArrayList<Integer>();
+		this.pointersDown = new ArrayList<Integer>();
 		controls = new boolean[Controls.TOTAL];
 		
 		if (ArchipeloClient.IS_MOBILE) {
@@ -126,7 +135,54 @@ public class ControlsManager implements InputProcessor {
 		controlsUpdated = false;
 	}
 	
-	public void update () {}
+	public void stopMovement () {
+		controls[Controls.UP] = false;
+		controls[Controls.LEFT] = false;
+		controls[Controls.DOWN] = false;
+		controls[Controls.RIGHT] = false;
+	}
+	
+	public void update () {
+		//Look for keys to add
+		for (int key : KEYS_TO_CHECK) {
+			if (Gdx.input.isKeyJustPressed(key)) {
+				keysDown.add(key);
+				keyDown(key);
+			}
+		}
+		
+		//Look for keys to remove
+		ArrayList<Integer> keysToRemove = new ArrayList<Integer>();
+		for (int key : keysDown) {
+			if (!Gdx.input.isKeyPressed(key)) {
+				keysToRemove.add(key);
+				keyUp(key);
+			}
+		}
+		keysDown.removeAll(keysToRemove);
+		
+		//Look for pointers to add
+		for (int pointer = 0; pointer < POINTERS_TO_CHECK; pointer++) {
+			if (Gdx.input.isTouched(pointer) && !pointersDown.contains(pointer)) {
+				pointersDown.add(pointer);
+				touchDown(Gdx.input.getX(pointer), Gdx.input.getY(pointer), pointer);
+			}
+		}
+		
+		//Look for pointers to remove
+		ArrayList<Integer> pointersToRemove = new ArrayList<Integer>();
+		for (int pointer : pointersDown) {
+			if (!Gdx.input.isTouched(pointer)) {
+				pointersToRemove.add(pointer);
+				touchUp(Gdx.input.getX(pointer), Gdx.input.getY(pointer), pointer);
+			}
+		}
+		pointersDown.removeAll(pointersToRemove);
+		
+		//Update pointer moving
+		for (int pointer : pointersDown)
+			pointerMoved(Gdx.input.getX(pointer), Gdx.input.getY(pointer), pointer);
+	}
 	
 	public void render (SpriteBatch batch) {
 		if (ArchipeloClient.IS_MOBILE) {
@@ -170,7 +226,6 @@ public class ControlsManager implements InputProcessor {
 	}
 	
 	//Controls handlers
-	@Override
 	public boolean keyDown (int keycode) {
 		if (!focused)
 			return false;
@@ -220,7 +275,6 @@ public class ControlsManager implements InputProcessor {
 		return false;
 	}
 	
-	@Override
 	public boolean keyUp (int keycode) {
 		if (!focused)
 			return true;
@@ -278,8 +332,7 @@ public class ControlsManager implements InputProcessor {
 		}
 	}
 
-	@Override
-	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+	public boolean touchDown(int screenX, int screenY, int pointer) {
 		if (ArchipeloClient.IS_MOBILE) {
 			Vector2 input = new Vector2(screenX, Gdx.graphics.getHeight() - screenY);
 			if (dpadRects[Direction.TOTAL].contains(input.x, input.y) && !lockRect.contains(input.x, input.y)) {//If is touching dpad
@@ -398,8 +451,7 @@ public class ControlsManager implements InputProcessor {
 		return false;
 	}
 
-	@Override
-	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+	public boolean touchUp(int screenX, int screenY, int pointer) {
 		if (ArchipeloClient.IS_MOBILE) {
 			Vector2 input = new Vector2(screenX, Gdx.graphics.getHeight() - screenY);
 			if (pointer == dpadPointer) {//If player is using the same point as when they were touching the dpad before
@@ -429,27 +481,6 @@ public class ControlsManager implements InputProcessor {
 		controls[Controls.LEFT] = false;
 		controls[Controls.DOWN] = false;
 		controls[Controls.RIGHT] = false;
-	}
-	
-	//Unused methods
-	@Override
-	public boolean keyTyped (char character) {
-		return false;
-	}
-
-	@Override
-	public boolean touchDragged(int screenX, int screenY, int pointer) {
-		return pointerMoved(screenX, screenY, pointer);
-	}
-
-	@Override
-	public boolean mouseMoved(int screenX, int screenY) {
-		return pointerMoved(screenX, screenY, 0);
-	}
-
-	@Override
-	public boolean scrolled(int amount) {
-		return false;
 	}
 	
 }

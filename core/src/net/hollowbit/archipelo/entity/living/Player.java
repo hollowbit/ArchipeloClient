@@ -16,6 +16,7 @@ import net.hollowbit.archipelo.entity.living.player.MovementLog;
 import net.hollowbit.archipelo.entity.living.player.MovementLogEntry;
 import net.hollowbit.archipelo.items.Item;
 import net.hollowbit.archipelo.items.ItemType;
+import net.hollowbit.archipelo.screen.screens.GameScreen;
 import net.hollowbit.archipelo.world.Map;
 import net.hollowbit.archipeloshared.CollisionRect;
 import net.hollowbit.archipeloshared.Controls;
@@ -47,7 +48,6 @@ public class Player extends LivingEntity {
 	float rollTimer;
 	float rollDoubleClickTimer = 0;
 	boolean isSprinting;
-	boolean[] controls;
 	boolean isCurrentPlayer;
 	Item[] equippedInventory;
 	boolean loaded = false;
@@ -58,7 +58,6 @@ public class Player extends LivingEntity {
 	 * No point in initializing variables if they won't be used, right?
 	*/
 	public void createCurrentPlayer () {
-		controls = new boolean[Controls.TOTAL];
 		movementLog = new MovementLog();
 	}
 	
@@ -94,7 +93,22 @@ public class Player extends LivingEntity {
 		}
 	}
 	
+	public void stopMovement () {
+		rollTimer = 0;
+		rollingStateTime = 0;
+		rollDoubleClickTimer = 0;
+		goal.set(location.pos);
+	}
+	
 	public void updatePlayer (float deltatime, boolean[] controls) {
+		if (!(ArchipeloClient.getGame().getScreenManager().getScreen() instanceof GameScreen))
+			return;
+		
+		GameScreen gameScreen = (GameScreen) ArchipeloClient.getGame().getScreenManager().getScreen();
+		
+		if (!gameScreen.canPlayerMove())
+			return;
+		
 		//Tick timer for roll double-click
 		if (rollDoubleClickTimer >= 0) {
 			rollDoubleClickTimer -= deltatime;
@@ -212,7 +226,7 @@ public class Player extends LivingEntity {
 		
 		boolean collidesWithMap = false;
 		for (CollisionRect rect : getCollisionRects(pos)) {//Checks to make sure no collision rect is intersecting with map
-			if (location.getMap().collidesWithMap(rect)) {
+			if (location.getMap().collidesWithMap(rect, this)) {
 				collidesWithMap = true;
 				break;
 			}
@@ -223,11 +237,12 @@ public class Player extends LivingEntity {
 			
 			if (isMoving(controls)) {
 				//Add new log entry to movement log manager
+				gameScreen.playerMoved();
 				movementLog.add(new MovementLogEntry(directionMoved, (float) speedMoved));
 			}
 		}
 	}
-
+	
 	@Override
 	public void render (SpriteBatch batch) {
 		if (!loaded)
@@ -365,7 +380,7 @@ public class Player extends LivingEntity {
 	
 	private boolean doesCurrentPositionCollideWithMap () {
 		for (CollisionRect rect : getCollisionRects(location.pos)) {//Checks to make sure no collision rect is intersecting with map
-			if (location.getMap().collidesWithMap(rect)) {
+			if (location.getMap().collidesWithMap(rect, this)) {
 				return true;
 			}
 		}

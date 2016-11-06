@@ -8,5 +8,12 @@ public class NpcDialog {
 	public String name = "?";//Npc's name
 	public String message = "!?!!?";
 	public ArrayList<String> choices;
-	public boolean interruptable = true;
+	
+	/**
+	 * Used to make ids uppercase and add category name
+	 * @param name
+	 */
+	public void processIds (String name) {
+		this.id = (name + this.id).toUpperCase();
+	}
 }

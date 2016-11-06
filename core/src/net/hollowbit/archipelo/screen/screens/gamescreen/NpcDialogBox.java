@@ -46,18 +46,17 @@ public class NpcDialogBox extends Window {
 		
 		this.usesId = packet.usesId;
 		if (this.usesId) {
-			NpcDialog npcDialog = ArchipeloClient.getGame().getLanguageSpecificMessageManager().getNpcDialogById(packet.name);
+			NpcDialog npcDialog = ArchipeloClient.getGame().getLanguageSpecificMessageManager().getNpcDialogById(packet.prefix, packet.name);
 			this.message = npcDialog.message;
 			this.choices = npcDialog.choices;
 			this.choiceLinks = packet.messages;
-			this.interruptable = npcDialog.interruptable;
 		} else {
 			this.messages = packet.messages;
 			this.setName(packet.name);
-			this.interruptable = packet.interruptable;
 			
 			getNextMessage();
 		}
+		this.interruptable = packet.interruptable;
 		
 		messageLabel = new Label("", getSkin(), "small");
 		messageLabel.setWrap(true);

@@ -73,7 +73,7 @@ public class GameScreen extends Screen implements PacketHandler, InputProcessor 
 		controlsManager = new ControlsManager(this);
 		controls = new boolean[Controls.TOTAL];
 		stage = new Stage(ArchipeloClient.getGame().getCameraUi().getScreenViewport(), ArchipeloClient.getGame().getBatch());
-		InputMultiplexer inputMultiplexer = new InputMultiplexer(controlsManager, stage, this);
+		InputMultiplexer inputMultiplexer = new InputMultiplexer(stage, this);
 		Gdx.input.setInputProcessor(inputMultiplexer);
 		world = ArchipeloClient.getGame().getWorld();
 		world.setGameScreen(this);
@@ -138,7 +138,7 @@ public class GameScreen extends Screen implements PacketHandler, InputProcessor 
 
 	@Override
 	public void update (float deltaTime) {
-		if (stage.getKeyboardFocus() == null) {
+		if (!(stage.getKeyboardFocus() instanceof TextField)) {
 			controlsManager.setFocused(true);
 		} else {
 			controlsManager.setFocused(false);
@@ -153,6 +153,8 @@ public class GameScreen extends Screen implements PacketHandler, InputProcessor 
 			controlsManager.resetControls();
 		}
 		
+		if (canPlayerMove())
+			controlsManager.update();
 		worldSnapshotManager.update();
 		popupTextManager.update(deltaTime);
 		chatManager.update(deltaTime);
@@ -235,14 +237,15 @@ public class GameScreen extends Screen implements PacketHandler, InputProcessor 
 			
 			String name = "";
 			if (npcDialogPacket.usesId)
-				name = ArchipeloClient.getGame().getLanguageSpecificMessageManager().getNpcDialogById(npcDialogPacket.name).name;
+				name = ArchipeloClient.getGame().getLanguageSpecificMessageManager().getNpcDialogById(npcDialogPacket.prefix, npcDialogPacket.name).name;
 			else
 				name = npcDialogPacket.name;
-				
+			
+			stopPlayerMovement();
 			npcDialogBox = new NpcDialogBox(name, npcDialogPacket);
 			npcDialogBox.setPosition(Gdx.graphics.getWidth() / 2 - npcDialogBox.getWidth() / 2, NPC_DIALOG_BOX_HEIGHT);
 			stage.addActor(npcDialogBox);
-			break;
+			return true;
 		}
 		return false;
 	}
@@ -307,7 +310,24 @@ public class GameScreen extends Screen implements PacketHandler, InputProcessor 
 		}
 		return false;
 	}
-
+	
+	private void stopPlayerMovement () {
+		ArchipeloClient.getGame().getWorld().getPlayer().stopMovement();
+		controlsManager.stopMovement();
+	}
+	
+	public boolean canPlayerMove () {
+		if (npcDialogBox == null || !stage.getActors().contains(npcDialogBox, true))
+			return true;
+		else
+			return npcDialogBox.isInterruptable();
+	}
+	
+	public void playerMoved () {
+		if (npcDialogBox != null)
+			npcDialogBox.remove();
+	}
+	
 	@Override
 	public boolean keyUp(int keycode) {return false;}
 

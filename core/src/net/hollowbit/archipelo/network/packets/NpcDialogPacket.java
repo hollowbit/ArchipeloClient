@@ -9,6 +9,7 @@ public class NpcDialogPacket extends Packet {
 	
 	public String name;
 	public ArrayList<String> messages;
+	public String prefix;
 	public boolean interruptable = false;
 	
 	public boolean usesId = false;

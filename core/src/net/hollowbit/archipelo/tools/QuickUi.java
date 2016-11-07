@@ -97,44 +97,45 @@ public class QuickUi {
 	@SuppressWarnings("deprecation")
 	public static String processMessageString (String message) {
 		if (ArchipeloClient.getGame().getWorld() != null && ArchipeloClient.getGame().getWorld().getPlayer() != null)
-			message.replaceAll("{n}", ArchipeloClient.getGame().getWorld().getPlayer().getName());
+			message = message.replace("{n}", ArchipeloClient.getGame().getWorld().getPlayer().getName());
 		
-		message.replaceAll("{t}", new Date().toLocaleString());
+		message = message.replace("{t}", new Date().toLocaleString());
 		
 		//Colors
 		//message.replaceAll("&", "[" + Color. + "]");
-		message.replaceAll("&h", "[CLEAR]");
-		message.replaceAll("&5", "[BLACK]");
-		message.replaceAll("&4", "[DARK_GRAY]");
-		message.replaceAll("&3", "[GRAY]");
-		message.replaceAll("&2", "[LIGHT_GRAY]");
-		message.replaceAll("&1", "[WHITE]");
+		message = message.replace("&h", "[CLEAR]");
+		message = message.replace("&5", "[BLACK]");
+		message = message.replace("&4", "[DARK_GRAY]");
+		message = message.replace("&3", "[GRAY]");
+		message = message.replace("&2", "[LIGHT_GRAY]");
+		message = message.replace("&1", "[WHITE]");
 		
-		message.replaceAll("&B", "[NAVY]");
-		message.replaceAll("&b", "[.BLUE]");
-		message.replaceAll("&C", "[TEAL]");
-		message.replaceAll("&c", "[CYAN]");
-		message.replaceAll("&R", "[FIREBRICK]");
-		message.replaceAll("&r", "[RED]");
-		message.replaceAll("&P", "[MAGENTA]");
-		message.replaceAll("&p", "[PINK]");
-		message.replaceAll("&V", "[VIOLET]");
-		message.replaceAll("&v", "[ROYAL]");
-		message.replaceAll("&Y", "[GOLDENROD]");
-		message.replaceAll("&y", "[YELLOW]");
-		message.replaceAll("&G", "[FOREST]");
-		message.replaceAll("&g", "[GREEN]");
-		message.replaceAll("&O", "[ORANGE]");
-		message.replaceAll("&o", "[TAN]");
+		message = message.replace("&B", "[NAVY]");
+		message = message.replace("&b", "[BLUE]");
+		message = message.replace("&C", "[TEAL]");
+		message = message.replace("&c", "[CYAN]");
+		message = message.replace("&R", "[FIREBRICK]");
+		message = message.replace("&r", "[RED]");
+		message = message.replace("&P", "[MAGENTA]");
+		message = message.replace("&p", "[PINK]");
+		message = message.replace("&V", "[VIOLET]");
+		message = message.replace("&v", "[ROYAL]");
+		message = message.replace("&Y", "[GOLDENROD]");
+		message = message.replace("&y", "[YELLOW]");
+		message = message.replace("&G", "[FOREST]");
+		message = message.replace("&g", "[GREEN]");
+		message = message.replace("&O", "[ORANGE]");
+		message = message.replace("&o", "[TAN]");
 		
-		message.replaceAll("&l", "[LIME]");
-		message.replaceAll("&e", "[OLIVE]");
-		message.replaceAll("&s", "[SCARLET]");
-		message.replaceAll("&m", "[MAROON]");
-		message.replaceAll("&c", "[CHARTREUSE]");
-		message.replaceAll("&b", "[BROWN]");
-		message.replaceAll("&n", "[SALMON]");
-		message.replaceAll("&t", "[SLATE]");
+		message = message.replace("&l", "[LIME]");
+		message = message.replace("&e", "[OLIVE]");
+		message = message.replace("&s", "[SCARLET]");
+		message = message.replace("&m", "[MAROON]");
+		message = message.replace("&c", "[CHARTREUSE]");
+		message = message.replace("&b", "[BROWN]");
+		message = message.replace("&n", "[SALMON]");
+		message = message.replace("&t", "[SLATE]");
+		message = message.replace("&d", "[GOLD]");
 		
 		return message;
 	}

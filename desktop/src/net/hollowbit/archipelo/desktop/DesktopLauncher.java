@@ -16,6 +16,11 @@ public class DesktopLauncher {
 		config.height = 720;
 		config.vSyncEnabled = true;
 		
+		//Fullscreen
+		//config.width = 1920;
+		//config.height = 1080;
+		//config.fullscreen = true;
+		
 		//TODO: Test with unlimited FPS when optimizing
 		//config.foregroundFPS = 60;
 		//config.backgroundFPS = 60;

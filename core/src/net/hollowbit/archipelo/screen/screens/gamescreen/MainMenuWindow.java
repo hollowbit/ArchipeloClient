@@ -1,6 +1,8 @@
 package net.hollowbit.archipelo.screen.screens.gamescreen;
 
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
@@ -36,7 +38,7 @@ public class MainMenuWindow extends Window {
 			}
 			
 		});
-		add(logoutBtn);
+		add(logoutBtn).pad(5);
 		row();
 		
 		returnBtn = new TextButton(LM.ui("returnToGame"), getSkin());
@@ -49,7 +51,17 @@ public class MainMenuWindow extends Window {
 			}
 			
 		});
-		add(returnBtn);
+		add(returnBtn).pad(5);
+		
+		final MainMenuWindow mainMenuWindow = this;
+		this.addListener(new InputListener() {
+			@Override
+			public boolean keyDown (InputEvent event, int keycode) {
+				if (keycode == Keys.ESCAPE)
+					mainMenuWindow.remove();
+				return super.keyDown(event, keycode);
+			}
+		});
 	}
 
 }

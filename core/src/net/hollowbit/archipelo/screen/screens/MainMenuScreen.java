@@ -232,7 +232,7 @@ public class MainMenuScreen extends Screen {
 			font.draw(batch, layoutFPS, 10, height - layoutFPS.height);
 		}
 		
-		GlyphLayout layoutCon = new GlyphLayout(font, LM.getMsg(Cat.UI, "connected") + " (" + prefs.getServerName() + "): " + (ArchipeloClient.getGame().getNetworkManager().isConnected() ? "[GREEN]" + LM.getMsg(Cat.UI, "connected") : "[RED]" + LM.getMsg(Cat.UI, "notConnected")));
+		GlyphLayout layoutCon = new GlyphLayout(font, LM.getMsg(Cat.UI, "netStatus") + " (" + prefs.getServerName() + "): " + (ArchipeloClient.getGame().getNetworkManager().isConnected() ? "[GREEN]" + LM.getMsg(Cat.UI, "connected") : "[RED]" + LM.getMsg(Cat.UI, "notConnected")));
 		font.draw(batch, layoutCon, 4, 4 + layoutCon.height);
 		
 		if (flashOn && progression == 0)//Render flashing "Press Start" text

@@ -5,7 +5,7 @@
 {id:"sign1StopIt", name:"Welcome", message:"What do you want from me? You already saw what I had to say.",}
 
 {id:"sign2Start", name:"Information", message:"What would you like to learn about?", choices:["HollowBit Logins", "NPC System"]},
-{id:"sign2Hollowbit", name:"Information", message:"The HollowBit logins now use emails instead of usernames."},
+{id:"sign2Hollowbit", name:"Information", message:"The HollowBit logins now use &cemails&1 instead of usernames."},
 {id:"sign2Npc", name:"Information", message:"The new NPC system is amazing. It has tons of possibilities for huge dialog trees."},
-{id:"sign2End", name:"Information", message:"Be sure to catch the next DevLog for more info!"},
+{id:"sign2End", name:"Information", message:"Thanks for watching this DevLog! Please follow @vedi0boy on Twitter for more updates."},
 ]}

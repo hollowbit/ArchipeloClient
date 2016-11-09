@@ -73,7 +73,7 @@ public class GameScreen extends Screen implements PacketHandler, InputProcessor 
 		controlsManager = new ControlsManager(this);
 		controls = new boolean[Controls.TOTAL];
 		stage = new Stage(ArchipeloClient.getGame().getCameraUi().getScreenViewport(), ArchipeloClient.getGame().getBatch());
-		InputMultiplexer inputMultiplexer = new InputMultiplexer(stage, this);
+		InputMultiplexer inputMultiplexer = new InputMultiplexer(this, stage);
 		Gdx.input.setInputProcessor(inputMultiplexer);
 		world = ArchipeloClient.getGame().getWorld();
 		world.setGameScreen(this);

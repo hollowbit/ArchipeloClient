@@ -273,7 +273,7 @@ public class CharacterCreatorScreen extends Screen implements PacketHandler {
 		/*pantsColorButton.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
-				if (colorPickerWindow != null)//If a color picker window is already open, don't opena  new one
+				if (colorPickerWindow != null)//If a color picker window is already open, don't open a new one
 					return;
 				
 				ColorPicker colorPicker = new ColorPicker("Pants", pantsColor, PANTS_COLORS, new ColorPickListener() {
@@ -297,10 +297,11 @@ public class CharacterCreatorScreen extends Screen implements PacketHandler {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				if (nameTextField.getText().equals("")) {
-					QuickUi.showErrorWindow(LM.getMsg(Cat.ERROR, "nameEmptyTitle"), LM.getMsg(Cat.UI, "nameEmpty"), stage);
+					QuickUi.showErrorWindow(LM.getMsg(Cat.ERROR, "nameEmptyTitle"), LM.getMsg(Cat.ERROR, "nameEmpty"), stage);
 					return;
 				} else if (!StringValidator.isStringValid(nameTextField.getText(), StringValidator.USERNAME, StringValidator.MAX_USERNAME_LENGTH)) {
-					QuickUi.showErrorWindow(LM.getMsg(Cat.ERROR, "nameInvalidTitle"), LM.getMsg(Cat.UI, "nameInvalid"), stage);
+					QuickUi.showErrorWindow(LM.getMsg(Cat.ERROR, "nameInvalidTitle"), LM.getMsg(Cat.ERROR, "nameInvalid"), stage);
+					return;
 				}
 				
 				new PlayerPickPacket(nameTextField.getText(), selectedHair, selectedFace, hairColor, eyeColor, bodyColor).send();

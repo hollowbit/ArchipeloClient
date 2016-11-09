@@ -2,6 +2,7 @@ package net.hollowbit.archipelo.screen.screens.gamescreen;
 
 import java.util.ArrayList;
 
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -18,7 +19,7 @@ import net.hollowbit.archipelo.tools.npcdialogs.NpcDialog;
 
 public class NpcDialogBox extends Window {
 	
-	public static final float LETTER_ADD_TIME = 0.05f;
+	public static final float LETTER_ADD_TIME = 0.03f;
 	public static final int WIDTH = 400;
 	public static final int HEIGHT = 150;
 	public static final int PADDING = 10;
@@ -76,7 +77,8 @@ public class NpcDialogBox extends Window {
 		this.addListener(new InputListener() {
 			@Override
 			public boolean keyDown(InputEvent event, int keycode) {
-				interactedWith();
+				if (keycode == Keys.Z || keycode == Keys.X)
+					interactedWith();
 				return super.keyDown(event, keycode);
 			}
 		});
@@ -109,6 +111,13 @@ public class NpcDialogBox extends Window {
 			if (timer >= LETTER_ADD_TIME) {
 				timer -= LETTER_ADD_TIME;
 				charsAdded++;
+				
+				//Adds color markup in one shot
+				if (message.charAt(charsAdded - 1) == '[') {
+					do {
+						charsAdded++;
+					} while (charsAdded <= message.length() && message.charAt(charsAdded - 1) != ']');
+				}
 				
 				//Update label
 				messageLabel.setText(message.substring(0, charsAdded));

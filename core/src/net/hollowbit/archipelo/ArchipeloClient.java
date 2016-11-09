@@ -127,7 +127,7 @@ public class ArchipeloClient extends ApplicationAdapter {
 			screenManager.setScreen(new ErrorScreen(languageSpecificMessageManager.getMessage(Cat.UI, "couldNotConnectToHB")));
 		
 		//For testing purposes
-		//IS_MOBILE = true;
+		IS_MOBILE = true;
 		//IS_GWT = true;
 		
 		//If on mobile device, set IS_MOBILE to true

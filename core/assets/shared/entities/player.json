@@ -12,8 +12,8 @@
 				{"offsetX":11,"offsetY":3,"width":9,"height":9}
 				],
 	"animations":[
-				{"id":"default", "timeBetweenFrames":0.15, "numberOfDirections":8, "looping":true},
+				{"id":"default", "timeBetweenFrames":0.1, "numberOfDirections":8, "looping":true},
 				{"id":"rolling", "timeBetweenFrames":0.08, "numberOfDirections":8, "looping":true},
-				{"id":"sprinting", "fileName":"default", "timeBetweenFrames":0.11, "numberOfDirections":8, "looping":true},
+				{"id":"sprinting", "fileName":"default", "timeBetweenFrames":0.08, "numberOfDirections":8, "looping":true},
 				]
 }

@@ -75,8 +75,8 @@ public class GameScreen extends Screen implements PacketHandler, InputProcessor 
 		stage = new Stage(ArchipeloClient.getGame().getCameraUi().getScreenViewport(), ArchipeloClient.getGame().getBatch());
 		InputMultiplexer inputMultiplexer = new InputMultiplexer(this, stage);
 		Gdx.input.setInputProcessor(inputMultiplexer);
-		world = ArchipeloClient.getGame().getWorld();
-		world.setGameScreen(this);
+		world = new World(this);
+		ArchipeloClient.getGame().setWorld(world);
 		worldSnapshotManager = new WorldSnapshotManager(world);
 		popupTextManager = new PopupTextManager();
 		chatManager = new ChatManager();
@@ -182,7 +182,7 @@ public class GameScreen extends Screen implements PacketHandler, InputProcessor 
 
 	@Override
 	public void dispose () {
-		world.removeGameScreen();
+		world.dispose();
 		ArchipeloClient.getGame().getNetworkManager().removePacketHandler(this);
 	}
 	

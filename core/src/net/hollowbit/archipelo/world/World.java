@@ -19,6 +19,7 @@ import net.hollowbit.archipelo.network.packets.EntityRemovePacket;
 import net.hollowbit.archipelo.network.packets.TeleportPacket;
 import net.hollowbit.archipelo.screen.screens.GameScreen;
 import net.hollowbit.archipelo.screen.screens.gamescreen.MapTagPopupText;
+import net.hollowbit.archipelo.tools.FlagsManager;
 import net.hollowbit.archipeloshared.CollisionRect;
 import net.hollowbit.archipeloshared.Direction;
 
@@ -43,8 +44,10 @@ public class World implements PacketHandler {
 	private float fadeTimer;
 	private GameScreen gameScreen;
 	private boolean firstTimeLoading;
+	FlagsManager flagsManager;
 	
-	public World () {
+	public World (GameScreen gameScreen) {
+		this.gameScreen = gameScreen;
 		entities = new ArrayList<Entity>();
 		nextMapSnapshot = null;
 		time = 0;
@@ -52,15 +55,8 @@ public class World implements PacketHandler {
 		firstTimeLoading = true;
 		fadeColor = getFadeColor(FADE_COLOR_BLACK);
 		goalTime = time;
+		flagsManager = new FlagsManager();
 		ArchipeloClient.getGame().getNetworkManager().addPacketHandler(this);
-	}
-	
-	public void setGameScreen (GameScreen gameScreen) {
-		this.gameScreen = gameScreen;
-	}
-	
-	public void removeGameScreen () {
-		this.gameScreen = null;
 	}
 	
 	public void update (float deltaTime, boolean[] controls) {
@@ -109,6 +105,14 @@ public class World implements PacketHandler {
 	public void render (SpriteBatch batch) {
 		if (map != null)
 			map.render(batch, entities);//Entities is passed because they are drawn by the map. This allows map elements to appear in front of entities if they belong there.
+	}
+	
+	/**
+	 * Properly dispose of game world
+	 */
+	public void dispose () {
+		this.flagsManager.dispose();
+		ArchipeloClient.getGame().getNetworkManager().removePacketHandler(this);
 	}
 	
 	public boolean allowPositionCorrection () {//Don't allow position correction if about to teleport to new map
@@ -169,9 +173,8 @@ public class World implements PacketHandler {
 	
 	private void loadMap () {
 		map = new Map(nextMapSnapshot, this);
-		for (Entity entity : entities) {
+		for (Entity entity : entities)
 			entity.unload();
-		}
 		entities.clear();
 		
 		for (EntitySnapshot entitySnapshot : nextEntitySnapshots) {
@@ -211,6 +214,10 @@ public class World implements PacketHandler {
 				return entity;
 		}
 		return null;
+	}
+	
+	public FlagsManager getFlagsManager () {
+		return flagsManager;
 	}
 	
 	/**

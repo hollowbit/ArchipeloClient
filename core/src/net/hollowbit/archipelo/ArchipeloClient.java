@@ -25,10 +25,10 @@ import net.hollowbit.archipelo.tools.AssetManager;
 import net.hollowbit.archipelo.tools.FontManager;
 import net.hollowbit.archipelo.tools.GameCamera;
 import net.hollowbit.archipelo.tools.LanguageSpecificMessageManager;
+import net.hollowbit.archipelo.tools.LanguageSpecificMessageManager.Cat;
 import net.hollowbit.archipelo.tools.Prefs;
 import net.hollowbit.archipelo.tools.QuickUi;
 import net.hollowbit.archipelo.tools.UiCamera;
-import net.hollowbit.archipelo.tools.LanguageSpecificMessageManager.Cat;
 import net.hollowbit.archipelo.world.MapElementManager;
 import net.hollowbit.archipelo.world.World;
 
@@ -136,8 +136,6 @@ public class ArchipeloClient extends ApplicationAdapter {
 		
 		if (Gdx.app.getType() == ApplicationType.WebGL)
 			IS_GWT = true;
-		
-		world = new World();
 	}
 	
 	@Override
@@ -231,6 +229,10 @@ public class ArchipeloClient extends ApplicationAdapter {
 	
 	public World getWorld () {
 		return world;
+	}
+	
+	public void setWorld (World world) {
+		this.world = world;
 	}
 	
 	public Skin getUiSkin () {

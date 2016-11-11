@@ -39,20 +39,26 @@ public class NetworkManager {
 		ArrayList<Packet> currentPackets = new ArrayList<Packet>();
 		currentPackets.addAll(packets);
 		
+		ArrayList<Packet> packetsToRemove = new ArrayList<Packet>();
 		for (Packet packet : currentPackets) {
 			ArrayList<PacketHandler> currentPacketHandlers = new ArrayList<PacketHandler>();
 			currentPacketHandlers.addAll(packetHandlers);
 			
 			for (PacketHandler packetHandler : currentPacketHandlers) {
-				packetHandler.handlePacket(packet);
+				if (packetHandler.handlePacket(packet))
+					packetsToRemove.add(packet);
 			}
 		}
 
-		removeAllPackets();
+		removeAllPackets(packetsToRemove);
 	}
 	
-	private synchronized void removeAllPackets () {
-		this.packets.clear();;
+	private synchronized void removeAllPackets (ArrayList<Packet> packetsToRemove) {
+		this.packets.removeAll(packetsToRemove);
+	}
+	
+	private synchronized void removeAllPacketHandlers () {
+		packetHandlers.clear();
 	}
 	
 	private synchronized void addPacket (Packet packet) {
@@ -116,6 +122,7 @@ public class NetworkManager {
             @Override
             public boolean onClose(final WebSocket webSocket, final WebSocketCloseCode code, final String reason) {
                 Gdx.app.log("WS", "Disconnected - status: " + code + ", reason: " + reason);
+                removeAllPacketHandlers();
                 if (ArchipeloClient.getGame().getScreenManager().getScreenType() == ScreenType.GAME)
                 	ArchipeloClient.getGame().getScreenManager().setScreen(new MainMenuScreen(LM.ui("lostConnection")));
                 return FULLY_HANDLED;

@@ -226,6 +226,7 @@ public class World implements PacketHandler {
 	 * @return
 	 */
 	public boolean collidesWithWorld (CollisionRect rect, Entity testEntity) {
+		boolean isPlayer = testEntity instanceof Player;
 		//Check collisions with entities
 		for (Entity entity : entities) {
 			if (entity == testEntity)
@@ -233,6 +234,9 @@ public class World implements PacketHandler {
 			
 			for (CollisionRect entityRect : entity.getCollisionRects()) {
 				if (!entityRect.hard)
+					continue;
+				
+				if (isPlayer && entity.ignoreHardnessOfCollisionRects((Player) testEntity, entityRect.name))
 					continue;
 				
 				if (entityRect.collidesWith(rect))

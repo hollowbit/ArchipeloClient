@@ -15,6 +15,7 @@ public class Map {
 	
 	private String name;
 	private String displayName;
+	private String islandName;
 	private String[][] tileData;
 	private String[][] elementData;
 	private String music;
@@ -27,6 +28,7 @@ public class Map {
 		this.world = world;
 		this.displayName = fullSnapshot.getString("display-name", name);
 		this.music = fullSnapshot.getString("music", "main-theme");//Default song is main theme
+		this.islandName = fullSnapshot.getString("island-name", "Archipelo");
 		tileData = fullSnapshot.tileData;
 		elementData = fullSnapshot.elementData;
 		generateCollisionMap();
@@ -184,6 +186,10 @@ public class Map {
 	
 	public String getDisplayName () {
 		return displayName;
+	}
+	
+	public String getIslandName () {
+		return islandName;
 	}
 	
 	public World getWorld () {

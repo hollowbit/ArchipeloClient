@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Vector2;
 
 import net.hollowbit.archipelo.tools.Location;
 import net.hollowbit.archipelo.world.Map;
+import net.hollowbit.archipelo.entity.living.Player;
 import net.hollowbit.archipeloshared.CollisionRect;
 import net.hollowbit.archipeloshared.Direction;
 
@@ -75,6 +76,17 @@ public abstract class Entity {
 	
 	public CollisionRect getViewRect () {
 		return entityType.getViewRect(location.getX(), location.getY());
+	}
+	
+	/**
+	 * This is used by certain entities which don't always want a collision rect to be hard.
+	 * Ex: Like a locked door that becomes unlocked for some players.
+	 * @param player
+	 * @param rectName
+	 * @return
+	 */
+	public boolean ignoreHardnessOfCollisionRects (Player player, String rectName) {
+		return false;
 	}
 	
 }

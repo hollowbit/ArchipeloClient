@@ -12,9 +12,17 @@ public class Door extends LifelessEntity {
 	@Override
 	public void render(SpriteBatch batch) {
 		if (open)
-			batch.draw(entityType.getAnimationFrame("open", 0), location.getX(), location.getY());
+			batch.draw(entityType.getAnimationFrame("open", 0, style), location.getX(), location.getY());
 		else
-			batch.draw(entityType.getAnimationFrame("closed", 0), location.getX(), location.getY());
+			batch.draw(entityType.getAnimationFrame("closed", 0, style), location.getX(), location.getY());
+		super.render(batch);
+	}
+	
+	/**
+	 * Used by door subtypes to avoid rendering open and closed while still being able to render supertype things
+	 * @param batch
+	 */
+	public void renderSuper(SpriteBatch batch) {
 		super.render(batch);
 	}
 	

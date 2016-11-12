@@ -26,6 +26,7 @@ public enum EntityType {
 	PLAYER ("player", Player.class),
 	TELEPORTER ("teleporter", Teleporter.class),
 	DOOR ("door", Door.class),
+	DOOR_LOCKED ("door-locked", DoorLocked.class),
 	SIGN ("sign", Sign.class);
 	
 	private String id;

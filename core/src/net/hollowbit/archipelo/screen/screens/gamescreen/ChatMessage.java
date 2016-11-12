@@ -2,6 +2,7 @@ package net.hollowbit.archipelo.screen.screens.gamescreen;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.BitmapFontCache;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Align;
@@ -34,11 +35,20 @@ public class ChatMessage {
 	boolean show = true;
 	boolean remove = false;
 	
-	public ChatMessage (String message, String sender, ChatManager manager) {
-		this.message = QuickUi.processMessageString(message);
-		this.sender = ArchipeloClient.getGame().getWorld().getPlayer(sender);
+	public ChatMessage (String prefix, String message, String sender, ChatManager manager) {
+		this.message = message;
+		if (sender.equals("server"))//Only process message if sent by server
+			this.message = QuickUi.processMessageString(this.message);
+		else
+			this.message = QuickUi.stripAllNewlinesAndTabs(this.message);
+		prefix = QuickUi.processMessageString(prefix);
+		
+		this.message = prefix + " " +  this.message;
+		
+		if (sender.startsWith("@"))
+			this.sender = ArchipeloClient.getGame().getWorld().getPlayer(sender.substring(1, sender.length() - 1));
 		y = START_Y + (ArchipeloClient.IS_MOBILE ? MOBILE_BUMP : 0);
-		GlyphLayout layout = new GlyphLayout(ArchipeloClient.getGame().getFontManager().getFont(Fonts.PIXELATED, Sizes.VERY_SMALL), message, Color.WHITE, WIDTH, Align.bottomLeft, true);
+		GlyphLayout layout = new GlyphLayout(ArchipeloClient.getGame().getFontManager().getFont(Fonts.PIXELATED, Sizes.VERY_SMALL), this.message, Color.WHITE, WIDTH, Align.bottomLeft, true);
 		this.height = layout.height;
 		
 		for (ChatMessage chatMessage : manager.getChatMessages()) {
@@ -68,7 +78,13 @@ public class ChatMessage {
 		else
 			font.setColor(1, 1, 1, 1);
 		
-		font.draw(batch, message, X_POSITION, y + height, WIDTH, Align.bottomLeft, true);
+		BitmapFontCache cache = font.getCache();
+		cache.clear();
+		cache.addText(message, X_POSITION, y + height, WIDTH, Align.bottomLeft, true);
+		if (timer >= LIFE_TIME - FADE_TIME && !noTransparency)
+			cache.setAlphas(1 - (1 / FADE_TIME) * (timer - (LIFE_TIME - FADE_TIME)));
+		cache.draw(batch);
+		
 		font.setColor(1, 1, 1, 1);
 		batch.setColor(1, 1, 1, 1);
 	}

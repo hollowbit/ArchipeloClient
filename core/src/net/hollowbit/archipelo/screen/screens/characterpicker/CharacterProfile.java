@@ -32,12 +32,14 @@ public class CharacterProfile extends Table {
 	TextButton pickButton;
 	TextButton deleteButton;
 	CharacterDisplay characterDisplay;
+	CharacterPickWindow window;
 	
 	/**
 	 * Used in character picker to show different players
 	 */
-	public CharacterProfile (Stage stage, final String name, Item[] equippedInventory, String island, String lastPlayedDateTime, String creationDateTime, int level) {
+	public CharacterProfile (Stage stage, CharacterPickWindow window, final String name, Item[] equippedInventory, String island, String lastPlayedDateTime, String creationDateTime, int level) {
 		this.setStage(stage);
+		this.window = window;
 		this.setSkin(ArchipeloClient.getGame().getUiSkin());
 		this.name = name;
 		
@@ -101,6 +103,7 @@ public class CharacterProfile extends Table {
 		    	if (delete) {//If confirmed, delete player
 		    		new PlayerDeletePacket(name).send();//Delete player
 		    		charProfile.remove();
+		    		window.updateAfterCharacterRemoved();
 		    	}
 		    	
 		        remove();

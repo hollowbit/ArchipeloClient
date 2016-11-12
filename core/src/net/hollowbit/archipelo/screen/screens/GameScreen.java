@@ -154,7 +154,7 @@ public class GameScreen extends Screen implements PacketHandler, InputProcessor 
 		}
 		
 		if (canPlayerMove())
-			controlsManager.update();
+			controlsManager.update(isNpcDialogBoxOpen());
 		worldSnapshotManager.update();
 		popupTextManager.update(deltaTime);
 		chatManager.update(deltaTime);
@@ -235,6 +235,10 @@ public class GameScreen extends Screen implements PacketHandler, InputProcessor 
 			if (npcDialogBox != null)//If there is a box open, close it
 				npcDialogBox.remove();
 			
+			//Don't open blank NPC dialogs. This could occur if a player choice ends the conversation, a blank response could be sent back to close dialog
+			if (npcDialogPacket.usesId && npcDialogPacket.name.equals(""))
+				return true;
+			
 			String name = "";
 			if (npcDialogPacket.usesId)
 				name = ArchipeloClient.getGame().getLanguageSpecificMessageManager().getNpcDialogById(npcDialogPacket.prefix, npcDialogPacket.name).name;
@@ -248,6 +252,10 @@ public class GameScreen extends Screen implements PacketHandler, InputProcessor 
 			return true;
 		}
 		return false;
+	}
+	
+	public boolean isNpcDialogBoxOpen () {
+		return npcDialogBox != null && stage.getActors().contains(npcDialogBox, true);
 	}
 	
 	@Override

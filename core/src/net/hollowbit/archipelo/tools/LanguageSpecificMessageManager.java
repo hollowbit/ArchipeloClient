@@ -109,7 +109,8 @@ public class LanguageSpecificMessageManager {
 	
 	public enum Cat {
 		UI("ui"),
-		ERROR("error");
+		ERROR("error"),
+		CHAT("chat");
 		
 		private String id;
 		

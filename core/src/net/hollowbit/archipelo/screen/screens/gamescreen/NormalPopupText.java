@@ -1,6 +1,7 @@
 package net.hollowbit.archipelo.screen.screens.gamescreen;
 
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.BitmapFontCache;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
@@ -46,7 +47,14 @@ public class NormalPopupText extends PopupText {
 			font.setColor(1, 1, 1, 1);
 		
 		x = ArchipeloClient.getGame().getCameraUi().getWidth() / 2 - width / 2;
-		font.draw(batch, text, x, y);
+		
+		BitmapFontCache cache = font.getCache();
+		cache.clear();
+		cache.addText(text, x, y);
+		if (timer >= LIFE_TIME - FADE_TIME)
+			cache.setAlphas(1 - (1 / FADE_TIME) * (timer - (LIFE_TIME - FADE_TIME)));
+		cache.draw(batch);
+		
 		font.setColor(1, 1, 1, 1);
 	}
 	

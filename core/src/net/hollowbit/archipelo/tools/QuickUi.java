@@ -20,6 +20,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 
 import net.hollowbit.archipelo.ArchipeloClient;
+import net.hollowbit.archipelo.tools.LanguageSpecificMessageManager.Cat;
 
 public class QuickUi {
 	
@@ -96,10 +97,31 @@ public class QuickUi {
 	
 	@SuppressWarnings("deprecation")
 	public static String processMessageString (String message) {
-		if (ArchipeloClient.getGame().getWorld() != null && ArchipeloClient.getGame().getWorld().getPlayer() != null)
-			message = message.replace("{n}", ArchipeloClient.getGame().getWorld().getPlayer().getName());
+		if (message == null || message.equals(""))
+			return "";
 		
-		message = message.replace("{t}", new Date().toLocaleString());
+		String newMessage = "";
+		for (int i = 0; i < message.length(); i++) {
+			char ch = message.charAt(i);
+			
+			if (ch == '{') {
+				String id = "";
+				ch = message.charAt(++i);
+				while (ch != '}' && i < message.length()) {
+					id += ch;
+					ch = message.charAt(++i);
+				}
+				
+				newMessage += LM.getMsg(Cat.CHAT, id);
+			} else
+				newMessage += ch;
+		}
+		message = newMessage;
+		
+		if (ArchipeloClient.getGame().getWorld() != null && ArchipeloClient.getGame().getWorld().getPlayer() != null)
+			message = message.replace("[n]", ArchipeloClient.getGame().getWorld().getPlayer().getName());
+		
+		message = message.replace("[t]", new Date().toLocaleString());
 		
 		//Colors
 		//message.replaceAll("&", "[" + Color. + "]");
@@ -137,6 +159,15 @@ public class QuickUi {
 		message = message.replace("&t", "[SLATE]");
 		message = message.replace("&d", "[GOLD]");
 		
+		return message;
+	}
+	
+	public static String stripAllNewlinesAndTabs (String message) {
+		if (message == null || message.equals(""))
+			return "";
+		
+		message.replace("\n", "");
+		message.replace("\t", "");
 		return message;
 	}
 	

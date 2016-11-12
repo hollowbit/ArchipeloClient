@@ -1,0 +1,10 @@
+{messages:{
+serverTag: "&R<SERVER>&1",
+youJustRolled: "You have just rolled!",
+youSteppedOn: "You stepped on",
+youSteppedOff: "You stepped off of",
+youHit: "You hit",
+pong: "Pong!",
+join: "Join",
+leave: "Leave",
+}}

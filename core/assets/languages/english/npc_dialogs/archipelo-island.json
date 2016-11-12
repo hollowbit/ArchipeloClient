@@ -1,6 +1,6 @@
 {dialogs:[
 
-{id:"sign1Start", name:"Welcome", message:"Hello {n}, welcome to Archipelo!"},
+{id:"sign1Start", name:"Welcome", message:"Hello [n], welcome to Archipelo!"},
 {id:"sign1End", name:"Welcome", message:"Please enjoy your stay! There isn't much in the game yet but soon there will be :)."},
 {id:"sign1StopIt", name:"Welcome", message:"What do you want from me? You already saw what I had to say.",}
 
@@ -8,4 +8,7 @@
 {id:"sign2Hollowbit", name:"Information", message:"The HollowBit logins now use &cemails&1 instead of usernames."},
 {id:"sign2Npc", name:"Information", message:"The new NPC system is amazing. It has tons of possibilities for huge dialog trees."},
 {id:"sign2End", name:"Information", message:"Thanks for watching this DevLog! Please follow @vedi0boy on Twitter for more updates."},
+
+{id:"smithyDoorLocked", name:"Door Locked!", message:"The smithy door is locked. Bronze key required."},
+{id:"smithyDoorUnlock", name:"Unlock Door?", message:"The smithy door is locked. Would you like to unlock it?", choices:["Yes (-1  Bronze Key)", "No"]},
 ]}

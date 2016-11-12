@@ -148,7 +148,10 @@ public class NpcDialogBox extends Window {
 				choice.addListener(new ClickListener() {
 					@Override
 					public void clicked(InputEvent event, float x, float y) {
-						ArchipeloClient.getGame().getNetworkManager().sendPacket(new NpcDialogRequestPacket(id));
+						if (id.equals(""))//Some reponses could be blank so just end conversation
+							remove();
+						else
+							ArchipeloClient.getGame().getNetworkManager().sendPacket(new NpcDialogRequestPacket(id));
 						super.clicked(event, x, y);
 					}
 				});

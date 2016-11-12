@@ -14,8 +14,7 @@ public class DoorLocked extends Door {
 	@Override
 	public void create(EntitySnapshot fullSnapshot, Map map, EntityType entityType) {
 		super.create(fullSnapshot, map, entityType);
-		this.unlockFlag = fullSnapshot.getString("unlockFlag", map.getIslandName() + "-" + map.getName() + "-" + this.name + "unlock");
-		System.out.println(unlockFlag);
+		this.unlockFlag = fullSnapshot.getString("unlockFlag", map.getIslandName() + "-" + map.getName() + "-" + this.name + "Unlock");
 	}
 	
 	@Override

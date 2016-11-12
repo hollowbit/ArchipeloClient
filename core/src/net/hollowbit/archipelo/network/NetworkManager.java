@@ -23,37 +23,44 @@ import net.hollowbit.archipelo.tools.LM;
 
 public class NetworkManager {
 	
+	private static final int PACKET_LIFESPAN = 5000;//ms
+	
 	private ArrayList<PacketHandler> packetHandlers;
-	private ArrayList<Packet> packets;
+	private ArrayList<PacketWrapper> packets;
 	private Json json;
 	
 	private WebSocket socket;
 	
 	public NetworkManager () {
 		packetHandlers = new ArrayList<PacketHandler>();
-		packets = new ArrayList<Packet>();
+		packets = new ArrayList<PacketWrapper>();
 		json = new Json();
 	}
 	
 	public void update () {
-		ArrayList<Packet> currentPackets = new ArrayList<Packet>();
+		ArrayList<PacketWrapper> currentPackets = new ArrayList<PacketWrapper>();
 		currentPackets.addAll(packets);
 		
-		ArrayList<Packet> packetsToRemove = new ArrayList<Packet>();
-		for (Packet packet : currentPackets) {
+		ArrayList<PacketWrapper> packetsToRemove = new ArrayList<PacketWrapper>();
+		for (PacketWrapper packetWrapper : currentPackets) {
+			Packet packet = packetWrapper.packet;
 			ArrayList<PacketHandler> currentPacketHandlers = new ArrayList<PacketHandler>();
 			currentPacketHandlers.addAll(packetHandlers);
 			
+			boolean handled = false;
 			for (PacketHandler packetHandler : currentPacketHandlers) {
 				if (packetHandler.handlePacket(packet))
-					packetsToRemove.add(packet);
+					handled = true;
 			}
+			
+			if (handled || System.currentTimeMillis() - packetWrapper.time > PACKET_LIFESPAN)
+				packetsToRemove.add(packetWrapper);
 		}
 
 		removeAllPackets(packetsToRemove);
 	}
 	
-	private synchronized void removeAllPackets (ArrayList<Packet> packetsToRemove) {
+	private synchronized void removeAllPackets (ArrayList<PacketWrapper> packetsToRemove) {
 		this.packets.removeAll(packetsToRemove);
 	}
 	
@@ -61,7 +68,7 @@ public class NetworkManager {
 		packetHandlers.clear();
 	}
 	
-	private synchronized void addPacket (Packet packet) {
+	private synchronized void addPacket (PacketWrapper packet) {
 		packets.add(packet);
 	}
 	
@@ -137,7 +144,7 @@ public class NetworkManager {
         			int type = Integer.parseInt(packetWrapArray[0]);
         			String newPacketString = packetWrapArray[1];
         			packet = (Packet) json.fromJson(PacketType.getPacketClassByType(type), newPacketString);
-        			addPacket(packet);
+        			addPacket(new PacketWrapper(packet));
         		} catch (Exception e) {
         			return NOT_HANDLED;
         		}

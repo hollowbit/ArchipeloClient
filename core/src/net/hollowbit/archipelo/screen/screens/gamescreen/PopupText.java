@@ -2,6 +2,8 @@ package net.hollowbit.archipelo.screen.screens.gamescreen;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
+import net.hollowbit.archipelo.tools.QuickUi;
+
 public abstract class PopupText {
 	
 	public static final int TYPE_NORMAL = 0;
@@ -12,7 +14,7 @@ public abstract class PopupText {
 	public boolean remove = false;
 	
 	public PopupText (String text, float x, float y, PopupTextManager manager) {
-		this.text = text;
+		this.text = QuickUi.processMessageString(text);
 		this.x = x;
 		this.y = y;
 		this.manager = manager;

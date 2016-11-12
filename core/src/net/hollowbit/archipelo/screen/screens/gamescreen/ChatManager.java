@@ -37,7 +37,7 @@ public class ChatManager {
 	}
 	
 	public synchronized void addChatMessage (ChatMessagePacket packet) {
-		ChatMessage message = new ChatMessage(packet.message, packet.sender, this);
+		ChatMessage message = new ChatMessage(packet.prefix, packet.message, packet.sender, this);
 		messages.add(message);
 		
 		for (ChatListener listener : chatListeners)

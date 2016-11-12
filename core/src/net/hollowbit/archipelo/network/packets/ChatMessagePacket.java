@@ -5,6 +5,7 @@ import net.hollowbit.archipelo.network.PacketType;
 
 public class ChatMessagePacket extends Packet {
 	
+	public String prefix;
 	public String message;
 	public String sender;
 	

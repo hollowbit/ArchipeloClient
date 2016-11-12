@@ -142,9 +142,16 @@ public class ControlsManager {
 		controls[Controls.RIGHT] = false;
 	}
 	
-	public void update () {
+	/**
+	 * Update controls
+	 * @param ignoreActionButtons Whether x and z actions should be ignored
+	 */
+	public void update (boolean ignoreActionButtons) {
 		//Look for keys to add
 		for (int key : KEYS_TO_CHECK) {
+			if (ignoreActionButtons && (key == Keys.Z || key == Keys.X))
+				continue;
+			
 			if (Gdx.input.isKeyJustPressed(key)) {
 				keysDown.add(key);
 				keyDown(key);
@@ -154,6 +161,9 @@ public class ControlsManager {
 		//Look for keys to remove
 		ArrayList<Integer> keysToRemove = new ArrayList<Integer>();
 		for (int key : keysDown) {
+			if (ignoreActionButtons && (key == Keys.Z || key == Keys.X))
+				continue;
+			
 			if (!Gdx.input.isKeyPressed(key)) {
 				keysToRemove.add(key);
 				keyUp(key);

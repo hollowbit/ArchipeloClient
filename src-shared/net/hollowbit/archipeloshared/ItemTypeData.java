@@ -9,6 +9,7 @@ public class ItemTypeData {
 	public int iconY = 0;
 	public int minDamage = 0;
 	public int maxDamage = 0;
+	public int maxStackSize = 1;
 	public float critMultiplier = 1.5f;
 	public float critChance = 20.0f;
 	public int durability = 1;

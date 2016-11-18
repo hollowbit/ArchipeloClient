@@ -51,7 +51,9 @@ public class Player extends LivingEntity {
 	boolean isCurrentPlayer;
 	Item[] equippedInventory;
 	boolean loaded = false;
+	
 	MovementLog movementLog;
+	boolean[] controls;
 	
 	/**
 	 * This method is used when creating a player that is the current one.
@@ -59,6 +61,7 @@ public class Player extends LivingEntity {
 	*/
 	public void createCurrentPlayer () {
 		movementLog = new MovementLog();
+		this.controls = new boolean[Controls.TOTAL];
 	}
 	
 	@Override
@@ -101,6 +104,7 @@ public class Player extends LivingEntity {
 	}
 	
 	public void updatePlayer (float deltatime, boolean[] controls) {
+		this.controls = controls;
 		if (!(ArchipeloClient.getGame().getScreenManager().getScreen() instanceof GameScreen))
 			return;
 		
@@ -248,7 +252,7 @@ public class Player extends LivingEntity {
 		if (!loaded)
 			return;
 		
-		drawPlayer(batch, location.getDirection(), loaded, isRolling(), location.getX(), location.getY(), movingStateTime, rollingStateTime, equippedInventory, isSprinting, ArchipeloClient.PLAYER_SIZE, ArchipeloClient.PLAYER_SIZE);
+		drawPlayer(batch, location.getDirection(), isMoving(controls), isRolling(), location.getX(), location.getY(), movingStateTime, rollingStateTime, equippedInventory, isSprinting, ArchipeloClient.PLAYER_SIZE, ArchipeloClient.PLAYER_SIZE);
 		
 		super.render(batch);
 	}
@@ -402,8 +406,11 @@ public class Player extends LivingEntity {
 	 * @param width
 	 * @param height
 	 */
-	public static void drawPlayer (Batch batch, Direction direction, boolean isMoving, boolean isRolling, float x, float y, float movingStateTime, float rollingStateTime, Item[] equippedInventory, boolean isSprinting, float width, float height) {
+	public static void drawPlayer (Batch batch, Direction direction, boolean isMoving, boolean isRolling, float xFloat, float yFloat, float movingStateTime, float rollingStateTime, Item[] equippedInventory, boolean isSprinting, float width, float height) {
 		boolean drawUseableOnBottom = direction == Direction.DOWN_LEFT || direction == Direction.LEFT || direction == Direction.UP_LEFT || direction == Direction.UP; 
+		
+		int x = (int) xFloat;
+		int y = (int) yFloat;
 		
 		if (isMoving) {
 			if (isRolling) {

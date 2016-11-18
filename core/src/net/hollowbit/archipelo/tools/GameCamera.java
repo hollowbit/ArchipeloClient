@@ -2,6 +2,7 @@ package net.hollowbit.archipelo.tools;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -39,8 +40,14 @@ public class GameCamera {
 	
 	public void update (float deltatime) {
 		if (goal == null) {
-			if (entityToFocusOn != null)
-				cam.position.set(entityToFocusOn.getLocation().getX() + ArchipeloClient.PLAYER_SIZE / 2, entityToFocusOn.getLocation().getY() + ArchipeloClient.PLAYER_SIZE / 2, 0);
+			if (entityToFocusOn != null && !cam.position.epsilonEquals((int)( entityToFocusOn.getLocation().getX() + ArchipeloClient.PLAYER_SIZE / 2), (int) (entityToFocusOn.getLocation().getY() + ArchipeloClient.PLAYER_SIZE / 2), 0, 3f)) {
+				//cam.position.x += ((int)( entityToFocusOn.getLocation().getX() + ArchipeloClient.PLAYER_SIZE / 2)) - cam.position.x * 5f * deltatime;
+				//cam.position.y += ((int)( entityToFocusOn.getLocation().getY() + ArchipeloClient.PLAYER_SIZE / 2)) - cam.position.y * 5f * deltatime;
+				cam.position.interpolate(new Vector3((int)( entityToFocusOn.getLocation().getX() + ArchipeloClient.PLAYER_SIZE / 2), (int) (entityToFocusOn.getLocation().getY() + ArchipeloClient.PLAYER_SIZE / 2), 0), 0.08f, Interpolation.linear);
+				/*if (cam.position.epsilonEquals((int)( entityToFocusOn.getLocation().getX() + ArchipeloClient.PLAYER_SIZE / 2), (int) (entityToFocusOn.getLocation().getY() + ArchipeloClient.PLAYER_SIZE / 2), 0, 0.2f)) {
+					cam.position.set((int)( entityToFocusOn.getLocation().getX() + ArchipeloClient.PLAYER_SIZE / 2), (int) (entityToFocusOn.getLocation().getY() + ArchipeloClient.PLAYER_SIZE / 2), 0);
+				}*/
+			}
 		} else {
 			cam.position.lerp(new Vector3(goal.x + ArchipeloClient.PLAYER_SIZE / 2, goal.y + ArchipeloClient.PLAYER_SIZE / 2, 0), deltatime);
 			if (cam.position.epsilonEquals(goal.x + ArchipeloClient.PLAYER_SIZE / 2, goal.y + ArchipeloClient.PLAYER_SIZE / 2, 0, 1f)) {

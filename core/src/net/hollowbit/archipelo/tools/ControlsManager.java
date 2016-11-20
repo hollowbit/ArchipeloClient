@@ -243,9 +243,15 @@ public class ControlsManager {
 		boolean updateControls = true;
 		switch (keycode) {
 		case Keys.UP:
-			controls[Controls.UP] = true;
-			if (game.getWorld().getPlayer() != null)
-				game.getWorld().getPlayer().controlDown(Controls.UP);
+			if (ArchipeloClient.INVERT) {
+				controls[Controls.DOWN] = true;
+				if (game.getWorld().getPlayer() != null)
+					game.getWorld().getPlayer().controlDown(Controls.DOWN);
+			} else {
+				controls[Controls.UP] = true;
+				if (game.getWorld().getPlayer() != null)
+					game.getWorld().getPlayer().controlDown(Controls.UP);	
+			}
 			break;
 		case Keys.LEFT:
 			controls[Controls.LEFT] = true;
@@ -253,9 +259,15 @@ public class ControlsManager {
 				game.getWorld().getPlayer().controlDown(Controls.LEFT);
 			break;
 		case Keys.DOWN:
-			controls[Controls.DOWN] = true;
-			if (game.getWorld().getPlayer() != null)
-				game.getWorld().getPlayer().controlDown(Controls.DOWN);
+			if (ArchipeloClient.INVERT) {
+				controls[Controls.UP] = true;
+				if (game.getWorld().getPlayer() != null)
+					game.getWorld().getPlayer().controlDown(Controls.UP);
+			} else {
+				controls[Controls.DOWN] = true;
+				if (game.getWorld().getPlayer() != null)
+					game.getWorld().getPlayer().controlDown(Controls.DOWN);	
+			}
 			break;
 		case Keys.RIGHT:
 			controls[Controls.RIGHT] = true;
@@ -292,9 +304,15 @@ public class ControlsManager {
 		boolean updateControls = true;
 		switch (keycode) {
 		case Keys.UP:
-			controls[Controls.UP] = false;
-			if (game.getWorld().getPlayer() != null)
-				game.getWorld().getPlayer().controlUp(Controls.UP);
+			if (ArchipeloClient.INVERT) {
+				controls[Controls.DOWN] = false;
+				if (game.getWorld().getPlayer() != null)
+					game.getWorld().getPlayer().controlUp(Controls.DOWN);
+			} else {
+				controls[Controls.UP] = false;
+				if (game.getWorld().getPlayer() != null)
+					game.getWorld().getPlayer().controlUp(Controls.UP);	
+			}
 			break;
 		case Keys.LEFT:
 			controls[Controls.LEFT] = false;
@@ -302,9 +320,15 @@ public class ControlsManager {
 				game.getWorld().getPlayer().controlUp(Controls.LEFT);
 			break;
 		case Keys.DOWN:
-			controls[Controls.DOWN] = false;
-			if (game.getWorld().getPlayer() != null)
-				game.getWorld().getPlayer().controlUp(Controls.DOWN);
+			if (ArchipeloClient.INVERT) {
+				controls[Controls.UP] = false;
+				if (game.getWorld().getPlayer() != null)
+					game.getWorld().getPlayer().controlUp(Controls.UP);
+			} else {
+				controls[Controls.DOWN] = false;
+				if (game.getWorld().getPlayer() != null)
+					game.getWorld().getPlayer().controlUp(Controls.DOWN);	
+			}
 			break;
 		case Keys.RIGHT:
 			controls[Controls.RIGHT] = false;

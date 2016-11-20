@@ -5,15 +5,25 @@
  */
 package net.hollowbit.archipelo;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Pixmap.Format;
+import com.badlogic.gdx.graphics.PixmapIO;
+import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.utils.BufferUtils;
+import com.badlogic.gdx.utils.ScreenUtils;
 
 import net.hollowbit.archipelo.entity.EntityType;
 import net.hollowbit.archipelo.hollowbitserver.HollowBitServerConnectivity;
@@ -48,11 +58,15 @@ public class ArchipeloClient extends ApplicationAdapter {
 	public static float DELTA_TIME = 0;
 	public static float STATE_TIME = 0;//this is for looping animations where it doesn't matter where it starts.
 	public static boolean DEBUGMODE = true;
+	public static boolean INVERT = false;
 	public static boolean PLACEHOLDER_ART_MODE = DEBUGMODE;
+	public static boolean CINEMATIC_MODE = false;
 	
 	private static ArchipeloClient game;
 	
 	SpriteBatch batch;
+	FrameBuffer fbo;
+	ShaderProgram shader;
 	
 	AssetManager assetManager;
 	NetworkManager networkManager;
@@ -80,8 +94,12 @@ public class ArchipeloClient extends ApplicationAdapter {
 		prefs = new Prefs();
 		
 		batch = new SpriteBatch();
-		//ShaderProgram.pedantic = false;
-		//batch.setShader(new ShaderProgram(Gdx.files.internal("shaders/test.vsh"), Gdx.files.internal("shaders/test.fsh")));
+		ShaderProgram.pedantic = false;
+		shader = new ShaderProgram(Gdx.files.internal("shaders/test.vsh"), Gdx.files.internal("shaders/test.fsh"));
+		System.out.println(shader.isCompiled() ? "Shader compiled!" : shader.getLog());
+		batch.setShader(shader);
+		fbo = new FrameBuffer(Format.RGBA8888, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), false);
+		fbo.getColorBufferTexture().setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
 		
 		skin = new Skin(Gdx.files.internal("ui/uiskin.json"));
 		
@@ -147,12 +165,32 @@ public class ArchipeloClient extends ApplicationAdapter {
 			return;*/
 		
 		//Enable/disable debug mode
+		if (Gdx.input.isKeyJustPressed(Keys.F1))
+			CINEMATIC_MODE = !CINEMATIC_MODE;
+		
+		if (Gdx.input.isKeyJustPressed(Keys.F2) && !IS_GWT) {
+			byte[] pixels = ScreenUtils.getFrameBufferPixels(0, 0, Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight(), true);
+
+			Pixmap pixmap = new Pixmap(Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight(), Pixmap.Format.RGBA8888);
+			BufferUtils.copy(pixels, 0, pixmap.getPixels(), pixels.length);
+			PixmapIO.writePNG(Gdx.files.external("archipelo/screenshots/" + new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").format(new Date()) + "_screenshot.png"), pixmap);
+			pixmap.dispose();
+		}
+		
 		if (Gdx.input.isKeyJustPressed(Keys.F3))
 			DEBUGMODE = !DEBUGMODE;
 		
 		//Enable/disable placeholder art mode
 		if (Gdx.input.isKeyJustPressed(Keys.F4))
 			PLACEHOLDER_ART_MODE = !PLACEHOLDER_ART_MODE;
+		
+		if (Gdx.input.isKeyJustPressed(Keys.F5))
+			INVERT = !INVERT;
+		
+		Gdx.gl.glClearColor(0, 0, 0, 1);
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		
+		fbo.begin();
 		
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -173,13 +211,25 @@ public class ArchipeloClient extends ApplicationAdapter {
 		screenManager.render(batch, cameraGame.getWidth(), cameraGame.getHeight());
 		batch.end();
 		
-		if (batch.isDrawing())
-			batch.end();
-
+		fbo.end();
+		
+		if (INVERT)
+			batch.setShader(shader);
 		batch.setProjectionMatrix(cameraUi.combined());
 		batch.begin();
-		screenManager.renderUi(batch, cameraUi.getWidth(), cameraUi.getHeight());
+		batch.draw(fbo.getColorBufferTexture(), 0, Gdx.graphics.getHeight(), Gdx.graphics.getWidth(), -Gdx.graphics.getHeight());
 		batch.end();
+		
+		batch.setShader(null);
+		
+		if (batch.isDrawing())
+			batch.end();
+		
+		if (!CINEMATIC_MODE) {
+			batch.begin();
+			screenManager.renderUi(batch, cameraUi.getWidth(), cameraUi.getHeight());
+			batch.end();
+		}
 	}
 	
 	@Override
@@ -188,6 +238,13 @@ public class ArchipeloClient extends ApplicationAdapter {
 		cameraGame.resize(width, height);
 		cameraUi.resize(width, height);
 		screenManager.resize(width, height);
+	}
+	
+	@Override
+	public void dispose() {
+		super.dispose();
+		fbo.dispose();
+		batch.dispose();
 	}
 	
 	public SpriteBatch getBatch () {

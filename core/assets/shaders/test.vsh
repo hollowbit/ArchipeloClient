@@ -9,6 +9,6 @@ varying vec2 v_texCoord0;
 
 void main() {
 	v_color = a_color;
-	v_texcoord0 = a_texcoord0.st * vec2(1.0, -1.0);
+	v_texCoord0 = vec2(a_texCoord0.s, 1.0 - a_texCoord0.t);
 	gl_Position =  u_projTrans * vec4(a_position, 1.);
 }

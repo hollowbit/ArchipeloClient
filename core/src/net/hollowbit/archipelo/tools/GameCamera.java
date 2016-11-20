@@ -40,10 +40,10 @@ public class GameCamera {
 	
 	public void update (float deltatime) {
 		if (goal == null) {
-			if (entityToFocusOn != null && !cam.position.epsilonEquals((int)( entityToFocusOn.getLocation().getX() + ArchipeloClient.PLAYER_SIZE / 2), (int) (entityToFocusOn.getLocation().getY() + ArchipeloClient.PLAYER_SIZE / 2), 0, 3f)) {
-				//cam.position.x += ((int)( entityToFocusOn.getLocation().getX() + ArchipeloClient.PLAYER_SIZE / 2)) - cam.position.x * 5f * deltatime;
-				//cam.position.y += ((int)( entityToFocusOn.getLocation().getY() + ArchipeloClient.PLAYER_SIZE / 2)) - cam.position.y * 5f * deltatime;
-				cam.position.interpolate(new Vector3((int)( entityToFocusOn.getLocation().getX() + ArchipeloClient.PLAYER_SIZE / 2), (int) (entityToFocusOn.getLocation().getY() + ArchipeloClient.PLAYER_SIZE / 2), 0), 0.08f, Interpolation.linear);
+			if (entityToFocusOn != null && !cam.position.epsilonEquals((int)( entityToFocusOn.getLocation().getX() + ArchipeloClient.PLAYER_SIZE / 2), (int) (entityToFocusOn.getLocation().getY() + ArchipeloClient.PLAYER_SIZE / 2), 0, 1.5f)) {
+				//cam.position.x -= cam.position.x - ((int)( entityToFocusOn.getLocation().getX() + ArchipeloClient.PLAYER_SIZE / 2)) * 5f * deltatime;
+				//cam.position.y -= cam.position.y - ((int)( entityToFocusOn.getLocation().getY() + ArchipeloClient.PLAYER_SIZE / 2)) * 5f * deltatime;
+				cam.position.interpolate(new Vector3((int)( entityToFocusOn.getLocation().getX() + ArchipeloClient.PLAYER_SIZE / 2), (int) (entityToFocusOn.getLocation().getY() + ArchipeloClient.PLAYER_SIZE / 2), 0), 5 * deltatime, Interpolation.linear);
 				/*if (cam.position.epsilonEquals((int)( entityToFocusOn.getLocation().getX() + ArchipeloClient.PLAYER_SIZE / 2), (int) (entityToFocusOn.getLocation().getY() + ArchipeloClient.PLAYER_SIZE / 2), 0, 0.2f)) {
 					cam.position.set((int)( entityToFocusOn.getLocation().getX() + ArchipeloClient.PLAYER_SIZE / 2), (int) (entityToFocusOn.getLocation().getY() + ArchipeloClient.PLAYER_SIZE / 2), 0);
 				}*/

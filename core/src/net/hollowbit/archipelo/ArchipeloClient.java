@@ -12,6 +12,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 import net.hollowbit.archipelo.entity.EntityType;
@@ -79,6 +80,8 @@ public class ArchipeloClient extends ApplicationAdapter {
 		prefs = new Prefs();
 		
 		batch = new SpriteBatch();
+		//ShaderProgram.pedantic = false;
+		//batch.setShader(new ShaderProgram(Gdx.files.internal("shaders/test.vsh"), Gdx.files.internal("shaders/test.fsh")));
 		
 		skin = new Skin(Gdx.files.internal("ui/uiskin.json"));
 		

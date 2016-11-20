@@ -329,7 +329,10 @@ public class Player extends LivingEntity {
 	}
 	
 	public boolean isMoving (boolean[] controls) {
-		return controls[Controls.UP] || controls[Controls.LEFT] || controls[Controls.DOWN] || controls[Controls.RIGHT];
+		if (isCurrentPlayer)
+			return controls[Controls.UP] || controls[Controls.LEFT] || controls[Controls.DOWN] || controls[Controls.RIGHT];
+		else
+			return super.isMoving;
 	}
 	
 	public boolean isRolling () {

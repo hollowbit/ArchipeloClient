@@ -67,5 +67,6 @@ float snoise(vec2 v)
 void main() {
 	vec4 color = texture2D(u_sampler2D, v_texCoord0) * v_color;
 	color.rgb = 1. - color.rgb;
+	color.b = color.b * 1.1;
 	gl_FragColor = color;
 }

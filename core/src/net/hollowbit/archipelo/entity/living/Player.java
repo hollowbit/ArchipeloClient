@@ -5,8 +5,6 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.reflect.ClassReflection;
-import com.badlogic.gdx.utils.reflect.ReflectionException;
 
 import net.hollowbit.archipelo.ArchipeloClient;
 import net.hollowbit.archipelo.entity.EntitySnapshot;
@@ -49,7 +47,7 @@ public class Player extends LivingEntity {
 	float rollDoubleClickTimer = 0;
 	boolean isSprinting;
 	boolean isCurrentPlayer;
-	Item[] equippedInventory;
+	Item[] displayInventory;
 	boolean loaded = false;
 	
 	MovementLog movementLog;
@@ -68,7 +66,7 @@ public class Player extends LivingEntity {
 	public void create (EntitySnapshot fullSnapshot, Map map, EntityType entityType) {
 		super.create(fullSnapshot, map, entityType);
 		Json json = new Json();
-		this.equippedInventory = json.fromJson(Item[].class, fullSnapshot.getString("equipped-inventory", ""));
+		this.displayInventory = json.fromJson(Item[].class, fullSnapshot.getString("displayInventory", ""));
 		loaded = true;
 	}
 	
@@ -252,12 +250,11 @@ public class Player extends LivingEntity {
 		if (!loaded)
 			return;
 		
-		drawPlayer(batch, location.getDirection(), isMoving(controls), isRolling(), location.getX(), location.getY(), movingStateTime, rollingStateTime, equippedInventory, isSprinting, ArchipeloClient.PLAYER_SIZE, ArchipeloClient.PLAYER_SIZE);
+		drawPlayer(batch, location.getDirection(), isMoving(controls), isRolling(), location.getX(), location.getY(), movingStateTime, rollingStateTime, displayInventory, isSprinting, ArchipeloClient.PLAYER_SIZE, ArchipeloClient.PLAYER_SIZE);
 		
 		super.render(batch);
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Override
 	public void applyChangesSnapshot (EntitySnapshot snapshot) {
 		if (!isCurrentPlayer()) {
@@ -269,12 +266,9 @@ public class Player extends LivingEntity {
 		}
 		
 		//Get clothes
-		if (snapshot.doesPropertyExist("equipped-inventory")) {
+		if (snapshot.doesPropertyExist("displayInventory")) {
 			Json json = new Json();
-			try {
-				this.equippedInventory = json.fromJson(ClassReflection.forName("net.hollowbit.archipelo.items.Item"), snapshot.getString("equipped-inventory", ""));
-			} catch (ReflectionException e) {
-			}
+			this.displayInventory = json.fromJson(Item[].class, snapshot.getString("displayInventory", ""));
 		}
 		
 		super.applyChangesSnapshot(snapshot);

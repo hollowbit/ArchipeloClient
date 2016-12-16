@@ -27,6 +27,7 @@ import net.hollowbit.archipelo.screen.ScreenType;
 import net.hollowbit.archipelo.screen.screens.gamescreen.ChatManager;
 import net.hollowbit.archipelo.screen.screens.gamescreen.ChatMessage;
 import net.hollowbit.archipelo.screen.screens.gamescreen.ChatWindow;
+import net.hollowbit.archipelo.screen.screens.gamescreen.InventoryWindow;
 import net.hollowbit.archipelo.screen.screens.gamescreen.MainMenuWindow;
 import net.hollowbit.archipelo.screen.screens.gamescreen.NpcDialogBox;
 import net.hollowbit.archipelo.screen.screens.gamescreen.PopupTextManager;
@@ -134,6 +135,8 @@ public class GameScreen extends Screen implements PacketHandler, InputProcessor 
 		chatTextField.setName("chatTextField");
 		chatTextField.setMaxLength(140);//Like twitter!
 		stage.addActor(chatTextField);
+		
+		stage.addActor(new InventoryWindow());
 	}
 
 	@Override

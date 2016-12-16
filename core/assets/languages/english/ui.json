@@ -62,6 +62,7 @@ writeHere: "Write Here!",
 name: "Name",
 lostConnection: "You have lost connection with the server. Sorry for the inconvenience.",
 netStatus: "Net Status",
+inventory: "Inventory",
 
 region: "Region",
 region0: "World",

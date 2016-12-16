@@ -107,7 +107,7 @@ public class ArchipeloClient extends ApplicationAdapter {
 		skin.getFont("default-font").getData().markupEnabled = true;
 		skin.getFont("large-font").getData().markupEnabled = true;
 		skin.getFont("chat-font").getData().markupEnabled = true;
-
+		
 		//Temporary way to add assets
 		assetManager = new AssetManager();
 		assetManager.putTextureMap("tiles", "tiles.png", TILE_SIZE, TILE_SIZE);

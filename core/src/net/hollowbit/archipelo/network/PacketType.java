@@ -15,7 +15,7 @@ public class PacketType {
 	public static final int ENTITY_ADD = 4;
 	public static final int ENTITY_REMOVE = 5;
 	public static final int CONTROLS = 6;
-	////////Emtpy spot for 7
+	////////Empty spot for 7
 	public static final int POPUP_TEXT = 8;
 	public static final int CHAT_MESSAGE = 9;
 	public static final int TELEPORT = 10;
@@ -25,6 +25,9 @@ public class PacketType {
 	public static final int NPC_DIALOG = 14;
 	public static final int NPC_DIALOG_REQUEST = 15;
 	public static final int FLAGS_ADD = 16;
+	public static final int FORM_INTERACT = 17;
+	public static final int FORM_REQUEST = 18;
+	public static final int FORM_DATA = 19;
 	
 	private static HashMap<Integer, Class> registeredPackets;
 	
@@ -47,6 +50,9 @@ public class PacketType {
 			registeredPackets.put(NPC_DIALOG, ClassReflection.forName("net.hollowbit.archipelo.network.packets.NpcDialogPacket"));
 			registeredPackets.put(NPC_DIALOG_REQUEST, ClassReflection.forName("net.hollowbit.archipelo.network.packets.NpcDialogRequestPacket"));
 			registeredPackets.put(FLAGS_ADD, ClassReflection.forName("net.hollowbit.archipelo.network.packets.FlagsAddPacket"));
+			registeredPackets.put(FORM_INTERACT, ClassReflection.forName("net.hollowbit.archipelo.network.packets.FormInteractPacket"));
+			registeredPackets.put(FORM_REQUEST, ClassReflection.forName("net.hollowbit.archipelo.network.packets.FormRequestPacket"));
+			registeredPackets.put(FORM_DATA, ClassReflection.forName("net.hollowbit.archipelo.network.packets.FormDataPacket"));
 		} catch (Exception e) {
 			System.out.println("Was unable to register all packet.");
 			Gdx.app.exit();

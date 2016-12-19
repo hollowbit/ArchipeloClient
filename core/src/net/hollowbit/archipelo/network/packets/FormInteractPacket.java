@@ -8,6 +8,7 @@ import net.hollowbit.archipelo.network.PacketType;
 public class FormInteractPacket extends Packet {
 	
 	public String id;
+	public String command;
 	public HashMap<String, String> data;
 	public boolean close = false;
 	
@@ -21,9 +22,10 @@ public class FormInteractPacket extends Packet {
 		this.close = close;
 	}
 	
-	public FormInteractPacket (String id, HashMap<String, String> data) {
+	public FormInteractPacket (String id, String command, HashMap<String, String> data) {
 		this();
 		this.id = id;
+		this.command = command;
 		this.data = data;
 	}
 

@@ -1,5 +1,7 @@
 package net.hollowbit.archipelo.screen.screens;
 
+import java.util.HashMap;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputMultiplexer;
@@ -14,11 +16,15 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 import net.hollowbit.archipelo.ArchipeloClient;
+import net.hollowbit.archipelo.form.Form;
+import net.hollowbit.archipelo.form.FormType;
 import net.hollowbit.archipelo.network.Packet;
 import net.hollowbit.archipelo.network.PacketHandler;
 import net.hollowbit.archipelo.network.PacketType;
 import net.hollowbit.archipelo.network.packets.ChatMessagePacket;
 import net.hollowbit.archipelo.network.packets.ControlsPacket;
+import net.hollowbit.archipelo.network.packets.FormDataPacket;
+import net.hollowbit.archipelo.network.packets.FormRequestPacket;
 import net.hollowbit.archipelo.network.packets.LogoutPacket;
 import net.hollowbit.archipelo.network.packets.NpcDialogPacket;
 import net.hollowbit.archipelo.network.packets.PopupTextPacket;
@@ -27,7 +33,6 @@ import net.hollowbit.archipelo.screen.ScreenType;
 import net.hollowbit.archipelo.screen.screens.gamescreen.ChatManager;
 import net.hollowbit.archipelo.screen.screens.gamescreen.ChatMessage;
 import net.hollowbit.archipelo.screen.screens.gamescreen.ChatWindow;
-import net.hollowbit.archipelo.screen.screens.gamescreen.InventoryWindow;
 import net.hollowbit.archipelo.screen.screens.gamescreen.MainMenuWindow;
 import net.hollowbit.archipelo.screen.screens.gamescreen.NpcDialogBox;
 import net.hollowbit.archipelo.screen.screens.gamescreen.PopupTextManager;
@@ -64,6 +69,8 @@ public class GameScreen extends Screen implements PacketHandler, InputProcessor 
 	
 	MainMenuWindow mainMenuWndw;
 	
+	HashMap<String, Form> forms;
+	
 	public GameScreen (String playerName) {
 		super(ScreenType.GAME);
 		ArchipeloClient.getGame().setPlayerName(playerName);
@@ -81,6 +88,7 @@ public class GameScreen extends Screen implements PacketHandler, InputProcessor 
 		worldSnapshotManager = new WorldSnapshotManager(world);
 		popupTextManager = new PopupTextManager();
 		chatManager = new ChatManager();
+		forms = new HashMap<String, Form>();
 		ArchipeloClient.getGame().getNetworkManager().addPacketHandler(this);
 		ArchipeloClient.getGame().getCamera().zoom(1);
 		
@@ -136,7 +144,7 @@ public class GameScreen extends Screen implements PacketHandler, InputProcessor 
 		chatTextField.setMaxLength(140);//Like twitter!
 		stage.addActor(chatTextField);
 		
-		stage.addActor(new InventoryWindow());
+		ArchipeloClient.getGame().getNetworkManager().sendPacket(new FormRequestPacket("inventory", new HashMap<String, String>()));
 	}
 
 	@Override
@@ -253,6 +261,16 @@ public class GameScreen extends Screen implements PacketHandler, InputProcessor 
 			npcDialogBox.setPosition(Gdx.graphics.getWidth() / 2 - npcDialogBox.getWidth() / 2, NPC_DIALOG_BOX_HEIGHT);
 			stage.addActor(npcDialogBox);
 			return true;
+		case PacketType.FORM_DATA:
+			FormDataPacket formDataPacket = (FormDataPacket) packet;
+			if (forms.containsKey(formDataPacket.data.id))
+				forms.get(formDataPacket.data.id).update(formDataPacket.data);
+			else {
+				Form form = FormType.createFormByFormData(formDataPacket.data, this);
+				forms.put(formDataPacket.data.id, form);
+				stage.addActor(form);
+			}
+			return true;
 		}
 		return false;
 	}
@@ -337,6 +355,10 @@ public class GameScreen extends Screen implements PacketHandler, InputProcessor 
 	public void playerMoved () {
 		if (npcDialogBox != null)
 			npcDialogBox.remove();
+	}
+	
+	public void removeForm (Form form) {
+		this.forms.remove(form.getId());
 	}
 	
 	@Override

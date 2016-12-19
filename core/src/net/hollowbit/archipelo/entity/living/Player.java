@@ -66,6 +66,7 @@ public class Player extends LivingEntity {
 	public void create (EntitySnapshot fullSnapshot, Map map, EntityType entityType) {
 		super.create(fullSnapshot, map, entityType);
 		Json json = new Json();
+		System.out.println("Player.java " + fullSnapshot.getString("displayInventory", ""));
 		this.displayInventory = json.fromJson(Item[].class, fullSnapshot.getString("displayInventory", ""));
 		loaded = true;
 	}
@@ -377,6 +378,10 @@ public class Player extends LivingEntity {
 	
 	public float getSpeed () {
 		return SPEED * (isRolling() ? ROLLING_SPEED_SCALE : (isSprinting ? SPRINTING_SPEED_SCALE : 1));
+	}
+	
+	public Item[] getDisplayInventory () {
+		return displayInventory;
 	}
 	
 	private boolean doesCurrentPositionCollideWithMap () {

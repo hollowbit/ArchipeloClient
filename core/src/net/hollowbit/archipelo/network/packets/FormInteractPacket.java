@@ -10,16 +10,14 @@ public class FormInteractPacket extends Packet {
 	public String id;
 	public String command;
 	public HashMap<String, String> data;
-	public boolean close = false;
 	
 	public FormInteractPacket () {
 		super(PacketType.FORM_INTERACT);
 	}
 	
-	public FormInteractPacket (String id, boolean close) {
+	public FormInteractPacket (String id) {
 		this();
 		this.id = id;
-		this.close = close;
 	}
 	
 	public FormInteractPacket (String id, String command, HashMap<String, String> data) {

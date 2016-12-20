@@ -27,6 +27,7 @@ public enum ItemType {
 	SWORD("sword")*/;
 
 	public static final int NO_EQUIP_TYPE = -1;
+	public static final int EQUIP_INDEX_USABLE = 9;
 	
 	public static final float WALK_ANIMATION_LENGTH = 0.15f;
 	public static final float ROLL_ANIMATION_LENGTH = 0.08f;

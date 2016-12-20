@@ -63,6 +63,10 @@ public class InventorySlot extends Widget {
 		this._item = item;
 	}
 	
+	public Item getItem () {
+		return this._item;
+	}
+	
 	public interface InventorySlotActionHandler {
 		
 		public abstract void slotClick (int slot, int inventoryNum, Item item, float xOffset, float yOffset);

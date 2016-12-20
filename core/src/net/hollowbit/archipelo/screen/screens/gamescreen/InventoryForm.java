@@ -11,6 +11,7 @@ import net.hollowbit.archipelo.ArchipeloClient;
 import net.hollowbit.archipelo.entity.living.Player;
 import net.hollowbit.archipelo.form.Form;
 import net.hollowbit.archipelo.items.Item;
+import net.hollowbit.archipelo.items.ItemType;
 import net.hollowbit.archipelo.network.packets.FormInteractPacket;
 import net.hollowbit.archipelo.screen.screens.gamescreen.InventorySlot.InventorySlotActionHandler;
 import net.hollowbit.archipelo.screen.screens.mainmenu.CharacterDisplay;
@@ -231,17 +232,40 @@ public class InventoryForm extends Form implements InventorySlotActionHandler {
 			this.xOffset = xOffset;
 			this.yOffset = yOffset;
 		} else {
+			boolean valid = true;
 			if (slot != slotDown || inventoryNum != inventoryDown) {
-				String command = "move";
-				HashMap<String, String> data = new HashMap<String, String>();
-				data.put(KEY_FROM_SLOT, "" + slotDown);
-				data.put(KEY_TO_SLOT, "" + slot);
-				data.put(KEY_FROM_INVENTORY, "" + inventoryDown);
-				data.put(KEY_TO_INVENTORY, "" + inventoryNum);
+				if (inventoryNum == WEAPON_INVENTORY) {
+					if (itemInHand.getType().equipType != ItemType.EQUIP_INDEX_USABLE)
+						valid = false;
+				} else if (inventoryNum == AMMO_INVENTORY) {
+					if (!itemInHand.getType().ammo)
+						valid = false;
+				} else if (inventoryNum == BUFFS_INVENTORY) {
+					if (!itemInHand.getType().buff)
+						valid = false;
+				} else if (inventoryNum == CONSUMABLES_INVENTORY) {
+					if (!itemInHand.getType().consumable)
+						valid = false;
+				} else if (inventoryNum == EQUIPPED_INVENTORY || inventoryNum == COSMETIC_INVENTORY) {
+					if (itemInHand.getType().equipType != slot)
+						valid = false;
+				}
+				
+				if (valid) {
+					String command = "move";
+					HashMap<String, String> data = new HashMap<String, String>();
+					data.put(KEY_FROM_SLOT, "" + slotDown);
+					data.put(KEY_TO_SLOT, "" + slot);
+					data.put(KEY_FROM_INVENTORY, "" + inventoryDown);
+					data.put(KEY_TO_INVENTORY, "" + inventoryNum);
 
-				ArchipeloClient.getGame().getNetworkManager().sendPacket(new FormInteractPacket(this.id, command, data));
+					ArchipeloClient.getGame().getNetworkManager().sendPacket(new FormInteractPacket(this.id, command, data));	
+				}
 			}
-			inventorySlotCollections.get(inventoryNum)[slot].setItem(itemInHand);
+			if (valid)
+				inventorySlotCollections.get(inventoryNum)[slot].setItem(itemInHand);
+			else
+				inventorySlotCollections.get(inventoryDown)[slotDown].setItem(itemInHand);
 			slotDown = -1;
 			inventoryDown = -1;
 			itemInHand = null;

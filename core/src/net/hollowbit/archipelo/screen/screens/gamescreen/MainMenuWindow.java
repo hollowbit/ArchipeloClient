@@ -1,5 +1,7 @@
 package net.hollowbit.archipelo.screen.screens.gamescreen;
 
+import java.util.HashMap;
+
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
@@ -9,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 import net.hollowbit.archipelo.ArchipeloClient;
+import net.hollowbit.archipelo.network.packets.FormRequestPacket;
 import net.hollowbit.archipelo.network.packets.LogoutPacket;
 import net.hollowbit.archipelo.screen.screens.GameScreen;
 import net.hollowbit.archipelo.tools.LM;
@@ -18,6 +21,7 @@ public class MainMenuWindow extends Window {
 	GameScreen screen;
 	
 	//Ui
+	TextButton inventoryBtn;
 	TextButton logoutBtn;
 	TextButton returnBtn;
 	
@@ -28,12 +32,27 @@ public class MainMenuWindow extends Window {
 		this.setBounds(0, 0, 350, 200);
 		this.setMovable(false);
 		
+		inventoryBtn = new TextButton(LM.ui("inventory"), getSkin());
+		inventoryBtn.addListener(new ClickListener() {
+			
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				ArchipeloClient.getGame().getNetworkManager().sendPacket(new FormRequestPacket("inventory", new HashMap<String, String>()));
+				remove();
+				super.clicked(event, x, y);
+			}
+			
+		});
+		add(inventoryBtn).pad(5);
+		row();
+		
 		logoutBtn = new TextButton(LM.ui("logout"), getSkin());
 		logoutBtn.addListener(new ClickListener() {
 			
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				ArchipeloClient.getGame().getNetworkManager().sendPacket(new LogoutPacket());//Will receive a logout packet in response and then go to menu
+				remove();
 				super.clicked(event, x, y);
 			}
 			

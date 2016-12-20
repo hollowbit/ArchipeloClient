@@ -5,5 +5,5 @@
 	"iconX":7,
 	"minDamage":1,
 	"durability":400,
-	"wearable":true
+	"equipType":4
 }

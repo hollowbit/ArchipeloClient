@@ -13,8 +13,10 @@ public class ItemTypeData {
 	public float critMultiplier = 1.5f;
 	public float critChance = 20.0f;
 	public int durability = 1;
-	public boolean wearable = false;
-	public boolean usable = false;
+	public int equipType = -1;
+	public boolean buff = false;
+	public boolean ammo = false;
+	public boolean consumable = false;
 	public boolean material = false;
 	public int numOfStyles = 1;
 	public int numOfUseAnimations = 1;

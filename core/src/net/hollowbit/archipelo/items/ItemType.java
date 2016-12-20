@@ -25,6 +25,8 @@ public enum ItemType {
 	HAIR1("hair1"),
 	FACE1("face1")/*,
 	SWORD("sword")*/;
+
+	public static final int NO_EQUIP_TYPE = -1;
 	
 	public static final float WALK_ANIMATION_LENGTH = 0.15f;
 	public static final float ROLL_ANIMATION_LENGTH = 0.08f;
@@ -41,8 +43,10 @@ public enum ItemType {
 	public float critMultiplier;
 	public float critChance;
 	public int durability;
-	public boolean wearable;
-	public boolean usable;
+	public int equipType;
+	public boolean buff;
+	public boolean ammo;
+	public boolean consumable;
 	public boolean material;
 	public int numOfStyles;
 	public int numOfUseAnimations;
@@ -74,8 +78,10 @@ public enum ItemType {
 		this.critMultiplier = data.critMultiplier;
 		this.critChance = data.critChance;
 		this.durability = data.durability;
-		this.wearable = data.wearable;
-		this.usable = data.usable;
+		this.equipType = data.equipType;
+		this.buff = data.buff;
+		this.ammo = data.ammo;
+		this.consumable = data.consumable;
 		this.material = data.material;
 		this.numOfStyles = data.numOfStyles;
 		this.numOfUseAnimations = data.numOfUseAnimations;
@@ -86,7 +92,7 @@ public enum ItemType {
 		this.icon = iconMap[iconY][iconX];
 		
 		//Load images depending on conditions
-		if (wearable || usable) {
+		if (equipType != NO_EQUIP_TYPE) {
 			walkAnimation = new Animation[Direction.TOTAL][numOfStyles];
 			sprintAnimation = new Animation[Direction.TOTAL][numOfStyles];
 			rollAnimation = new Animation[Direction.TOTAL][numOfStyles];

@@ -15,6 +15,7 @@ import net.hollowbit.archipelo.entity.living.player.MovementLogEntry;
 import net.hollowbit.archipelo.items.Item;
 import net.hollowbit.archipelo.items.ItemType;
 import net.hollowbit.archipelo.screen.screens.GameScreen;
+import net.hollowbit.archipelo.tools.StaticTools;
 import net.hollowbit.archipelo.world.Map;
 import net.hollowbit.archipeloshared.CollisionRect;
 import net.hollowbit.archipeloshared.Controls;
@@ -65,9 +66,7 @@ public class Player extends LivingEntity {
 	@Override
 	public void create (EntitySnapshot fullSnapshot, Map map, EntityType entityType) {
 		super.create(fullSnapshot, map, entityType);
-		Json json = new Json();
-		System.out.println("Player.java " + fullSnapshot.getString("displayInventory", ""));
-		this.displayInventory = json.fromJson(Item[].class, fullSnapshot.getString("displayInventory", ""));
+		this.displayInventory = StaticTools.getJson().fromJson(Item[].class, fullSnapshot.getString("displayInventory", ""));
 		loaded = true;
 	}
 	

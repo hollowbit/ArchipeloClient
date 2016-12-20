@@ -24,7 +24,6 @@ import net.hollowbit.archipelo.network.PacketType;
 import net.hollowbit.archipelo.network.packets.ChatMessagePacket;
 import net.hollowbit.archipelo.network.packets.ControlsPacket;
 import net.hollowbit.archipelo.network.packets.FormDataPacket;
-import net.hollowbit.archipelo.network.packets.FormRequestPacket;
 import net.hollowbit.archipelo.network.packets.LogoutPacket;
 import net.hollowbit.archipelo.network.packets.NpcDialogPacket;
 import net.hollowbit.archipelo.network.packets.PopupTextPacket;
@@ -143,8 +142,6 @@ public class GameScreen extends Screen implements PacketHandler, InputProcessor 
 		chatTextField.setName("chatTextField");
 		chatTextField.setMaxLength(140);//Like twitter!
 		stage.addActor(chatTextField);
-		
-		ArchipeloClient.getGame().getNetworkManager().sendPacket(new FormRequestPacket("inventory", new HashMap<String, String>()));
 	}
 
 	@Override
@@ -268,6 +265,7 @@ public class GameScreen extends Screen implements PacketHandler, InputProcessor 
 			else {
 				Form form = FormType.createFormByFormData(formDataPacket.data, this);
 				forms.put(formDataPacket.data.id, form);
+				form.setPosition(Gdx.graphics.getWidth() / 2 - form.getWidth() / 2, Gdx.graphics.getHeight() / 2 - form.getHeight() / 2);
 				stage.addActor(form);
 			}
 			return true;

@@ -5,7 +5,6 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Widget;
@@ -21,10 +20,10 @@ public class InventorySlot extends Widget {
 	
 	private Skin skin;
 	private NinePatch patch;
-	private Item item;
+	private Item _item;
 	
 	public InventorySlot (Item item, final int slotNum, final int inventoryNum, final InventorySlotActionHandler handler) {
-		this.item = item;
+		this._item = item;
 		this.skin = ArchipeloClient.getGame().getUiSkin();
 		patch = skin.getPatch("textfield");
 		
@@ -32,25 +31,11 @@ public class InventorySlot extends Widget {
 		this.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
-				handler.slotTouchUp(slotNum, inventoryNum);
+				Item itemToSend = _item;
+				_item = null;
+				handler.slotClick(slotNum, inventoryNum, itemToSend, x, y);
 				super.clicked(event, x, y);
 			}
-		});
-		
-		this.addListener(new InputListener() {
-			
-			@Override
-			public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
-				handler.slotTouchDown(slotNum, inventoryNum);
-				return super.touchDown(event, x, y, pointer, button);
-			}
-			
-			@Override
-			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-				handler.slotTouchUp(slotNum, inventoryNum);
-				super.touchUp(event, x, y, pointer, button);
-			}
-			
 		});
 	}
 	
@@ -58,14 +43,14 @@ public class InventorySlot extends Widget {
 	public void draw (Batch batch, float parentAlpha) {
 		batch.setColor(1, 1, 1, parentAlpha);
 		patch.draw(batch, this.getX(), this.getY(), this.getWidth(), this.getHeight());
-		if (item != null) {
-			Color itemIconDrawColor = new Color(item.color);
+		if (_item != null) {
+			Color itemIconDrawColor = new Color(_item.color);
 			itemIconDrawColor.a = parentAlpha;
 			batch.setColor(itemIconDrawColor);
-			batch.draw(item.getType().getIcon(), this.getX() + OFFSET, this.getY() + OFFSET, this.getWidth() - OFFSET * 2, this.getHeight() - OFFSET * 2);
+			batch.draw(_item.getType().getIcon(), this.getX() + OFFSET, this.getY() + OFFSET, this.getWidth() - OFFSET * 2, this.getHeight() - OFFSET * 2);
 			batch.setColor(1, 1, 1, parentAlpha);
-			if (item.quantity > 1) {
-				GlyphLayout quantityLayout = new GlyphLayout(skin.getFont("chat-font"), "" + item.quantity);
+			if (_item.quantity > 1) {
+				GlyphLayout quantityLayout = new GlyphLayout(skin.getFont("chat-font"), "" + _item.quantity);
 				skin.getFont("chat-font").draw(batch, quantityLayout, this.getX() + this.getWidth() - OFFSET - quantityLayout.width, this.getY() + quantityLayout.height + OFFSET);
 			}
 		}
@@ -74,10 +59,13 @@ public class InventorySlot extends Widget {
 		super.draw(batch, parentAlpha);
 	}
 	
+	public void setItem (Item item) {
+		this._item = item;
+	}
+	
 	public interface InventorySlotActionHandler {
 		
-		public abstract void slotTouchUp (int slot, int inventoryNum);
-		public abstract void slotTouchDown (int slot, int inventoryNum);
+		public abstract void slotClick (int slot, int inventoryNum, Item item, float xOffset, float yOffset);
 		
 	}
 	

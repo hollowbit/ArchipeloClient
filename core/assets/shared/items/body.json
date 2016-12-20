@@ -2,5 +2,5 @@
 	"id":"body",
 	"name":"Body",
 	"desc":"Basic plain body to be colored.",
-	"equipType":0
+	"equipType":5
 }

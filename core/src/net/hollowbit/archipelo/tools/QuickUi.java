@@ -58,7 +58,7 @@ public class QuickUi {
 	}
 	
 	public static ImageButton getIconButton (IconType iconType) {
-		return new ImageButton(iconType.getUpImage(), iconType.getUpImage());
+		return new ImageButton(iconType.getUpImage(), iconType.getDownImage());
 	}
 	
 	public static void makeTextFieldMobileCompatible (final String usage, final TextField textField, final Stage stage, final TextFieldMessageListener listener) {
@@ -187,7 +187,8 @@ public class QuickUi {
 	public enum IconType {
 		HOME(0),
 		CHAT(1),
-		BACK(2);
+		BACK(2),
+		INVENTORY(3);
 		
 		int row = 0;
 		

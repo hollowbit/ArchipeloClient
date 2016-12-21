@@ -24,6 +24,7 @@ import net.hollowbit.archipelo.network.PacketType;
 import net.hollowbit.archipelo.network.packets.ChatMessagePacket;
 import net.hollowbit.archipelo.network.packets.ControlsPacket;
 import net.hollowbit.archipelo.network.packets.FormDataPacket;
+import net.hollowbit.archipelo.network.packets.FormRequestPacket;
 import net.hollowbit.archipelo.network.packets.LogoutPacket;
 import net.hollowbit.archipelo.network.packets.NpcDialogPacket;
 import net.hollowbit.archipelo.network.packets.PopupTextPacket;
@@ -65,6 +66,7 @@ public class GameScreen extends Screen implements PacketHandler, InputProcessor 
 	TextField chatTextField = null;
 	ImageButton homeButton;
 	ImageButton chatButton;
+	ImageButton inventoryButton;
 	
 	MainMenuWindow mainMenuWndw;
 	
@@ -118,6 +120,18 @@ public class GameScreen extends Screen implements PacketHandler, InputProcessor 
 			}
 		});
 		stage.addActor(chatButton);
+		
+		inventoryButton = QuickUi.getIconButton(IconType.INVENTORY);
+		inventoryButton.setBounds(0, 0, MENU_BUTTON_SIZE, MENU_BUTTON_SIZE);
+		inventoryButton.setPosition(MENU_BUTTON_PADDING + (MENU_BUTTON_SIZE + MENU_BUTTON_PADDING) * 2, Gdx.graphics.getHeight() - homeButton.getHeight() - MENU_BUTTON_PADDING);
+		inventoryButton.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				ArchipeloClient.getGame().getNetworkManager().sendPacket(new FormRequestPacket("inventory", new HashMap<String, String>()));
+				super.clicked(event, x, y);
+			}
+		});
+		stage.addActor(inventoryButton);
 		
 		//Chat box
 		if (ArchipeloClient.IS_MOBILE) {

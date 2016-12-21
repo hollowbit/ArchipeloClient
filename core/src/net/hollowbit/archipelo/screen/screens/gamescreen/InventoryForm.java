@@ -262,13 +262,12 @@ public class InventoryForm extends Form implements InventorySlotActionHandler {
 					ArchipeloClient.getGame().getNetworkManager().sendPacket(new FormInteractPacket(this.id, command, data));	
 				}
 			}
-			if (valid)
+			if (valid) {
 				inventorySlotCollections.get(inventoryNum)[slot].setItem(itemInHand);
-			else
-				inventorySlotCollections.get(inventoryDown)[slotDown].setItem(itemInHand);
-			slotDown = -1;
-			inventoryDown = -1;
-			itemInHand = null;
+				slotDown = -1;
+				inventoryDown = -1;
+				itemInHand = null;
+			}
 		}
 	}
 

@@ -22,6 +22,7 @@ public class MainMenuWindow extends Window {
 	
 	//Ui
 	TextButton inventoryBtn;
+	TextButton chatBtn;
 	TextButton logoutBtn;
 	TextButton returnBtn;
 	
@@ -44,6 +45,21 @@ public class MainMenuWindow extends Window {
 			
 		});
 		add(inventoryBtn).pad(5);
+		row();
+		
+		chatBtn = new TextButton(LM.ui("chat"), getSkin());
+		chatBtn.addListener(new ClickListener() {
+			
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				/*ChatWindow chatWindow = new ChatWindow(chatManager, stage, controlsManager);
+				chatWindow.setPosition(Gdx.graphics.getWidth() / 2 - chatWindow.getWidth() / 2, Gdx.graphics.getHeight() / 2 - chatWindow.getHeight() / 2);
+				stage.addActor(chatWindow);//Open a chat window*/
+				super.clicked(event, x, y);
+			}
+			
+		});
+		add(chatBtn).pad(5);
 		row();
 		
 		logoutBtn = new TextButton(LM.ui("logout"), getSkin());

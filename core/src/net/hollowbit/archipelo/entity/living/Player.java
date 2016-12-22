@@ -171,6 +171,7 @@ public class Player extends LivingEntity {
 					rollingDirection = Direction.DOWN_LEFT;
 				
 				if (isMoving(controls)) {
+					System.out.println("Player.java DOWN LEFT!!");
 					directionMoved = Direction.DOWN_LEFT;
 					speedMoved = getSpeed() / LivingEntity.DIAGONAL_FACTOR;
 					pos.add((float) (-deltatime * speedMoved), (float) (-deltatime * speedMoved));

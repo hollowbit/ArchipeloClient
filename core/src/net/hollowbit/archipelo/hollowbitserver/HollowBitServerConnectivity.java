@@ -18,7 +18,7 @@ public class HollowBitServerConnectivity {
 	
 	public static final String ADDRESS = "hollowbit.net";
 	private static final int PORT = 22123;
-	private static final int TIMEOUT_LENGTH = 2000;//Time in milliseconds to wait to connect to HollowBitServer
+	private static final int TIMEOUT_LENGTH = 8000;//Time in milliseconds to wait to connect to HollowBitServer
 	
 	private static final float TIME_BETWEEN_QUERIES = 0.15f;
 	

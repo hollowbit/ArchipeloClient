@@ -112,10 +112,7 @@ public class GameScreen extends Screen implements PacketHandler, InputProcessor 
 		chatButton.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
-				ChatWindow chatWindow = new ChatWindow(chatManager, stage, controlsManager);
-				chatWindow.setPosition(Gdx.graphics.getWidth() / 2 - chatWindow.getWidth() / 2, Gdx.graphics.getHeight() / 2 - chatWindow.getHeight() / 2);
-				stage.addActor(chatWindow);//Open a chat window
-				
+				openChatWindow();
 				super.clicked(event, x, y);
 			}
 		});
@@ -300,6 +297,7 @@ public class GameScreen extends Screen implements PacketHandler, InputProcessor 
 		//Update positions of menu buttons on resize
 		homeButton.setPosition(MENU_BUTTON_PADDING + (MENU_BUTTON_SIZE + MENU_BUTTON_PADDING) * 0, Gdx.graphics.getHeight() - homeButton.getHeight() - MENU_BUTTON_PADDING);
 		chatButton.setPosition(MENU_BUTTON_PADDING + (MENU_BUTTON_SIZE + MENU_BUTTON_PADDING) * 1, Gdx.graphics.getHeight() - homeButton.getHeight() - MENU_BUTTON_PADDING);
+		inventoryButton.setPosition(MENU_BUTTON_PADDING + (MENU_BUTTON_SIZE + MENU_BUTTON_PADDING) * 2, Gdx.graphics.getHeight() - homeButton.getHeight() - MENU_BUTTON_PADDING);
 		
 		if (npcDialogBox != null)
 			npcDialogBox.setPosition(Gdx.graphics.getWidth() / 2 - npcDialogBox.getWidth() / 2, NPC_DIALOG_BOX_HEIGHT);
@@ -371,6 +369,12 @@ public class GameScreen extends Screen implements PacketHandler, InputProcessor 
 	
 	public void removeForm (Form form) {
 		this.forms.remove(form.getId());
+	}
+	
+	public void openChatWindow () {
+		ChatWindow chatWindow = new ChatWindow(chatManager, stage, controlsManager);
+		chatWindow.setPosition(Gdx.graphics.getWidth() / 2 - chatWindow.getWidth() / 2, Gdx.graphics.getHeight() / 2 - chatWindow.getHeight() / 2);
+		stage.addActor(chatWindow);//Open a chat window
 	}
 	
 	@Override

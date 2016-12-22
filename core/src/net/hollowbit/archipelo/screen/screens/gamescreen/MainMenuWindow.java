@@ -26,7 +26,7 @@ public class MainMenuWindow extends Window {
 	TextButton logoutBtn;
 	TextButton returnBtn;
 	
-	public MainMenuWindow (GameScreen screen, Stage stage) {
+	public MainMenuWindow (final GameScreen screen, Stage stage) {
 		super(LM.ui("mainMenu"), ArchipeloClient.getGame().getUiSkin());
 		this.screen = screen;
 		this.setStage(stage);
@@ -52,9 +52,7 @@ public class MainMenuWindow extends Window {
 			
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
-				/*ChatWindow chatWindow = new ChatWindow(chatManager, stage, controlsManager);
-				chatWindow.setPosition(Gdx.graphics.getWidth() / 2 - chatWindow.getWidth() / 2, Gdx.graphics.getHeight() / 2 - chatWindow.getHeight() / 2);
-				stage.addActor(chatWindow);//Open a chat window*/
+				screen.openChatWindow();
 				super.clicked(event, x, y);
 			}
 			

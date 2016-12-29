@@ -4,8 +4,11 @@ import java.util.HashMap;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 
 import net.hollowbit.archipelo.ArchipeloClient;
 import net.hollowbit.archipelo.entity.living.Player;
@@ -19,6 +22,7 @@ import net.hollowbit.archipelo.tools.LM;
 import net.hollowbit.archipelo.tools.QuickUi;
 import net.hollowbit.archipelo.tools.StaticTools;
 import net.hollowbit.archipeloshared.FormData;
+import net.hollowbit.archipeloshared.ItemTypeData;
 
 public class InventoryForm extends Form implements InventorySlotActionHandler {
 
@@ -63,6 +67,7 @@ public class InventoryForm extends Form implements InventorySlotActionHandler {
 	private Table consumablesInventoryTable;
 	private Table buffsInventoryTable;
 	private Table ammoInventoryTable;
+	private Table itemStatTable;
 	
 	private CharacterDisplay characterDisplay;
 	
@@ -206,7 +211,24 @@ public class InventoryForm extends Form implements InventorySlotActionHandler {
 		this.add(equippedInventoryTable).padRight(10);
 		this.add(cosmeticInventoryTable).padRight(25);
 		this.add(mainInventoryTable);
+		
+		itemStatTable = new Table(getSkin());
+		this.add(itemStatTable).pad(10);
+		
 		this.pack();
+		
+		final InventoryForm form = this;
+		this.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				if (event.getTarget() == form) {
+					itemStatTable.clear();
+					itemStatTable.setVisible(false);
+					form.pack();
+				}
+				super.clicked(event, x, y);
+			}
+		});
 	}
 	
 	@Override
@@ -307,6 +329,80 @@ public class InventoryForm extends Form implements InventorySlotActionHandler {
 		for (int i = 0; i < ammoInventory.length; i++) {//Loop through inventory and add slots to window
 			ammoInventorySlots[i].setItem(ammoInventory[i]);
 		}
+	}
+
+	@Override
+	public void slotRightClick (Item item) {
+		itemStatTable.setVisible(true);
+		itemStatTable.clear();
+		itemStatTable.setBackground(new NinePatchDrawable(getSkin().getPatch("textfield")));
+		
+		Label title = new Label(item.getType().getDisplayName(), getSkin());
+		itemStatTable.add(title).padBottom(2);
+		itemStatTable.row();
+
+		Label desc = new Label(item.getType().getDescription(), getSkin(), "small");
+		itemStatTable.add(desc).growX().left().padBottom(6);
+		itemStatTable.row();
+		
+		Label stats = new Label(LM.ui("stats") + ":", getSkin(), "default");
+		itemStatTable.add(stats).growX().left().padBottom(2);
+		itemStatTable.row();
+		
+		//Add stats if they are different from defaults
+		if (item.getType().maxDamage != ItemTypeData.DEFAULT_MAX_DAMAGE) {
+			Label stat = new Label(LM.ui("minDamage") + ": " + item.getType().minDamage, getSkin(), "small");
+			itemStatTable.add(stat).growX().left().padBottom(2);
+			itemStatTable.row();
+		}
+		
+		if (item.getType().maxDamage != ItemTypeData.DEFAULT_MAX_DAMAGE) {
+			Label stat = new Label(LM.ui("maxDamage") + ": " + item.getType().maxDamage, getSkin(), "small");
+			itemStatTable.add(stat).growX().left().padBottom(2);
+			itemStatTable.row();
+		}
+		
+		if (item.getType().defense != ItemTypeData.DEFAULT_DEFENSE) {
+			Label stat = new Label(LM.ui("defense") + ": " + item.getType().defense, getSkin(), "small");
+			itemStatTable.add(stat).growX().left().padBottom(2);
+			itemStatTable.row();
+		}
+		
+		if (item.getType().damageMultiplier != ItemTypeData.DEFAULT_DAMAGE_MULTIPLIER) {
+			Label stat = new Label(LM.ui("damageMultiplier") + ": " + item.getType().damageMultiplier, getSkin(), "small");
+			itemStatTable.add(stat).growX().left().padBottom(2);
+			itemStatTable.row();
+		}
+		
+		if (item.getType().defenseMultiplier != ItemTypeData.DEFAULT_DEFENSE_MULTIPLIER) {
+			Label stat = new Label(LM.ui("defenseMultiplier") + ": " + item.getType().defenseMultiplier, getSkin(), "small");
+			itemStatTable.add(stat).growX().left().padBottom(2);
+			itemStatTable.row();
+		}
+		
+		if (item.getType().speedMultiplier != ItemTypeData.DEFAULT_SPEED_MULTIPLIER) {
+			Label stat = new Label(LM.ui("speedMultiplier") + ": " + item.getType().speedMultiplier, getSkin(), "small");
+			itemStatTable.add(stat).growX().left().padBottom(2);
+			itemStatTable.row();
+		}
+		
+		/*
+		 * Check if max damage is different for crit stuff since they could be default but still be used. Also min damage could still be 0 and make these not display
+		 */
+		if (item.getType().maxDamage != ItemTypeData.DEFAULT_MAX_DAMAGE) {
+			Label stat = new Label(LM.ui("critMultiplier") + ": " + item.getType().critMultiplier, getSkin(), "small");
+			itemStatTable.add(stat).growX().left().padBottom(2);
+			itemStatTable.row();
+		}
+		
+		if (item.getType().maxDamage != ItemTypeData.DEFAULT_MAX_DAMAGE) {
+			Label stat = new Label(LM.ui("critChance") + ": " + item.getType().critChance, getSkin(), "small");
+			itemStatTable.add(stat).growX().left().padBottom(2);
+			itemStatTable.row();
+		}
+		
+		itemStatTable.pack();
+		this.pack();
 	}
 
 }

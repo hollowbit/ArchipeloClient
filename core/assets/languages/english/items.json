@@ -1,0 +1,19 @@
+{
+messages:{
+	bodyName: "Body",
+	bodyDesc: "Basic plain body to be colored.",
+	shirt_basicName: "Basic Shirt",
+	shirt_basicDesc: "Just a basic shirt.",
+	boots_basicName: "Basic Boots",
+	boots_basicDesc: "Just some basic boots.",
+	face1Name: "Face1",
+	face1Desc: "Face1",
+	gloves_basicName: "Basic Gloves",
+	gloves_basicDesc: "Just some basic gloves",
+	hair1Name: "Hair1",
+	hair1Desc: "Hair1",
+	pants_basicName: "Basic Pants",
+	pants_basicDesc: "Just some basic pants.",
+	shoulderpads_basicName: "Basic Shoulderpads",
+	shoulderpads_basicDesc: "Just some basic shoulderpads.",
+}}

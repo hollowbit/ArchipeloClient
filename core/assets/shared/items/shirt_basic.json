@@ -1,9 +1,8 @@
 {
 	"id":"shirt_basic",
-	"name":"Basic Shirt",
-	"desc":"Just a basic shirt.",
 	"iconX":3,
 	"minDamage":1,
 	"durability":400,
-	"equipType":2
+	"equipType":2,
+	"defense": 2
 }

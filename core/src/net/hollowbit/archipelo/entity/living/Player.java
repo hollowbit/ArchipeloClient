@@ -23,7 +23,7 @@ import net.hollowbit.archipeloshared.Direction;
 
 public class Player extends LivingEntity {
 	
-	public static final int SPEED = 60;//Pixels per second
+	//public static final int SPEED = 60;//Pixels per second
 	public static final float ROLLING_DURATION = 0.4f;
 	public static final float ROLLING_SPEED_SCALE = 3.0f;
 	public static final float SPRINTING_SPEED_SCALE = 1.4f;
@@ -50,6 +50,7 @@ public class Player extends LivingEntity {
 	boolean isCurrentPlayer;
 	Item[] displayInventory;
 	boolean loaded = false;
+	float speed = 0;
 	
 	MovementLog movementLog;
 	boolean[] controls;
@@ -67,6 +68,7 @@ public class Player extends LivingEntity {
 	public void create (EntitySnapshot fullSnapshot, Map map, EntityType entityType) {
 		super.create(fullSnapshot, map, entityType);
 		this.displayInventory = StaticTools.getJson().fromJson(Item[].class, fullSnapshot.getString("displayInventory", ""));
+		this.speed = fullSnapshot.getFloat("speed", EntityType.PLAYER.getSpeed());
 		loaded = true;
 	}
 	
@@ -171,7 +173,6 @@ public class Player extends LivingEntity {
 					rollingDirection = Direction.DOWN_LEFT;
 				
 				if (isMoving(controls)) {
-					System.out.println("Player.java DOWN LEFT!!");
 					directionMoved = Direction.DOWN_LEFT;
 					speedMoved = getSpeed() / LivingEntity.DIAGONAL_FACTOR;
 					pos.add((float) (-deltatime * speedMoved), (float) (-deltatime * speedMoved));
@@ -270,6 +271,11 @@ public class Player extends LivingEntity {
 		if (snapshot.doesPropertyExist("displayInventory")) {
 			Json json = new Json();
 			this.displayInventory = json.fromJson(Item[].class, snapshot.getString("displayInventory", ""));
+		}
+		
+		if (snapshot.doesPropertyExist("speed")) {
+			System.out.println("Player.java new speed! " + snapshot.getFloat("speed", speed));
+			this.speed = snapshot.getFloat("speed", speed);
 		}
 		
 		super.applyChangesSnapshot(snapshot);
@@ -377,7 +383,7 @@ public class Player extends LivingEntity {
 	}
 	
 	public float getSpeed () {
-		return SPEED * (isRolling() ? ROLLING_SPEED_SCALE : (isSprinting ? SPRINTING_SPEED_SCALE : 1));
+		return speed * (isRolling() ? ROLLING_SPEED_SCALE : (isSprinting ? SPRINTING_SPEED_SCALE : 1));
 	}
 	
 	public Item[] getDisplayInventory () {

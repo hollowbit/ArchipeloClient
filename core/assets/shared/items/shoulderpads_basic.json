@@ -1,9 +1,8 @@
 {
 	"id":"shoulderpads_basic",
-	"name":"Basic Shoulderpads",
-	"desc":"Just basic shoulderpads.",
 	"iconX":6,
 	"minDamage":1,
 	"durability":400,
-	"equipType":4
+	"equipType":4,
+	"defense": 1
 }

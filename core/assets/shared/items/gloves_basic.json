@@ -1,9 +1,8 @@
 {
 	"id":"gloves_basic",
-	"name":"Basic Gloves",
-	"desc":"Just basic gloves.",
 	"iconX":7,
 	"minDamage":1,
 	"durability":400,
-	"equipType":3
+	"equipType":3,
+	"defense": 1
 }

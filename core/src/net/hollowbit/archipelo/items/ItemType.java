@@ -11,6 +11,7 @@ import com.badlogic.gdx.utils.reflect.ClassReflection;
 import com.badlogic.gdx.utils.reflect.ReflectionException;
 
 import net.hollowbit.archipelo.ArchipeloClient;
+import net.hollowbit.archipelo.tools.LM;
 import net.hollowbit.archipeloshared.Direction;
 import net.hollowbit.archipeloshared.ItemTypeData;
 
@@ -35,14 +36,8 @@ public enum ItemType {
 	public static final int WEARABLE_SIZE = 32;
 	
 	public String id;
-	public String name;
-	public String desc;
 	public int iconX, iconY;
-	public int minDamage;
-	public int maxDamage;
 	public int maxStackSize;
-	public float critMultiplier;
-	public float critChance;
 	public int durability;
 	public int equipType;
 	public boolean buff;
@@ -52,6 +47,15 @@ public enum ItemType {
 	public int numOfStyles;
 	public int numOfUseAnimations;
 	public float useAnimationLength;
+	
+	public int minDamage;
+	public int maxDamage;
+	public int defense;
+	public float damageMultiplier = 1;
+	public float defenseMultiplier = 1;
+	public float speedMultiplier = 1;
+	public float critMultiplier;
+	public int critChance;
 	
 	private TextureRegion icon;
 	private Animation[][] walkAnimation = null;//Not null if wearable
@@ -69,12 +73,14 @@ public enum ItemType {
 		}
 		
 		this.id = data.id;
-		this.name = data.name;
-		this.desc = data.desc;
 		this.iconX = data.iconX;
 		this.iconY = data.iconY;
 		this.minDamage = data.minDamage;
 		this.maxDamage = data.maxDamage;
+		this.defense = data.defense;
+		this.damageMultiplier = data.damageMultiplier;
+		this.defenseMultiplier = data.defenseMultiplier;
+		this.speedMultiplier = data.speedMultiplier;
 		this.maxStackSize = data.maxStackSize;
 		this.critMultiplier = data.critMultiplier;
 		this.critChance = data.critChance;
@@ -161,6 +167,14 @@ public enum ItemType {
 	@Override
 	public String toString() {
 		return id;
+	}
+	
+	public String getDisplayName () {
+		return LM.items(id + "Name");
+	}
+	
+	public String getDescription () {
+		return LM.items(id + "Desc");
 	}
 	
 	private static HashMap<String, ItemType> itemTypes;

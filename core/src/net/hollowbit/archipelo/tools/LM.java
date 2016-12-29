@@ -37,4 +37,8 @@ public class LM {
 		return getMsg(Cat.ERROR, id);
 	}
 	
+	public static String items(String id) {
+		return getMsg(Cat.ITEMS, id);
+	}
+	
 }

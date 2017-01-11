@@ -282,12 +282,16 @@ public class Player extends LivingEntity {
 	}
 	
 	@Override
-	public void applyInterpSnapshot(double timeStamp, EntitySnapshot snapshot) {
+	public void applyInterpSnapshot (long timeStamp, EntitySnapshot snapshot1, EntitySnapshot snapshot2, float fraction) {
 		if (isCurrentPlayer()) {
 			//Correct player position using interp snapshot and time stamp from server
 			movementLog.removeFromBeforeTimeStamp(timeStamp);
-			goal.x = snapshot.getFloat("x", goal.x);
-			goal.y = snapshot.getFloat("y", goal.y);
+			Vector2 packet1Pos = new Vector2(snapshot1.getFloat("x", location.getX()), snapshot1.getFloat("y", location.getY()));
+			Vector2 packet2Pos = new Vector2(snapshot2.getFloat("x", location.getX()), snapshot2.getFloat("y", location.getY()));
+			this.goal.set(packet1Pos.lerp(packet2Pos, fraction));
+			
+			System.out.println("Player.java g: " + goal);
+			System.out.println("Player.java p: " + this.location.pos);
 			
 			double lastTime = timeStamp;
 			
@@ -310,7 +314,7 @@ public class Player extends LivingEntity {
 					goal.add(0, (float) (-deltatime * logEntry.speed));
 					break;
 				case DOWN_LEFT:
-					goal.add(-(float) (-deltatime * logEntry.speed), (float) (-deltatime * logEntry.speed));
+					goal.add((float) (-deltatime * logEntry.speed), (float) (-deltatime * logEntry.speed));
 					break;
 				case DOWN_RIGHT:
 					goal.add((float) (deltatime * logEntry.speed), (float) (-deltatime * logEntry.speed));
@@ -325,8 +329,10 @@ public class Player extends LivingEntity {
 				
 				lastTime = logEntry.timeStamp;
 			}
+			System.out.println("Player.java n: " + this.goal);
+			System.out.println();
 		} else
-			super.applyInterpSnapshot(timeStamp, snapshot);
+			super.applyInterpSnapshot(timeStamp, snapshot1, snapshot2, fraction);
 	}
 	
 	public boolean isMoving (boolean[] controls) {

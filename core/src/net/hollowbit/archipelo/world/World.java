@@ -1,6 +1,8 @@
 package net.hollowbit.archipelo.world;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map.Entry;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -20,6 +22,7 @@ import net.hollowbit.archipelo.network.packets.TeleportPacket;
 import net.hollowbit.archipelo.screen.screens.GameScreen;
 import net.hollowbit.archipelo.screen.screens.gamescreen.MapTagPopupText;
 import net.hollowbit.archipelo.tools.FlagsManager;
+import net.hollowbit.archipelo.tools.StaticTools;
 import net.hollowbit.archipeloshared.CollisionRect;
 import net.hollowbit.archipeloshared.Direction;
 
@@ -37,7 +40,7 @@ public class World implements PacketHandler {
 	private ArrayList<Entity> entities;
 	private Map map;
 	private MapSnapshot nextMapSnapshot;
-	private ArrayList<EntitySnapshot> nextEntitySnapshots;
+	private HashMap<String, EntitySnapshot> nextEntitySnapshots;
 	private TeleportPacket teleportPacket;
 	private Player player;
 	private Color fadeColor;
@@ -59,7 +62,7 @@ public class World implements PacketHandler {
 		ArchipeloClient.getGame().getNetworkManager().addPacketHandler(this);
 	}
 	
-	public void update (float deltaTime, boolean[] controls) {
+	public synchronized void update (float deltaTime, boolean[] controls) {
 		if (time < goalTime) 
 			time += deltaTime * TIME_SPEED;
 		
@@ -102,7 +105,7 @@ public class World implements PacketHandler {
 		}
 	}
 	
-	public void render (SpriteBatch batch) {
+	public synchronized void render (SpriteBatch batch) {
 		if (map != null)
 			map.render(batch, entities);//Entities is passed because they are drawn by the map. This allows map elements to appear in front of entities if they belong there.
 	}
@@ -130,32 +133,35 @@ public class World implements PacketHandler {
 			batch.setColor(fadeColor);
 			batch.draw(ArchipeloClient.getGame().getAssetManager().getTexture("blank"), 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		}
-		fadeColor.a = 1;//Reset fade of Color.BLACK or Color.WHITE
+		fadeColor.a = 1;//Reset fade of color
 		batch.setColor(1, 1, 1, 1);
 	}
 	
-	public void applyInterpWorldSnapshot (WorldSnapshot snapshot) {
-		goalTime = snapshot.time;
-		for (EntitySnapshot entitySnapshot : snapshot.entitySnapshots) {
-			Entity entity = getEntity(entitySnapshot.name);
-			if (entity != null) {
-				if (entity != player || teleportPacket == null)//Makes sure to only update player if they aren't teleporting
-					entity.applyInterpSnapshot(snapshot.timeCreatedMillis, entitySnapshot);
-			}
+	public synchronized void applyInterpWorldSnapshot (long timeStamp, WorldSnapshot snapshot1, WorldSnapshot snapshot2, float fraction) {
+		goalTime = StaticTools.singleDimensionLerp(snapshot1.time, snapshot2.time, fraction);
+		
+		if (teleportPacket != null)//Don't apply interp if client is teleporting
+			return;
+		
+		for (Entity entity : entities) {
+			EntitySnapshot entitySnapshot1 = snapshot1.entitySnapshots.get(entity.getName());
+			EntitySnapshot entitySnapshot2 = snapshot2.entitySnapshots.get(entity.getName());
+			
+			if (entitySnapshot1 != null && entitySnapshot2 != null)
+				entity.applyInterpSnapshot(timeStamp, entitySnapshot1, entitySnapshot2, fraction);
 		}
 	}
 	
-	public void applyChangesWorldSnapshot (WorldSnapshot snapshot) {
-		if (map == null)
+	public synchronized void applyChangesWorldSnapshot (WorldSnapshot snapshot) {
+		if (map == null || teleportPacket != null)
 			return;
 		
 		map.applyChangesSnapshot(snapshot.mapSnapshot);
-		for (EntitySnapshot entitySnapshot : snapshot.entitySnapshots) {
-			Entity entity = getEntity(entitySnapshot.name);
-			if (entity != null) {
-				if (entity != player || teleportPacket == null)
-					entity.applyChangesSnapshot(entitySnapshot);
-			}
+		
+		for (Entity entity : entities) {
+			EntitySnapshot entitySnapshot = snapshot.entitySnapshots.get(entity.getName());
+			if (entitySnapshot != null)
+				entity.applyChangesSnapshot(entitySnapshot);
 		}
 	}
 	
@@ -177,8 +183,8 @@ public class World implements PacketHandler {
 			entity.unload();
 		entities.clear();
 		
-		for (EntitySnapshot entitySnapshot : nextEntitySnapshots) {
-			Entity entity = EntityType.createEntityBySnapshot(entitySnapshot, map);
+		for (Entry<String, EntitySnapshot> entitySnapshot : nextEntitySnapshots.entrySet()) {
+			Entity entity = EntityType.createEntityBySnapshot(entitySnapshot.getValue(), map);
 			entity.load();
 			entities.add(entity);
 			if (entity.getName().equals(ArchipeloClient.getGame().getPlayerName())) {
@@ -285,9 +291,9 @@ public class World implements PacketHandler {
 	private Color getFadeColor (int fadeColor) {
 		switch (fadeColor) {
 		case FADE_COLOR_WHITE:
-			return Color.WHITE;
+			return new Color(Color.WHITE);
 		case FADE_COLOR_BLACK:
-			return Color.BLACK;
+			return new Color(Color.BLACK);
 		}
 		return Color.BLACK;
 	}

@@ -22,6 +22,7 @@ public class MainMenuWindow extends Window {
 	
 	//Ui
 	TextButton inventoryBtn;
+	TextButton statsBtn;
 	TextButton chatBtn;
 	TextButton logoutBtn;
 	TextButton returnBtn;
@@ -30,7 +31,7 @@ public class MainMenuWindow extends Window {
 		super(LM.ui("mainMenu"), ArchipeloClient.getGame().getUiSkin());
 		this.screen = screen;
 		this.setStage(stage);
-		this.setBounds(0, 0, 350, 200);
+		this.setBounds(0, 0, 350, 250);
 		this.setMovable(false);
 		
 		inventoryBtn = new TextButton(LM.ui("inventory"), getSkin());
@@ -45,6 +46,20 @@ public class MainMenuWindow extends Window {
 			
 		});
 		add(inventoryBtn).pad(5);
+		row();
+		
+		statsBtn = new TextButton(LM.ui("myStats"), getSkin());
+		statsBtn.addListener(new ClickListener() {
+			
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				ArchipeloClient.getGame().getNetworkManager().sendPacket(new FormRequestPacket("stats", new HashMap<String, String>()));
+				remove();
+				super.clicked(event, x, y);
+			}
+			
+		});
+		add(statsBtn).pad(5);
 		row();
 		
 		chatBtn = new TextButton(LM.ui("chat"), getSkin());

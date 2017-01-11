@@ -10,4 +10,8 @@ public class StaticTools {
 		return json;
 	}
 	
+	public static float singleDimensionLerp (float value1, float value2, float fraction) {
+		return value1 + ((value2 - value1) * fraction);
+	}
+	
 }

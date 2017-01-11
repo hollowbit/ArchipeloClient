@@ -44,7 +44,7 @@ public abstract class Entity {
 	
 	public void unload () {}
 	
-	public void applyInterpSnapshot (double timeStamp, EntitySnapshot snapshot) {}
+	public void applyInterpSnapshot (long timeStamp, EntitySnapshot snapshot1, EntitySnapshot snapshot2, float fraction) {}
 	
 	public void applyChangesSnapshot (EntitySnapshot snapshot) {
 		location.set(snapshot.getFloat("x", location.getX()), snapshot.getFloat("y", location.getY()), Direction.values()[snapshot.getInt("direction", location.direction.ordinal())]);

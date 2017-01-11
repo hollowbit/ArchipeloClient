@@ -2,7 +2,6 @@ package net.hollowbit.archipelo.tools;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -41,9 +40,9 @@ public class GameCamera {
 	public void update (float deltatime) {
 		if (goal == null) {
 			if (entityToFocusOn != null && !cam.position.epsilonEquals((int)( entityToFocusOn.getLocation().getX() + ArchipeloClient.PLAYER_SIZE / 2), (int) (entityToFocusOn.getLocation().getY() + ArchipeloClient.PLAYER_SIZE / 2), 0, 1.5f)) {
-				//cam.position.x -= cam.position.x - ((int)( entityToFocusOn.getLocation().getX() + ArchipeloClient.PLAYER_SIZE / 2)) * 5f * deltatime;
-				//cam.position.y -= cam.position.y - ((int)( entityToFocusOn.getLocation().getY() + ArchipeloClient.PLAYER_SIZE / 2)) * 5f * deltatime;
-				cam.position.interpolate(new Vector3((int)( entityToFocusOn.getLocation().getX() + ArchipeloClient.PLAYER_SIZE / 2), (int) (entityToFocusOn.getLocation().getY() + ArchipeloClient.PLAYER_SIZE / 2), 0), 5 * deltatime, Interpolation.linear);
+				cam.position.set(entityToFocusOn.getLocation().getX(), entityToFocusOn.getLocation().getY(), 0);
+				
+				//Uncomment this to enable lerping//cam.position.interpolate(new Vector3((int)( entityToFocusOn.getLocation().getX() + ArchipeloClient.PLAYER_SIZE / 2), (int) (entityToFocusOn.getLocation().getY() + ArchipeloClient.PLAYER_SIZE / 2), 0), 5 * deltatime, Interpolation.linear);
 				/*if (cam.position.epsilonEquals((int)( entityToFocusOn.getLocation().getX() + ArchipeloClient.PLAYER_SIZE / 2), (int) (entityToFocusOn.getLocation().getY() + ArchipeloClient.PLAYER_SIZE / 2), 0, 0.2f)) {
 					cam.position.set((int)( entityToFocusOn.getLocation().getX() + ArchipeloClient.PLAYER_SIZE / 2), (int) (entityToFocusOn.getLocation().getY() + ArchipeloClient.PLAYER_SIZE / 2), 0);
 				}*/

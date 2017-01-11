@@ -174,7 +174,8 @@ public class GameScreen extends Screen implements PacketHandler, InputProcessor 
 		
 		if (canPlayerMove())
 			controlsManager.update(isNpcDialogBoxOpen());
-		worldSnapshotManager.update();
+		
+		worldSnapshotManager.update(deltaTime);
 		popupTextManager.update(deltaTime);
 		chatManager.update(deltaTime);
 		world.update(deltaTime, controls);
@@ -201,6 +202,7 @@ public class GameScreen extends Screen implements PacketHandler, InputProcessor 
 
 	@Override
 	public void dispose () {
+		worldSnapshotManager.dispose();
 		world.dispose();
 		ArchipeloClient.getGame().getNetworkManager().removePacketHandler(this);
 	}

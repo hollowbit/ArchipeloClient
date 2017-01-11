@@ -8,12 +8,14 @@ import com.badlogic.gdx.utils.reflect.ReflectionException;
 
 import net.hollowbit.archipelo.screen.screens.GameScreen;
 import net.hollowbit.archipelo.screen.screens.gamescreen.InventoryForm;
+import net.hollowbit.archipelo.screen.screens.gamescreen.PlayerStatsForm;
 import net.hollowbit.archipeloshared.FormData;
 
 @SuppressWarnings("rawtypes")
 public enum FormType {
 	
-	INVENTORY ("inventory", InventoryForm.class, true);
+	INVENTORY ("inventory", InventoryForm.class, true),
+	PLAYER_STATS ("stats", PlayerStatsForm.class, true);
 	
 	public String id;
 	public Class formClass;
@@ -31,7 +33,7 @@ public enum FormType {
 		try {
 			form = (Form) ClassReflection.newInstance(formClass);
 		} catch (ReflectionException e) {
-			Gdx.app.error("Form Loader", "Could not load new instance of form type for: " + id + ".");
+			Gdx.app.error("Form Loader", "Could not load new instance of form type for: " + id + ". " + e.getMessage());
 		}
 		return form;
 	}

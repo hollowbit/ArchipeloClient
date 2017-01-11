@@ -1,6 +1,8 @@
 package net.hollowbit.archipelo.tools;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map.Entry;
 
 import com.badlogic.gdx.utils.Json;
 
@@ -17,12 +19,14 @@ import net.hollowbit.archipelo.world.WorldSnapshot;
 public class WorldSnapshotManager implements PacketHandler {
 	
 	private static final int DELAY = 100;//milliseconds  This delay is a set delay between server and client to keep it consistent. 
+	private static final float TIME_BETWEEN_UPDATES = 1 / 20f;
 	
 	//Stored in packets, rather than the snapshots themselves.
 	//The reason for this is to prevent decoding of packets that won't be used.
 	private ArrayList<WorldSnapshotPacket> worldInterpSnapshotPackets;
 	private ArrayList<WorldSnapshotPacket> worldChangesSnapshotPackets;
 	private World world;
+	private float timer = 0;
 	
 	public WorldSnapshotManager (World world) {
 		this.world = world;
@@ -31,32 +35,46 @@ public class WorldSnapshotManager implements PacketHandler {
 		ArchipeloClient.getGame().getNetworkManager().addPacketHandler(this);
 	}
 	
-	public synchronized void update () {
-		if (worldInterpSnapshotPackets.size() <= 0)
+	public void update (float delta) {
+		timer += delta;
+		if (timer >= TIME_BETWEEN_UPDATES) {
+			timer -= TIME_BETWEEN_UPDATES;
+			
+			//Perform update
+			double timeOfPacket = System.currentTimeMillis() - DELAY;
+			updateInterp(timeOfPacket);
+			updateChange(timeOfPacket);
+		}
+	}
+	
+	private synchronized void updateInterp (double timeOfPacket) {
+		if (worldInterpSnapshotPackets.isEmpty())
 			return;
 		
-		double timeOfPacket = worldInterpSnapshotPackets.get(worldInterpSnapshotPackets.size() - 1).timeCreatedMillis - DELAY;
-		
-		ArrayList<WorldSnapshotPacket> currentWorldSnapshotPackets = new ArrayList<WorldSnapshotPacket>();
-		currentWorldSnapshotPackets.addAll(worldInterpSnapshotPackets);
+		ArrayList<WorldSnapshotPacket> oldPackets = getPacketsFromBeforeMillis(timeOfPacket, worldInterpSnapshotPackets);
 
-		worldInterpSnapshotPackets.removeAll(getPacketsFromBeforeMillis(timeOfPacket, worldInterpSnapshotPackets));
+		if (oldPackets.isEmpty())
+			return;
+		
+		WorldSnapshotPacket packet1 = oldPackets.get(oldPackets.size() - 1);
+		worldInterpSnapshotPackets.removeAll(oldPackets);
+		
+		if (worldInterpSnapshotPackets.isEmpty())
+			return;
+		
+		WorldSnapshotPacket packet2 = worldInterpSnapshotPackets.get(0);
+		
+		double delta = packet2.timeCreatedMillis - packet1.timeCreatedMillis;
+		double deltaF = timeOfPacket - packet1.timeCreatedMillis;
+		
+		double fraction = deltaF / delta;
 		
 		//Find the latest packet
-		if (!worldInterpSnapshotPackets.isEmpty()) {
-			WorldSnapshotPacket latestPacket = worldInterpSnapshotPackets.get(0);
-			for (WorldSnapshotPacket packet : worldInterpSnapshotPackets) {
-				if (packet.timeCreatedMillis < latestPacket.timeCreatedMillis) {
-					latestPacket = packet;
-					break;
-				}
-			}
-			if (latestPacket != null) {
-				world.applyInterpWorldSnapshot(decode(latestPacket));
-				worldInterpSnapshotPackets.remove(latestPacket);
-			}
-		}
-		
+		world.applyInterpWorldSnapshot((long) timeOfPacket, decode(packet1), decode(packet2), (float) fraction);
+		worldInterpSnapshotPackets.remove(packet2);
+	}
+	
+	private synchronized void updateChange (double timeOfPacket) {
 		//Apply all changes packets to world that are at proper time
 		ArrayList<WorldSnapshotPacket> packetsToApply = getPacketsFromBeforeMillis(timeOfPacket, worldChangesSnapshotPackets);
 		for (WorldSnapshotPacket packet : packetsToApply) {
@@ -68,7 +86,7 @@ public class WorldSnapshotManager implements PacketHandler {
 	private ArrayList<WorldSnapshotPacket> getPacketsFromBeforeMillis (double millis, ArrayList<WorldSnapshotPacket> packetList) {
 		ArrayList<WorldSnapshotPacket> packets = new ArrayList<WorldSnapshotPacket>();
 		for (WorldSnapshotPacket packet : packetList) {
-			if (packet.timeCreatedMillis < millis)
+			if (packet.timeCreatedMillis <= millis)
 				packets.add(packet);
 		}
 		return packets;
@@ -79,10 +97,10 @@ public class WorldSnapshotManager implements PacketHandler {
 		double timeCreatedMillis = packet.timeCreatedMillis;
 		int time = packet.time;
 		int type = packet.type;
-		ArrayList<EntitySnapshot> entitySnapshots = new ArrayList<EntitySnapshot>();
+		HashMap<String, EntitySnapshot> entitySnapshots = new HashMap<String, EntitySnapshot>();
 		if (packet.entitySnapshots != null) {//Possibility of being null if there were no entity changes (on server) in that tick.
-			for (String entitySnapshotString : packet.entitySnapshots) {
-				entitySnapshots.add(json.fromJson(EntitySnapshot.class, entitySnapshotString));
+			for (Entry<String, String> entry : packet.entitySnapshots.entrySet()) {
+				entitySnapshots.put(entry.getKey(), json.fromJson(EntitySnapshot.class, entry.getValue()));
 			}
 		}
 		
@@ -122,6 +140,10 @@ public class WorldSnapshotManager implements PacketHandler {
 	private synchronized void clearLists () {
 		worldInterpSnapshotPackets.clear();
 		worldChangesSnapshotPackets.clear();
+	}
+	
+	public void dispose () {
+		
 	}
 	
 }

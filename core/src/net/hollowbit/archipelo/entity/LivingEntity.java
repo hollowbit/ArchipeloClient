@@ -6,7 +6,7 @@ import net.hollowbit.archipelo.world.Map;
 
 public abstract class LivingEntity extends Entity {
 	
-	public static final int INTERPOLATION_SPEED = 250;
+	public static final int INTERPOLATION_SPEED = 25;
 	public static final float MOVEMENT_STATETIME_START = 0.9f / 8;
 	public static final double DIAGONAL_FACTOR = Math.sqrt(2);
 
@@ -37,8 +37,10 @@ public abstract class LivingEntity extends Entity {
 	}
 	
 	@Override
-	public void applyInterpSnapshot(double timeStamp, EntitySnapshot snapshot) {
-		this.goal.set(snapshot.getFloat("x", location.getX()), snapshot.getFloat("y", location.getY()));
+	public void applyInterpSnapshot(long timeStamp, EntitySnapshot snapshot1, EntitySnapshot snapshot2, float fraction) {
+		Vector2 packet1Pos = new Vector2(snapshot1.getFloat("x", location.getX()), snapshot1.getFloat("y", location.getY()));
+		Vector2 packet2Pos = new Vector2(snapshot2.getFloat("x", location.getX()), snapshot2.getFloat("y", location.getY()));
+		this.goal.set(packet1Pos.lerp(packet2Pos, fraction));
 	}
 	
 	@Override

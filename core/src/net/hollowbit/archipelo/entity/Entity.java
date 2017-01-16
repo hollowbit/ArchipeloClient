@@ -30,7 +30,7 @@ public abstract class Entity {
 		this.location = new Location(map, new Vector2(fullSnapshot.getFloat("x", 0), fullSnapshot.getFloat("y", 0)), Direction.values()[fullSnapshot.getInt("direction", 0)]);
 	}
 	
-	public abstract void update (float deltaTime);
+	public abstract void update (float deltaTime, float timeUntilNextInterp);
 	
 	public boolean isPlayer () {
 		return false;

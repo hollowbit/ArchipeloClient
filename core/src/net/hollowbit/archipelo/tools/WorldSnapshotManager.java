@@ -18,8 +18,8 @@ import net.hollowbit.archipelo.world.WorldSnapshot;
 
 public class WorldSnapshotManager implements PacketHandler {
 	
-	private static final int DELAY = 100;//milliseconds  This delay is a set delay between server and client to keep it consistent. 
-	private static final float TIME_BETWEEN_UPDATES = 1 / 20f;
+	public static final int DELAY = 100;//milliseconds  This delay is a set delay between server and client to keep it consistent. 
+	public static final float TIME_BETWEEN_UPDATES = 1 / 20f;
 	
 	//Stored in packets, rather than the snapshots themselves.
 	//The reason for this is to prevent decoding of packets that won't be used.

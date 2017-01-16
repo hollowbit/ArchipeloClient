@@ -15,6 +15,6 @@ public abstract class LifelessEntity extends Entity {
 	}
 
 	@Override
-	public void update (float deltaTime) {}
+	public void update (float deltaTime, float timeUntilNextInterp) {}
 	
 }

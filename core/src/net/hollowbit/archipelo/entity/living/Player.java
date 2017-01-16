@@ -83,8 +83,8 @@ public class Player extends LivingEntity {
 	}
 	
 	@Override
-	public void update (float deltatime) {
-		super.update(deltatime);
+	public void update (float deltatime, float timeUntilNextInterp) {
+		super.update(deltatime, timeUntilNextInterp);
 		
 		if (isRolling()) {
 			rollingStateTime += deltatime;
@@ -284,6 +284,8 @@ public class Player extends LivingEntity {
 	@Override
 	public void applyInterpSnapshot (long timeStamp, EntitySnapshot snapshot1, EntitySnapshot snapshot2, float fraction) {
 		if (isCurrentPlayer()) {
+			Vector2 oldGoal = new Vector2(goal);
+			
 			//Correct player position using interp snapshot and time stamp from server
 			movementLog.removeFromBeforeTimeStamp(timeStamp);
 			Vector2 packet1Pos = new Vector2(snapshot1.getFloat("x", location.getX()), snapshot1.getFloat("y", location.getY()));
@@ -330,6 +332,7 @@ public class Player extends LivingEntity {
 				lastTime = logEntry.timeStamp;
 			}
 			System.out.println("Player.java n: " + this.goal);
+			System.out.println("Player.java dif: " + this.goal.dst2(oldGoal));
 			System.out.println();
 		} else
 			super.applyInterpSnapshot(timeStamp, snapshot1, snapshot2, fraction);

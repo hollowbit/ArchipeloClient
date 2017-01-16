@@ -23,6 +23,7 @@ import net.hollowbit.archipelo.screen.screens.GameScreen;
 import net.hollowbit.archipelo.screen.screens.gamescreen.MapTagPopupText;
 import net.hollowbit.archipelo.tools.FlagsManager;
 import net.hollowbit.archipelo.tools.StaticTools;
+import net.hollowbit.archipelo.tools.WorldSnapshotManager;
 import net.hollowbit.archipeloshared.CollisionRect;
 import net.hollowbit.archipeloshared.Direction;
 
@@ -49,6 +50,8 @@ public class World implements PacketHandler {
 	private boolean firstTimeLoading;
 	FlagsManager flagsManager;
 	
+	private float timeSinceLastInterp = 0;
+	
 	public World (GameScreen gameScreen) {
 		this.gameScreen = gameScreen;
 		entities = new ArrayList<Entity>();
@@ -63,6 +66,8 @@ public class World implements PacketHandler {
 	}
 	
 	public synchronized void update (float deltaTime, boolean[] controls) {
+		timeSinceLastInterp += deltaTime;
+		
 		if (time < goalTime) 
 			time += deltaTime * TIME_SPEED;
 		
@@ -73,7 +78,7 @@ public class World implements PacketHandler {
 			player.updatePlayer(deltaTime, controls);
 		
 		for (Entity entity : entities) {
-			entity.update(deltaTime);
+			entity.update(deltaTime, timeSinceLastInterp / WorldSnapshotManager.TIME_BETWEEN_UPDATES);
 		}
 		
 		//Fade map in
@@ -150,6 +155,8 @@ public class World implements PacketHandler {
 			if (entitySnapshot1 != null && entitySnapshot2 != null)
 				entity.applyInterpSnapshot(timeStamp, entitySnapshot1, entitySnapshot2, fraction);
 		}
+		
+		timeSinceLastInterp = 0;
 	}
 	
 	public synchronized void applyChangesWorldSnapshot (WorldSnapshot snapshot) {

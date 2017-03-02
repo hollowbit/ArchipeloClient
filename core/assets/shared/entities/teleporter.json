@@ -7,6 +7,6 @@
 	"viewRectHeight":32,
 	"collisionRects":[{}],
 	"animations":[
-				{"id":"default", "timeBetweenFrames":0.15, "numberOfDirections":1, "looping":true}
+				{"id":"default", "totalRuntime":1.2, "looping":true}
 				]
 }

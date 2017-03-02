@@ -9,17 +9,17 @@ import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
-import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 
 import net.hollowbit.archipelo.ArchipeloClient;
+import net.hollowbit.archipelo.form.MobileCompatibleWindow;
 import net.hollowbit.archipelo.tools.ControlsManager;
 import net.hollowbit.archipelo.tools.LM;
 import net.hollowbit.archipelo.tools.QuickUi;
 import net.hollowbit.archipelo.tools.QuickUi.TextFieldMessageListener;
 
-public class ChatWindow extends Window implements ChatListener {
+public class ChatWindow extends MobileCompatibleWindow implements ChatListener {
 	
 	//Ui elements
 	TextButton closeButton;
@@ -33,17 +33,14 @@ public class ChatWindow extends Window implements ChatListener {
 	float heightOfMessages = 0;
 	
 	public ChatWindow (final ChatManager chatManager, Stage stage, ControlsManager controlsManager) {
-		super(LM.ui("chat"), ArchipeloClient.getGame().getUiSkin());
+		super(LM.ui("chat"), ArchipeloClient.getGame().getUiSkin(), 1);
 		this.chatManager = chatManager;
 		this.setStage(stage);
-		
-		this.setBounds(0, 0, 500, 550);
-		
 		chatTable = new Table();
 		
 		chatPane = new ScrollPane(chatTable, getSkin());
 		chatPane.setFadeScrollBars(false);
-		add(chatPane).grow().colspan(2).pad(3);
+		add(chatPane).grow().colspan(2).pad(3).height(450);
 		
 		row();
 		
@@ -59,7 +56,12 @@ public class ChatWindow extends Window implements ChatListener {
 				}
 			}
 		});
-		add(chatTextField).width(380).height(40).pad(3);
+		
+		//Change width depending if on mobile or not
+		float width = 380;
+		if (ArchipeloClient.IS_MOBILE)
+			width = 700;
+		add(chatTextField).width(width).height(40).pad(3);
 		
 		if (!ArchipeloClient.IS_MOBILE)//If not on mobile, set focus to chat text field
 			stage.setKeyboardFocus(chatTextField);
@@ -84,6 +86,8 @@ public class ChatWindow extends Window implements ChatListener {
 		//Add messages already in chat manager
 		for (ChatMessage message : chatManager.getChatMessages())
 			newChatMessageReceived(message);
+		
+		this.pack();
 	}
 	
 	@Override

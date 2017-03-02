@@ -151,7 +151,9 @@ public class MainMenuScreen extends Screen {
 		
 		//If there is an error, show it
 		if (error != null)
-			QuickUi.showErrorWindow("Wait, what?!", error, stage);
+			QuickUi.showErrorWindow("!?!?!", error, stage);
+		
+		ArchipeloClient.getGame().getAssetManager().getMusic("title-screen").play();
 	}
 
 	@Override
@@ -194,7 +196,7 @@ public class MainMenuScreen extends Screen {
 			if (!prefs.isLoggedIn() && !isLoginRegisterWindowOpen()) {
 				loginRegisterWndw = new LoginRegisterWindow(this, stage);
 				stage.addActor(loginRegisterWndw);
-				loginRegisterWndw.setPosition(Gdx.graphics.getWidth() / 2 - loginRegisterWndw.getWidth() / 2, Gdx.graphics.getHeight() / 2 - loginRegisterWndw.getHeight() / 2);
+				loginRegisterWndw.centerOnScreen();
 			}
 			
 			//If the user is logged in and the login window is still open, close it.
@@ -207,7 +209,7 @@ public class MainMenuScreen extends Screen {
 			if (prefs.isLoggedIn() && !isServerPickerWindowOpen() && !ArchipeloClient.getGame().getNetworkManager().isConnected() && !isLoginRegisterWindowOpen()) {//Don't open the server picker if the login window is open
 				serverPickerWndw = new ServerPickerWindow();
 				stage.addActor(serverPickerWndw);
-				serverPickerWndw.setPosition(Gdx.graphics.getWidth() / 2 - serverPickerWndw.getWidth() / 2, Gdx.graphics.getHeight() / 2 - serverPickerWndw.getHeight() / 2);
+				serverPickerWndw.centerOnScreen();
 			}
 			
 			//If the server is picked and the server picker window is still open, close it.
@@ -261,13 +263,13 @@ public class MainMenuScreen extends Screen {
 		if (exitBtn != null)
 			exitBtn.setPosition(Gdx.graphics.getWidth() / 2 - exitBtn.getWidth() / 2, Gdx.graphics.getHeight() / 2 - exitBtn.getHeight() / 2 - 100);
 		if (loginWndw != null)
-			loginWndw.setPosition(Gdx.graphics.getWidth() / 2 - loginWndw.getWidth() / 2, Gdx.graphics.getHeight() / 2 - loginWndw.getHeight() / 2);
+			loginWndw.centerOnScreen();
 		if (registerWndw != null)
-			registerWndw.setPosition(Gdx.graphics.getWidth() / 2 - registerWndw.getWidth() / 2, Gdx.graphics.getHeight() / 2 - registerWndw.getHeight() / 2);
+			registerWndw.centerOnScreen();
 		if (loginRegisterWndw != null)
-			loginRegisterWndw.setPosition(Gdx.graphics.getWidth() / 2 - loginRegisterWndw.getWidth() / 2, Gdx.graphics.getHeight() / 2 - loginRegisterWndw.getHeight() / 2);
+			loginRegisterWndw.centerOnScreen();
 		if (serverPickerWndw != null)
-			serverPickerWndw.setPosition(Gdx.graphics.getWidth() / 2 - serverPickerWndw.getWidth() / 2, Gdx.graphics.getHeight() / 2 - serverPickerWndw.getHeight() / 2);
+			serverPickerWndw.centerOnScreen();
 	}
 
 	@Override
@@ -338,7 +340,7 @@ public class MainMenuScreen extends Screen {
 				if (!isServerPickerWindowOpen()) {
 					ArchipeloClient.getGame().getNetworkManager().disconnect();
 					serverPickerWndw = new ServerPickerWindow();
-					serverPickerWndw.setPosition(Gdx.graphics.getWidth() / 2 - serverPickerWndw.getWidth() / 2, Gdx.graphics.getHeight() / 2 - serverPickerWndw.getHeight() / 2);
+					serverPickerWndw.centerOnScreen();
 					stage.addActor(serverPickerWndw);
 				}
 				super.clicked(event, x, y);
@@ -361,7 +363,7 @@ public class MainMenuScreen extends Screen {
 						ArchipeloClient.getGame().getNetworkManager().sendPacket(new LogoutPacket());
 					
 					loginRegisterWndw = new LoginRegisterWindow(mainMenuScreen, stage);
-					loginRegisterWndw.setPosition(Gdx.graphics.getWidth() / 2 - loginRegisterWndw.getWidth() / 2, Gdx.graphics.getHeight() / 2 - loginRegisterWndw.getHeight() / 2);
+					loginRegisterWndw.centerOnScreen();
 					stage.addActor(loginRegisterWndw);
 				}
 				super.clicked(event, x, y);

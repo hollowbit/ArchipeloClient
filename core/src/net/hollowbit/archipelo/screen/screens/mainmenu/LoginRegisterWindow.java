@@ -5,15 +5,15 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 
 import net.hollowbit.archipelo.ArchipeloClient;
+import net.hollowbit.archipelo.form.MobileCompatibleWindow;
 import net.hollowbit.archipelo.screen.screens.MainMenuScreen;
 import net.hollowbit.archipelo.tools.LM;
 
-public class LoginRegisterWindow extends Window {
+public class LoginRegisterWindow extends MobileCompatibleWindow {
 
 	private Label instructionsLabel;
 	private TextButton loginButton;
@@ -45,7 +45,7 @@ public class LoginRegisterWindow extends Window {
 			public void clicked(InputEvent event, float x, float y) {
 				if (!screen.isThereAlreadyALoginWindow()) {
 					LoginWindow loginWndw = new LoginWindow(loginRegisterWindow, getStage());
-					loginWndw.setPosition(Gdx.graphics.getWidth() / 2 - loginWndw.getWidth() / 2, Gdx.graphics.getHeight() / 2 - loginWndw.getHeight() / 2);
+					loginWndw.centerOnScreen();
 					getStage().addActor(loginWndw);
 					screen.setLoginWindow(loginWndw);
 					setVisible(false);
@@ -63,7 +63,7 @@ public class LoginRegisterWindow extends Window {
 			public void clicked(InputEvent event, float x, float y) {
 				if (!screen.isThereAlreadyARegisterWindow()) {
 					RegisterWindow registerWndw = new RegisterWindow(loginRegisterWindow, getStage());
-					registerWndw.setPosition(Gdx.graphics.getWidth() / 2 - registerWndw.getWidth() / 2, Gdx.graphics.getHeight() / 2 - registerWndw.getHeight() / 2);
+					registerWndw.centerOnScreen();
 					getStage().addActor(registerWndw);
 					screen.setRegisterWindow(registerWndw);
 					setVisible(false);

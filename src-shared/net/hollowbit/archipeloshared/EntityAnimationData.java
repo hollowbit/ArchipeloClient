@@ -4,8 +4,9 @@ public class EntityAnimationData {
 	
 	public String id = "default";
 	public String fileName = "";
-	public float timeBetweenFrames = 0.2f;
+	public float totalRuntime = 0.2f;
 	public int numberOfDirections = 1;
-	public boolean looping = false;
+	public boolean looping = true;
+	public boolean finiteLength = false;
 	
 }

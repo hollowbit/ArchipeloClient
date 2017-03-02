@@ -6,7 +6,6 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -51,10 +50,11 @@ public class CharacterCreatorScreen extends Screen implements PacketHandler {
 	private static final Item BODY = new Item(ItemType.BODY);
 	private static final Item SHIRT = new Item(ItemType.SHIRT_BASIC);
 	private static final Item PANTS = new Item(ItemType.PANTS_BASIC);
+	private static final Item BOOTS = new Item(ItemType.BOOTS_BASIC);
 	
-	private static final Color[] HAIR_COLORS = {new Color(1, 1, 1, 1), new Color(0.627f, 0.412f, 0.071f, 1), new Color(0.843f, 0.824f, 0.275f, 1)};
-	private static final Color[] EYE_COLORS = {Color.BLUE, Color.BROWN, Color.RED, Color.GREEN};
-	private static final Color[] BODY_COLORS = {new Color(1, 1, 1, 1), new Color(0.7f, 0.5f, 0.08f, 1)};
+	private static final Color[] HAIR_COLORS = {new Color(39 / 255f, 28 / 255f, 3 / 255f, 1), new Color(0.627f, 0.412f, 0.071f, 1), new Color(0.843f, 0.824f, 0.275f, 1)};
+	private static final Color[] EYE_COLORS = {new Color(0.0549f,0.608f,0.819f,1), Color.BROWN, Color.RED, new Color(0.09f,0.784f,0.125f,1)};
+	private static final Color[] BODY_COLORS = {new Color(251 / 255f, 222 / 255f, 136 / 255f, 1), new Color(0.7f, 0.5f, 0.08f, 1), new Color(249 / 255f, 240 / 255f, 138 / 255f, 1)};
 	//private static final Color[] SHIRT_COLORS = {new Color(1, 1, 1, 1)};
 	//private static final Color[] PANTS_COLORS = {new Color(1, 1, 1, 1)};
 	
@@ -243,10 +243,10 @@ public class CharacterCreatorScreen extends Screen implements PacketHandler {
 		stage.addActor(bodyColorButton);
 		
 		//Shirt
-		shirtColorButton = new Button(ArchipeloClient.getGame().getUiSkin());
+		/*shirtColorButton = new Button(ArchipeloClient.getGame().getUiSkin());
 		shirtColorButton.setBounds(0, 0, PART_BUTTON_SIZE, PART_BUTTON_SIZE);
 		shirtColorButton.setTouchable(Touchable.disabled);
-		/*shirtColorButton.addListener(new ClickListener() {
+		shirtColorButton.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				if (colorPickerWindow != null)//If a color picker window is already open, don't opena  new one
@@ -263,14 +263,14 @@ public class CharacterCreatorScreen extends Screen implements PacketHandler {
 				stageWindow.addActor(colorPicker);
 				super.clicked(event, x, y);
 			}
-		});*/
-		stage.addActor(shirtColorButton);
+		});
+		stage.addActor(shirtColorButton);*/
 		
 		//Pants
-		pantsColorButton = new Button(ArchipeloClient.getGame().getUiSkin());
+		/*pantsColorButton = new Button(ArchipeloClient.getGame().getUiSkin());
 		pantsColorButton.setBounds(0, 0, PART_BUTTON_SIZE, PART_BUTTON_SIZE);
 		pantsColorButton.setTouchable(Touchable.disabled);
-		/*pantsColorButton.addListener(new ClickListener() {
+		pantsColorButton.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				if (colorPickerWindow != null)//If a color picker window is already open, don't open a new one
@@ -287,8 +287,8 @@ public class CharacterCreatorScreen extends Screen implements PacketHandler {
 				stageWindow.addActor(colorPicker);
 				super.clicked(event, x, y);
 			}
-		});*/
-		stage.addActor(pantsColorButton);
+		});
+		stage.addActor(pantsColorButton);*/
 		
 		//Finish
 		finishButton = new TextButton(LM.getMsg(Cat.UI, "playGame"), ArchipeloClient.getGame().getUiSkin(), "large");
@@ -370,30 +370,32 @@ public class CharacterCreatorScreen extends Screen implements PacketHandler {
 		/////////////Draw display items////////////
 		//Draw hair
 		batch.setColor(HAIR_COLORS[hairColor]);
-		batch.draw(HAIR_STYLES[selectedHair].getType().getWalkFrame(Direction.DOWN, 0), width - ARROW_BUTTON_WIDTH - PADDING - PART_BUTTON_SIZE - PADDING, height - PADDING_FROM_TOP, PART_BUTTON_SIZE, PART_BUTTON_SIZE);
+		batch.draw(HAIR_STYLES[selectedHair].getType().getWalkFrame(Direction.DOWN, 0, 0, 0), width - ARROW_BUTTON_WIDTH - PADDING - PART_BUTTON_SIZE - PADDING, height - PADDING_FROM_TOP, PART_BUTTON_SIZE, PART_BUTTON_SIZE);
 		
 		//Draw face
 		batch.setColor(1, 1, 1, 1);
-		batch.draw(FACE_STYLES[selectedFace].getType().getWalkFrame(Direction.DOWN, 0, 0), width - ARROW_BUTTON_WIDTH - PADDING - PART_BUTTON_SIZE - PADDING, height - PADDING_FROM_TOP - (PADDING_FROM_EACH_OTHER + PART_BUTTON_SIZE), PART_BUTTON_SIZE, PART_BUTTON_SIZE);
+		batch.draw(FACE_STYLES[selectedFace].getType().getWalkFrame(Direction.DOWN, 0, 0, 0), width - ARROW_BUTTON_WIDTH - PADDING - PART_BUTTON_SIZE - PADDING, height - PADDING_FROM_TOP - (PADDING_FROM_EACH_OTHER + PART_BUTTON_SIZE), PART_BUTTON_SIZE, PART_BUTTON_SIZE);
 		batch.setColor(EYE_COLORS[eyeColor]);
-		batch.draw(FACE_STYLES[selectedFace].getType().getWalkFrame(Direction.DOWN, 0, 1), width - ARROW_BUTTON_WIDTH - PADDING - PART_BUTTON_SIZE - PADDING, height - PADDING_FROM_TOP - (PADDING_FROM_EACH_OTHER + PART_BUTTON_SIZE), PART_BUTTON_SIZE, PART_BUTTON_SIZE);
+		batch.draw(FACE_STYLES[selectedFace].getType().getWalkFrame(Direction.DOWN, 0, 1, 0), width - ARROW_BUTTON_WIDTH - PADDING - PART_BUTTON_SIZE - PADDING, height - PADDING_FROM_TOP - (PADDING_FROM_EACH_OTHER + PART_BUTTON_SIZE), PART_BUTTON_SIZE, PART_BUTTON_SIZE);
 		batch.setColor(HAIR_COLORS[hairColor]);
-		batch.draw(FACE_STYLES[selectedFace].getType().getWalkFrame(Direction.DOWN, 0, 2), width - ARROW_BUTTON_WIDTH - PADDING - PART_BUTTON_SIZE - PADDING, height - PADDING_FROM_TOP - (PADDING_FROM_EACH_OTHER + PART_BUTTON_SIZE), PART_BUTTON_SIZE, PART_BUTTON_SIZE);
+		batch.draw(FACE_STYLES[selectedFace].getType().getWalkFrame(Direction.DOWN, 0, 2, 0), width - ARROW_BUTTON_WIDTH - PADDING - PART_BUTTON_SIZE - PADDING, height - PADDING_FROM_TOP - (PADDING_FROM_EACH_OTHER + PART_BUTTON_SIZE), PART_BUTTON_SIZE, PART_BUTTON_SIZE);
 		
 		//Draw body
 		batch.setColor(BODY_COLORS[bodyColor]);
-		batch.draw(BODY.getType().getWalkFrame(Direction.DOWN, 0), width - ARROW_BUTTON_WIDTH - PADDING - PART_BUTTON_SIZE - PADDING, height - PADDING_FROM_TOP - (PADDING_FROM_EACH_OTHER + PART_BUTTON_SIZE) * 2, PART_BUTTON_SIZE, PART_BUTTON_SIZE);
+		batch.draw(BODY.getType().getWalkFrame(Direction.DOWN, 0, 0, 0), width - ARROW_BUTTON_WIDTH - PADDING - PART_BUTTON_SIZE - PADDING, height - PADDING_FROM_TOP - (PADDING_FROM_EACH_OTHER + PART_BUTTON_SIZE) * 2, PART_BUTTON_SIZE, PART_BUTTON_SIZE);
 		
 		//Draw shirt
 		//batch.setColor(SHIRT_COLORS[shirtColor]);
-		batch.setColor(1, 1, 1, 1);
+		/*batch.setColor(1, 1, 1, 1);
 		batch.draw(SHIRT.getType().getWalkFrame(Direction.DOWN, 0), width - ARROW_BUTTON_WIDTH - PADDING - PART_BUTTON_SIZE - PADDING, height - PADDING_FROM_TOP - (PADDING_FROM_EACH_OTHER + PART_BUTTON_SIZE) * 3, PART_BUTTON_SIZE, PART_BUTTON_SIZE);
 		
 		//Draw pants
 		//batch.setColor(PANTS_COLORS[pantsColor]);
 		batch.setColor(1, 1, 1, 1);
 		batch.draw(PANTS.getType().getWalkFrame(Direction.DOWN, 0), width - ARROW_BUTTON_WIDTH - PADDING - PART_BUTTON_SIZE - PADDING, height - PADDING_FROM_TOP - (PADDING_FROM_EACH_OTHER + PART_BUTTON_SIZE) * 4, PART_BUTTON_SIZE, PART_BUTTON_SIZE);
-		
+		*/
+
+		batch.setColor(1, 1, 1, 1);
 		batch.end();
 		stageWindow.draw();
 		batch.begin();
@@ -417,10 +419,10 @@ public class CharacterCreatorScreen extends Screen implements PacketHandler {
 		bodyColorButton.setPosition(width - ARROW_BUTTON_WIDTH - PADDING - PART_BUTTON_SIZE - PADDING, height - PADDING_FROM_TOP - (PADDING_FROM_EACH_OTHER + PART_BUTTON_SIZE) * 2);
 
 		//Shirt
-		shirtColorButton.setPosition(width - ARROW_BUTTON_WIDTH - PADDING - PART_BUTTON_SIZE - PADDING, height - PADDING_FROM_TOP - (PADDING_FROM_EACH_OTHER + PART_BUTTON_SIZE) * 3);
+		//shirtColorButton.setPosition(width - ARROW_BUTTON_WIDTH - PADDING - PART_BUTTON_SIZE - PADDING, height - PADDING_FROM_TOP - (PADDING_FROM_EACH_OTHER + PART_BUTTON_SIZE) * 3);
 		
 		//Pants
-		pantsColorButton.setPosition(width - ARROW_BUTTON_WIDTH - PADDING - PART_BUTTON_SIZE - PADDING, height - PADDING_FROM_TOP - (PADDING_FROM_EACH_OTHER + PART_BUTTON_SIZE) * 4);
+		//pantsColorButton.setPosition(width - ARROW_BUTTON_WIDTH - PADDING - PART_BUTTON_SIZE - PADDING, height - PADDING_FROM_TOP - (PADDING_FROM_EACH_OTHER + PART_BUTTON_SIZE) * 4);
 		
 		//Finish
 		finishButton.setPosition(width - PADDING_FROM_EACH_OTHER - finishButton.getWidth(), PADDING_FROM_EACH_OTHER);
@@ -441,7 +443,7 @@ public class CharacterCreatorScreen extends Screen implements PacketHandler {
 		BODY.color = Color.rgba8888(BODY_COLORS[bodyColor]);
 		HAIR_STYLES[selectedHair].color = Color.rgba8888(HAIR_COLORS[hairColor]);
 		FACE_STYLES[selectedFace].color = Color.rgba8888(EYE_COLORS[eyeColor]);
-		return Player.createEquipInventory(BODY, null, PANTS, SHIRT, null, null, FACE_STYLES[selectedFace], HAIR_STYLES[selectedHair], null, null);
+		return Player.createEquipInventory(BODY, BOOTS, PANTS, SHIRT, null, null, FACE_STYLES[selectedFace], HAIR_STYLES[selectedHair], null, null);
 	}
 	
 	@Override

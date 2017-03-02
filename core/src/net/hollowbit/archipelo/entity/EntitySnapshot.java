@@ -5,21 +5,25 @@ import java.util.HashMap;
 public class EntitySnapshot {
 	
 	public String name;
-	public String entityType;
-	public int style = 0;
+	public String type;
+	public String anim = "";
+	public float animTime = 0;
+	public String animMeta = "";
 	public HashMap<String, String> properties;
 	
 	public EntitySnapshot () {}
 	
-	public EntitySnapshot (String name, String entityType, int style, HashMap<String, String> properties) {
+	public EntitySnapshot (String name, String entityType, HashMap<String, String> properties, String animation, String animationMeta, float animationTime) {
 		this.name = name;
-		this.entityType = entityType;
-		this.style = style;
+		this.type = entityType;
 		this.properties = properties;
+		this.anim = animation;
+		this.animMeta = animationMeta;
+		this.animTime = animationTime;
 	}
 	
-	public EntitySnapshot (String name, EntityType entityType, int style, HashMap<String, String> properties) {
-		this(name, entityType.getId(), style, properties);
+	public EntitySnapshot (String name, EntityType entityType, HashMap<String, String> properties, String animation, String animationMeta, float animationTime) {
+		this(name, entityType.getId(), properties, animation, animationMeta, animationTime);
 	}
 	
 	public float getFloat (String key, float currentValue) {

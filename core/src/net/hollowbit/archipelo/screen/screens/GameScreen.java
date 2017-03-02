@@ -22,7 +22,6 @@ import net.hollowbit.archipelo.network.Packet;
 import net.hollowbit.archipelo.network.PacketHandler;
 import net.hollowbit.archipelo.network.PacketType;
 import net.hollowbit.archipelo.network.packets.ChatMessagePacket;
-import net.hollowbit.archipelo.network.packets.ControlsPacket;
 import net.hollowbit.archipelo.network.packets.FormDataPacket;
 import net.hollowbit.archipelo.network.packets.FormRequestPacket;
 import net.hollowbit.archipelo.network.packets.LogoutPacket;
@@ -44,13 +43,12 @@ import net.hollowbit.archipelo.tools.QuickUi.IconType;
 import net.hollowbit.archipelo.tools.QuickUi.TextFieldMessageListener;
 import net.hollowbit.archipelo.tools.WorldSnapshotManager;
 import net.hollowbit.archipelo.world.World;
-import net.hollowbit.archipeloshared.Controls;
 
 public class GameScreen extends Screen implements PacketHandler, InputProcessor {
 	
 	private static final int MENU_BUTTON_SIZE = 70;
 	private static final int MENU_BUTTON_PADDING = 2;
-	private static final int NPC_DIALOG_BOX_HEIGHT = 20;
+	public static final int NPC_DIALOG_BOX_HEIGHT = 20;
 	
 	Stage stage;
 	World world;
@@ -59,8 +57,6 @@ public class GameScreen extends Screen implements PacketHandler, InputProcessor 
 	PopupTextManager popupTextManager;
 	ChatManager chatManager;
 	NpcDialogBox npcDialogBox;
-	
-	boolean[] controls;
 	
 	//Ui Elements
 	TextField chatTextField = null;
@@ -79,8 +75,9 @@ public class GameScreen extends Screen implements PacketHandler, InputProcessor 
 	
 	@Override
 	public void create () {
+		ArchipeloClient.getGame().getAssetManager().getMusic("title-screen").stop();
+		
 		controlsManager = new ControlsManager(this);
-		controls = new boolean[Controls.TOTAL];
 		stage = new Stage(ArchipeloClient.getGame().getCameraUi().getScreenViewport(), ArchipeloClient.getGame().getBatch());
 		InputMultiplexer inputMultiplexer = new InputMultiplexer(this, stage);
 		Gdx.input.setInputProcessor(inputMultiplexer);
@@ -163,22 +160,12 @@ public class GameScreen extends Screen implements PacketHandler, InputProcessor 
 			controlsManager.setFocused(false);
 		}
 		
-		for (int i = 0; i < controls.length; i++) {
-			controls[i] = controlsManager.getControls()[i];
-		}
-		
-		if (controlsManager.areControlsUpdated()) {//If controls have changed, send changes to server.
-			ArchipeloClient.getGame().getNetworkManager().sendPacket(new ControlsPacket(controlsManager.getControls()));
-			controlsManager.resetControls();
-		}
-		
-		if (canPlayerMove())
-			controlsManager.update(isNpcDialogBoxOpen());
+		controlsManager.update(isNpcDialogBoxOpen(), deltaTime, canPlayerMove());
 		
 		worldSnapshotManager.update(deltaTime);
 		popupTextManager.update(deltaTime);
 		chatManager.update(deltaTime);
-		world.update(deltaTime, controls);
+		world.update(deltaTime);
 		
 		//Check if user is done using keyboard
 		if (stage.getKeyboardFocus() == chatTextField) {
@@ -257,7 +244,7 @@ public class GameScreen extends Screen implements PacketHandler, InputProcessor 
 				npcDialogBox.remove();
 			
 			//Don't open blank NPC dialogs. This could occur if a player choice ends the conversation, a blank response could be sent back to close dialog
-			if (npcDialogPacket.usesId && npcDialogPacket.name.equals(""))
+			if (npcDialogPacket.usesId && (npcDialogPacket.name == null || npcDialogPacket.name.equals("")))
 				return true;
 			
 			String name = "";
@@ -278,7 +265,7 @@ public class GameScreen extends Screen implements PacketHandler, InputProcessor 
 			else {
 				Form form = FormType.createFormByFormData(formDataPacket.data, this);
 				forms.put(formDataPacket.data.id, form);
-				form.setPosition(Gdx.graphics.getWidth() / 2 - form.getWidth() / 2, Gdx.graphics.getHeight() / 2 - form.getHeight() / 2);
+				form.setPosition(Gdx.graphics.getWidth() / 2 - form.getWidth() * form.getScaleX() / 2, Gdx.graphics.getHeight() / 2 - form.getHeight() * form.getScaleY() / 2);
 				stage.addActor(form);
 			}
 			return true;
@@ -293,7 +280,7 @@ public class GameScreen extends Screen implements PacketHandler, InputProcessor 
 	@Override
 	public void resize(int width, int height) {
 		if (mainMenuWndw != null)
-			mainMenuWndw.setPosition(width / 2 - mainMenuWndw.getWidth() / 2, height / 2 - mainMenuWndw.getHeight() / 2);
+			mainMenuWndw.centerOnScreen();
 		controlsManager.resize(width, height);
 		
 		//Update positions of menu buttons on resize
@@ -345,7 +332,7 @@ public class GameScreen extends Screen implements PacketHandler, InputProcessor 
 	private boolean openMenu () {
 		if (mainMenuWndw == null || mainMenuWndw.getStage() == null) {
 			mainMenuWndw = new MainMenuWindow(this, stage);
-			mainMenuWndw.setPosition(stage.getWidth() / 2 - mainMenuWndw.getWidth() / 2, stage.getHeight() / 2 - mainMenuWndw.getHeight() / 2);
+			mainMenuWndw.centerOnScreen();
 			stage.addActor(mainMenuWndw);
 			return true;
 		}
@@ -375,7 +362,7 @@ public class GameScreen extends Screen implements PacketHandler, InputProcessor 
 	
 	public void openChatWindow () {
 		ChatWindow chatWindow = new ChatWindow(chatManager, stage, controlsManager);
-		chatWindow.setPosition(Gdx.graphics.getWidth() / 2 - chatWindow.getWidth() / 2, Gdx.graphics.getHeight() / 2 - chatWindow.getHeight() / 2);
+		chatWindow.centerOnScreen();
 		stage.addActor(chatWindow);//Open a chat window
 	}
 	

@@ -79,7 +79,7 @@ public class LanguageSpecificMessageManager {
 	 * @return
 	 */
 	public NpcDialog getNpcDialogById (String prefix, String id) {
-		id = (prefix + id).toUpperCase();
+		id = (prefix + "-" + id).toUpperCase();
 		if (npcDialogs.containsKey(id))
 			return npcDialogs.get(id);
 		else

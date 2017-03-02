@@ -5,15 +5,15 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 import net.hollowbit.archipelo.ArchipeloClient;
+import net.hollowbit.archipelo.form.MobileCompatibleWindow;
 import net.hollowbit.archipelo.network.packets.PlayerListPacket;
 import net.hollowbit.archipelo.screen.screens.CharacterCreatorScreen;
 import net.hollowbit.archipelo.tools.LM;
 
-public class CharacterPickWindow extends Window {
+public class CharacterPickWindow extends MobileCompatibleWindow {
 	
 	Table characterTable;
 	ScrollPane characterScrollPane;

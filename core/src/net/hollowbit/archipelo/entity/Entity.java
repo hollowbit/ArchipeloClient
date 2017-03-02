@@ -1,11 +1,14 @@
 package net.hollowbit.archipelo.entity;
 
+import java.util.ArrayList;
+
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 
+import net.hollowbit.archipelo.entity.EntityAnimationManager.EntityAnimationObject;
+import net.hollowbit.archipelo.entity.living.Player;
 import net.hollowbit.archipelo.tools.Location;
 import net.hollowbit.archipelo.world.Map;
-import net.hollowbit.archipelo.entity.living.Player;
 import net.hollowbit.archipeloshared.CollisionRect;
 import net.hollowbit.archipeloshared.Direction;
 
@@ -15,43 +18,123 @@ public abstract class Entity {
 	protected Location location;
 	protected EntityType entityType;
 	protected int style;
+	protected EntityAnimationManager animationManager;
+	protected ArrayList<EntityComponent> components;
 	
-	public Entity () {}
+	protected boolean overriddenAnimationControl = false;//Use by player to override animation changes
 	
-	public void render (SpriteBatch batch) {
+	public Entity () {
+		components = new ArrayList<EntityComponent>();
+	}
+	
+	/**
+	 * Begin rendering entity. Will handle cancelled renders and animations.
+	 * @param batch
+	 */
+	public void renderStart (SpriteBatch batch) {
 		//CollisionRect collRect = this.getCollisionRect();
 		//batch.draw(ArchipeloClient.getGame().getAssetManager().getTexture("invalid"), collRect.x, collRect.y, collRect.width, collRect.height);
+		
+		//Render components and check if they cancelled further rendering
+		boolean renderCancelled = false;
+		for (EntityComponent component : components) {
+			if (component.render(batch, renderCancelled))
+				renderCancelled = true;
+		}
+		
+		if (!renderCancelled) {
+			animationManager.render(batch);
+			render(batch);
+		}
+		
+		renderCancelled = false;
+		for (EntityComponent component : components) {
+			if (component.renderAfter(batch, renderCancelled))
+				renderCancelled = true;
+		}
 	}
+	
+	protected void render (SpriteBatch batch) {}
 	
 	public void create (EntitySnapshot fullSnapshot, Map map, EntityType entityType) {
 		this.name = fullSnapshot.name;
 		this.entityType = entityType;
-		this.style = fullSnapshot.style;
+		this.style = fullSnapshot.getInt("style", 0);
 		this.location = new Location(map, new Vector2(fullSnapshot.getFloat("x", 0), fullSnapshot.getFloat("y", 0)), Direction.values()[fullSnapshot.getInt("direction", 0)]);
+		animationManager = new EntityAnimationManager(this, fullSnapshot.anim, fullSnapshot.animTime, fullSnapshot.animMeta);
 	}
 	
-	public abstract void update (float deltaTime, float timeUntilNextInterp);
+	/**
+	 * Tick the entity forward in time
+	 * @param deltaTime
+	 * @param timeUntilNextInterp
+	 */
+	public void update (float deltaTime, float timeUntilNextInterp) {
+		if (overriddenAnimationControl)
+			animationManager.updateOverriden(deltaTime);
+		else
+			animationManager.update(deltaTime, timeUntilNextInterp);
+		for (EntityComponent component : components)
+			component.update(deltaTime, timeUntilNextInterp);
+	}
 	
+	/**
+	 * Definite and optimized way of knowing if an entity is a player.
+	 * @return
+	 */
 	public boolean isPlayer () {
 		return false;
 	}
 	
+	/**
+	 * Definite and optimized way of knowing if an entity is living/can move aka instance of {@link LivingEntity} class.
+	 * @return
+	 */
 	public boolean isAlive () {
 		return false;
 	}
 	
-	public void load () {}
+	/**
+	 * Called when the entity is loaded
+	 */
+	public void load () {
+		for (EntityComponent component : components)
+			component.load();
+	}
 	
-	public void unload () {}
+	/**
+	 * Called when the entity is unloaded
+	 */
+	public void unload () {
+		for (EntityComponent component : components)
+			component.unload();
+	}
 	
-	public void applyInterpSnapshot (long timeStamp, EntitySnapshot snapshot1, EntitySnapshot snapshot2, float fraction) {}
+	public void applyInterpSnapshot (long timeStamp, EntitySnapshot snapshot1, EntitySnapshot snapshot2, float fraction) {
+		if (!overriddenAnimationControl)
+			animationManager.change(timeStamp, snapshot1, snapshot2, fraction);
+		
+		for (EntityComponent component : components)
+			component.applyInterpSnapshot(timeStamp, snapshot1, snapshot2, fraction);
+	}
 	
 	public void applyChangesSnapshot (EntitySnapshot snapshot) {
-		location.set(snapshot.getFloat("x", location.getX()), snapshot.getFloat("y", location.getY()), Direction.values()[snapshot.getInt("direction", location.direction.ordinal())]);
+		style = snapshot.getInt("style", style);
+		location.direction = Direction.values()[snapshot.getInt("direction", location.direction.ordinal())];
+		for (EntityComponent component : components)
+			component.applyChangesSnapshot(snapshot);
 	}
 	
 	public String getName () {
 		return name;
+	}
+	
+	public int getStyle () {
+		return style;
+	}
+	
+	public Direction getDirection () {
+		return location.direction;
 	}
 	
 	public Location getLocation () {
@@ -64,6 +147,10 @@ public abstract class Entity {
 	
 	public EntityType getEntityType () {
 		return entityType;
+	}
+	
+	public EntityAnimationManager getAnimationManager () {
+		return animationManager;
 	}
 
 	public CollisionRect[] getCollisionRects () {
@@ -78,6 +165,19 @@ public abstract class Entity {
 		return entityType.getViewRect(location.getX(), location.getY());
 	}
 	
+	public float getDrawOrderY () {
+		return entityType.getDrawOrderY(location.getY());
+	}
+	
+	/**
+	 * Called when the current animation is complete. Only used by entities where animations are overridden.
+	 * @param animationId
+	 * @return
+	 */
+	public EntityAnimationObject animationCompleted (String animationId) {
+		return null;
+	}
+	
 	/**
 	 * This is used by certain entities which don't always want a collision rect to be hard.
 	 * Ex: Like a locked door that becomes unlocked for some players.
@@ -86,7 +186,21 @@ public abstract class Entity {
 	 * @return
 	 */
 	public boolean ignoreHardnessOfCollisionRects (Player player, String rectName) {
-		return false;
+		boolean ignoreHardness = false;
+		for (EntityComponent component : components) {
+			if (component.ignoreHardnessOfCollisionRects(player, rectName))
+				ignoreHardness = true;
+		}
+		return ignoreHardness;
+	}
+	
+	/**
+	 * Exact center point of the entities view rect.
+	 * @return
+	 */
+	public Vector2 getCenterPoint () {
+		CollisionRect viewRect = entityType.getViewRect(location.getX(), location.getY());
+		return new Vector2(location.getX() + viewRect.width / 2, location.getY() + viewRect.height / 2);
 	}
 	
 }

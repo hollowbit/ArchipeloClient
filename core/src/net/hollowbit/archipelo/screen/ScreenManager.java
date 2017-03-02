@@ -2,6 +2,8 @@ package net.hollowbit.archipelo.screen;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
+import net.hollowbit.archipelo.ArchipeloClient;
+
 public class ScreenManager {
 	
 	private Screen currentScreen;
@@ -28,8 +30,10 @@ public class ScreenManager {
 	
 	public void update (float deltaTime) {
 		if (newScreen != null) {
-			if (currentScreen != null)
+			if (currentScreen != null) {
+				ArchipeloClient.getGame().clearWindows();
 				currentScreen.dispose();
+			}
 			currentScreen = newScreen;
 			newScreen.create();
 			newScreen = null;

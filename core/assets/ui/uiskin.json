@@ -15,6 +15,7 @@ com.badlogic.gdx.scenes.scene2d.ui.Button$ButtonStyle: {
 },
 com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
 	default: { down: default-round-down, up: default-round, font: default-font, fontColor: white },
+	small: { down: default-round-down, up: default-round, font: chat-font, fontColor: white },
 	large: { down: default-round-down, up: default-round, font: medium-font, fontColor: white },
 	toggle: { down: default-round-down, up: default-round, checked: default-round-down, font: default-font, fontColor: white, downFontColor: red }
 },

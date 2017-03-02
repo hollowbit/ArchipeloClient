@@ -1,0 +1,15 @@
+{
+	"id": "blobby_grave",
+	"hittable":"false",
+	"imgWidth":16,
+	"imgHeight":16,
+	"viewRectWidth":16,
+	"viewRectHeight":16,
+	"collisionRects":[
+		{"name":"full", "width":16, "height":16}
+	],
+	"animations":[
+		{"id":"default"},
+		{"id":"crushed"}
+	]
+}

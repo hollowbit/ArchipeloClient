@@ -39,8 +39,9 @@ public class GameCamera {
 	
 	public void update (float deltatime) {
 		if (goal == null) {
-			if (entityToFocusOn != null && !cam.position.epsilonEquals((int)( entityToFocusOn.getLocation().getX() + ArchipeloClient.PLAYER_SIZE / 2), (int) (entityToFocusOn.getLocation().getY() + ArchipeloClient.PLAYER_SIZE / 2), 0, 1.5f)) {
-				cam.position.set(entityToFocusOn.getLocation().getX(), entityToFocusOn.getLocation().getY(), 0);
+			if (entityToFocusOn != null && !cam.position.epsilonEquals((int)( entityToFocusOn.getLocation().getX() + entityToFocusOn.getViewRect().width / 2), (int) (entityToFocusOn.getLocation().getY() + entityToFocusOn.getViewRect().height / 2), 0, 1.5f)) {
+				//cam.position.set(entityToFocusOn.getLocation().getX() + entityToFocusOn.getViewRect().width / 2, entityToFocusOn.getLocation().getY() + entityToFocusOn.getViewRect().height / 2, 0);
+				cam.position.lerp(new Vector3(entityToFocusOn.getLocation().getX() + entityToFocusOn.getViewRect().width / 2, entityToFocusOn.getLocation().getY() + entityToFocusOn.getViewRect().height / 2, 0), 0.05f);
 				
 				//Uncomment this to enable lerping//cam.position.interpolate(new Vector3((int)( entityToFocusOn.getLocation().getX() + ArchipeloClient.PLAYER_SIZE / 2), (int) (entityToFocusOn.getLocation().getY() + ArchipeloClient.PLAYER_SIZE / 2), 0), 5 * deltatime, Interpolation.linear);
 				/*if (cam.position.epsilonEquals((int)( entityToFocusOn.getLocation().getX() + ArchipeloClient.PLAYER_SIZE / 2), (int) (entityToFocusOn.getLocation().getY() + ArchipeloClient.PLAYER_SIZE / 2), 0, 0.2f)) {
@@ -48,7 +49,7 @@ public class GameCamera {
 				}*/
 			}
 		} else {
-			cam.position.lerp(new Vector3(goal.x + ArchipeloClient.PLAYER_SIZE / 2, goal.y + ArchipeloClient.PLAYER_SIZE / 2, 0), deltatime);
+			cam.position.lerp(new Vector3(goal.x, goal.y, 0), 0.2f);
 			if (cam.position.epsilonEquals(goal.x + ArchipeloClient.PLAYER_SIZE / 2, goal.y + ArchipeloClient.PLAYER_SIZE / 2, 0, 1f)) {
 				goal = null;
 			}

@@ -11,9 +11,14 @@ import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.reflect.ClassReflection;
 import com.badlogic.gdx.utils.reflect.ReflectionException;
 
-import net.hollowbit.archipelo.ArchipeloClient;
-import net.hollowbit.archipelo.entity.lifeless.*;
-import net.hollowbit.archipelo.entity.living.*;
+import net.hollowbit.archipelo.entity.lifeless.BlobbyGrave;
+import net.hollowbit.archipelo.entity.lifeless.Computer;
+import net.hollowbit.archipelo.entity.lifeless.Door;
+import net.hollowbit.archipelo.entity.lifeless.DoorLocked;
+import net.hollowbit.archipelo.entity.lifeless.Sign;
+import net.hollowbit.archipelo.entity.lifeless.Teleporter;
+import net.hollowbit.archipelo.entity.living.Player;
+import net.hollowbit.archipelo.tools.AssetManager;
 import net.hollowbit.archipelo.world.Map;
 import net.hollowbit.archipeloshared.CollisionRect;
 import net.hollowbit.archipeloshared.Direction;
@@ -27,7 +32,9 @@ public enum EntityType {
 	TELEPORTER ("teleporter", Teleporter.class),
 	DOOR ("door", Door.class),
 	DOOR_LOCKED ("door-locked", DoorLocked.class),
-	SIGN ("sign", Sign.class);
+	SIGN ("sign", Sign.class),
+	BLOBBY_GRAVE ("blobby_grave", BlobbyGrave.class),
+	COMPUTER ("computer", Computer.class);
 	
 	private String id;
 	private Class entityClass;
@@ -36,8 +43,12 @@ public enum EntityType {
 	private boolean hittable;
 	private float speed;
 	
+	private float drawOrderOffsetY;
+	
 	private int imgWidth;
 	private int imgHeight;
+	
+	private String defaultAnimationId;
 	
 	//Rects
 	private CollisionRect viewRect;
@@ -55,6 +66,8 @@ public enum EntityType {
 		this.hittable = data.hittable;
 		this.speed = data.speed;
 		
+		this.drawOrderOffsetY = data.drawOrderOffsetY;
+		
 		this.imgWidth = data.imgWidth;
 		this.imgHeight = data.imgHeight;
 		
@@ -67,8 +80,14 @@ public enum EntityType {
 		
 		//Load animations
 		animations = new HashMap<String, EntityAnimation>();
+		boolean first = true;
 		for (EntityAnimationData animationData : data.animations) {
 			animations.put(animationData.id, new EntityAnimation(animationData));
+			
+			if (first) {
+				defaultAnimationId = animationData.id;
+				first = false;
+			}
 		}
 	}
 	
@@ -112,32 +131,24 @@ public enum EntityType {
 		return speed;
 	}
 	
-	public TextureRegion getAnimationFrame (String id) {
-		return animations.get(id).getAnimationFrame(Direction.UP, ArchipeloClient.STATE_TIME, 0);
+	public float getDrawOrderY (float y) {
+		return y + drawOrderOffsetY;
 	}
 	
-	public TextureRegion getAnimationFrame (String id, Direction direction) {
-		return animations.get(id).getAnimationFrame(direction, ArchipeloClient.STATE_TIME, 0);
-	}
-	
-	public TextureRegion getAnimationFrame (String id, Direction direction, float stateTime) {
-		return animations.get(id).getAnimationFrame(direction, stateTime, 0);
-	}
-	
-	public TextureRegion getAnimationFrame (String id, float stateTime) {
-		return animations.get(id).getAnimationFrame(Direction.UP, stateTime, 0);
-	}
-	
-	public TextureRegion getAnimationFrame (String id, float stateTime, int style) {
-		return animations.get(id).getAnimationFrame(Direction.UP, stateTime, style);
-	}
-	
-	public TextureRegion getAnimationFrame (String id, int style) {
-		return animations.get(id).getAnimationFrame(Direction.UP, ArchipeloClient.STATE_TIME, style);
+	public float getDrawOrderOffsetY() {
+		return drawOrderOffsetY;
 	}
 	
 	public TextureRegion getAnimationFrame (String id, Direction direction, float stateTime, int style) {
 		return animations.get(id).getAnimationFrame(direction, stateTime, style);
+	}
+	
+	public EntityAnimation getEntityAnimation (String id) {
+		return animations.get(id);
+	}
+	
+	public String getDefaultAnimationId() {
+		return defaultAnimationId;
 	}
 	
 	public void loadImages () {
@@ -154,6 +165,10 @@ public enum EntityType {
 		}
 	}
 	
+	public boolean hasAnimation(String animationId) {
+		return animations.containsKey(animationId);
+	}
+	
 	//Static
 	private static HashMap<String, EntityType> entityTypeMap;
 	
@@ -165,7 +180,7 @@ public enum EntityType {
 	}
 	
 	public static Entity createEntityBySnapshot (EntitySnapshot fullSnapshot, Map map) {
-		return entityTypeMap.get(fullSnapshot.entityType).getNewEntityOfType(fullSnapshot, map);
+		return entityTypeMap.get(fullSnapshot.type).getNewEntityOfType(fullSnapshot, map);
 	}
 	
 	public static void loadAllImages () {
@@ -180,7 +195,7 @@ public enum EntityType {
 		}
 	}
 	
-	private class EntityAnimation {
+	public class EntityAnimation {
 		
 		Animation[][] animations;
 		EntityAnimationData entityAnimationData;
@@ -192,6 +207,13 @@ public enum EntityType {
 			loaded = false;
 		}
 		
+		/**
+		 * Loads images of this animation
+		 * @param entityId
+		 * @param numberOfStyles
+		 * @param imgWidth
+		 * @param imgHeight
+		 */
 		public void loadImages (String entityId, int numberOfStyles, int imgWidth, int imgHeight) {
 			if (!loaded) {
 				loaded = true;
@@ -200,14 +222,17 @@ public enum EntityType {
 				for (int i = 0; i < numberOfStyles; i++) {
 					String fileName = entityAnimationData.fileName.equals("") ? entityAnimationData.id : entityAnimationData.fileName;
 					srcTextures[i] = new Texture("entities/" + entityId + "/" + fileName + "_" + i + ".png");
-					TextureRegion[][] animationRegion = TextureRegion.split(srcTextures[i], imgWidth, imgHeight);
+					TextureRegion[][] animationRegion = AssetManager.fixBleedingSpriteSheet(TextureRegion.split(srcTextures[i], imgWidth, imgHeight));
 					for (int u = 0; u < entityAnimationData.numberOfDirections; u++) {
-						animations[i][u] = new Animation(entityAnimationData.timeBetweenFrames, animationRegion[u]);
+						animations[i][u] = new Animation(entityAnimationData.totalRuntime / animationRegion[u].length, animationRegion[u]);
 					}
 				}
 			}
 		}
 		
+		/**
+		 * Disposes of textures for this animation
+		 */
 		public void unloadImages () {
 			if (loaded) {
 				loaded = false;
@@ -217,7 +242,17 @@ public enum EntityType {
 			}
 		}
 		
+		/**
+		 * Get frame for this animation
+		 * @param direction
+		 * @param stateTime
+		 * @param style
+		 * @return
+		 */
 		public TextureRegion getAnimationFrame (Direction direction, float stateTime, int style) {
+			if (entityAnimationData.totalRuntime <= 0)//Special rule to make animation with no runtime only render first frame
+				stateTime = 0;
+			
 			int animationIndex = 0;
 			if (direction.ordinal() >= entityAnimationData.numberOfDirections) {
 				switch (entityAnimationData.numberOfDirections) {
@@ -232,6 +267,14 @@ public enum EntityType {
 				animationIndex = direction.ordinal();
 			}
 			return animations[style][animationIndex].getKeyFrame(stateTime, entityAnimationData.looping);
+		}
+		
+		public float getTotalRuntime () {
+			return entityAnimationData.totalRuntime;
+		}
+		
+		public EntityAnimationData getData () {
+			return entityAnimationData;
 		}
 		
 	}

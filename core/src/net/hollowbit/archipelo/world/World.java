@@ -12,6 +12,7 @@ import net.hollowbit.archipelo.ArchipeloClient;
 import net.hollowbit.archipelo.entity.Entity;
 import net.hollowbit.archipelo.entity.EntitySnapshot;
 import net.hollowbit.archipelo.entity.EntityType;
+import net.hollowbit.archipelo.entity.living.CurrentPlayer;
 import net.hollowbit.archipelo.entity.living.Player;
 import net.hollowbit.archipelo.network.Packet;
 import net.hollowbit.archipelo.network.PacketHandler;
@@ -43,7 +44,7 @@ public class World implements PacketHandler {
 	private MapSnapshot nextMapSnapshot;
 	private HashMap<String, EntitySnapshot> nextEntitySnapshots;
 	private TeleportPacket teleportPacket;
-	private Player player;
+	private CurrentPlayer player;
 	private Color fadeColor;
 	private float fadeTimer;
 	private GameScreen gameScreen;
@@ -65,7 +66,7 @@ public class World implements PacketHandler {
 		ArchipeloClient.getGame().getNetworkManager().addPacketHandler(this);
 	}
 	
-	public synchronized void update (float deltaTime, boolean[] controls) {
+	public synchronized void update (float deltaTime) {
 		timeSinceLastInterp += deltaTime;
 		
 		if (time < goalTime) 
@@ -74,11 +75,13 @@ public class World implements PacketHandler {
 		if (map != null)
 			map.update(deltaTime);
 		
-		if (player != null)
-			player.updatePlayer(deltaTime, controls);
+		//Calculate fraction of time until next interp snapshot
+		float timeUntilNextInterp = timeSinceLastInterp / WorldSnapshotManager.TIME_BETWEEN_UPDATES;
+		if (timeUntilNextInterp > 1)//Can cause bugs if over 1 aka 100%
+			timeUntilNextInterp = 1;
 		
 		for (Entity entity : entities) {
-			entity.update(deltaTime, timeSinceLastInterp / WorldSnapshotManager.TIME_BETWEEN_UPDATES);
+			entity.update(deltaTime, timeUntilNextInterp);
 		}
 		
 		//Fade map in
@@ -191,21 +194,24 @@ public class World implements PacketHandler {
 		entities.clear();
 		
 		for (Entry<String, EntitySnapshot> entitySnapshot : nextEntitySnapshots.entrySet()) {
-			Entity entity = EntityType.createEntityBySnapshot(entitySnapshot.getValue(), map);
+			Entity entity = null;
+			
+			//If it is the current player, use a custom creator, else use the default one
+			if (entitySnapshot.getValue().name.equals(ArchipeloClient.getGame().getPlayerName())) {
+				player = new CurrentPlayer();
+				player.create(entitySnapshot.getValue(), map, EntityType.PLAYER);
+				ArchipeloClient.getGame().getCamera().focusOnEntityFast(player);
+				entity = player;
+			} else
+				entity = EntityType.createEntityBySnapshot(entitySnapshot.getValue(), map);
 			entity.load();
 			entities.add(entity);
-			if (entity.getName().equals(ArchipeloClient.getGame().getPlayerName())) {
-				player = (Player) entity;
-				player.setIsCurrentPlayer(true);
-				player.createCurrentPlayer();
-				ArchipeloClient.getGame().getCamera().focusOnEntityFast(player);
-			}
 		}
 		nextMapSnapshot = null;
 		nextEntitySnapshots = null;
 	}
 	
-	public Player getPlayer () {
+	public CurrentPlayer getPlayer () {
 		return player;
 	}
 	
@@ -259,24 +265,32 @@ public class World implements PacketHandler {
 		
 		return false;
 	}
+	
+	public synchronized ArrayList<Entity> cloneEntitiesList() {
+		ArrayList<Entity> entitiesClone = new ArrayList<Entity>();
+		entitiesClone.addAll(entities);
+		return entitiesClone;
+	}
 
 	@Override
 	public boolean handlePacket (Packet packet) {
 		if (packet.packetType == PacketType.ENTITY_ADD) {
 			EntityAddPacket entityAddPacket = (EntityAddPacket) packet;
-			Entity entity = EntityType.createEntityBySnapshot(new EntitySnapshot(entityAddPacket.username, entityAddPacket.type, entityAddPacket.style, entityAddPacket.properties), map);
+			Entity entity = EntityType.createEntityBySnapshot(new EntitySnapshot(entityAddPacket.name, entityAddPacket.type, entityAddPacket.properties, entityAddPacket.anim, entityAddPacket.animMeta, entityAddPacket.animTime), map);
 			entities.add(entity);
 			entity.load();
+			
+			/*This shouldn't be an issue. The current player should never be added into the map using Entity Add packet
 			if (entity.getName().equals(ArchipeloClient.getGame().getPlayerName())) {
 				player = (Player) entity;
 				player.setIsCurrentPlayer(true);
 				player.createCurrentPlayer();
 				ArchipeloClient.getGame().getCamera().focusOnEntityFast(player);
-			}
+			}*/
 			return true;
 		} else
 		if (packet.packetType == PacketType.ENTITY_REMOVE) {
-			Entity entity = getEntity(((EntityRemovePacket) packet).username);
+			Entity entity = getEntity(((EntityRemovePacket) packet).name);
 			entity.unload();
 			entities.remove(entity);
 			return true;

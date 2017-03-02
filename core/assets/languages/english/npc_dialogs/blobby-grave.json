@@ -1,0 +1,5 @@
+{dialogs:[
+	{id:"blobbyGraveStart", name:"Blobby Bob's Grave", message:"R.I.P. Blobby Bob, you will not be missed."},
+	{id:"blobbyGraveCrushed", name:"Blobby Bob's Ashes", message:"There appears to be ashes here. &cYou have recieved Blobby Bob's Ashes.&1"},
+	{id:"blobbyGraveEnd", name:"Blobby Bob's Grave", message:"There seems to be nothing here but a boring grave."}
+]}

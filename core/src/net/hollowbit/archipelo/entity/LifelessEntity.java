@@ -3,6 +3,8 @@ package net.hollowbit.archipelo.entity;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
+import net.hollowbit.archipeloshared.Direction;
+
 public abstract class LifelessEntity extends Entity {
 
 	Texture texture;
@@ -13,8 +15,11 @@ public abstract class LifelessEntity extends Entity {
 		if (texture != null)
 			batch.draw(texture, location.getX(), location.getY());
 	}
-
+	
 	@Override
-	public void update (float deltaTime, float timeUntilNextInterp) {}
+	public void applyChangesSnapshot(EntitySnapshot snapshot) {
+		location.set(snapshot.getFloat("x", location.getX()), snapshot.getFloat("y", location.getY()), Direction.values()[snapshot.getInt("direction", location.direction.ordinal())]);
+		super.applyChangesSnapshot(snapshot);
+	}
 	
 }

@@ -7,6 +7,7 @@ package net.hollowbit.archipelo;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.LinkedList;
 
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Application.ApplicationType;
@@ -26,6 +27,7 @@ import com.badlogic.gdx.utils.BufferUtils;
 import com.badlogic.gdx.utils.ScreenUtils;
 
 import net.hollowbit.archipelo.entity.EntityType;
+import net.hollowbit.archipelo.form.MobileCompatibleWindow;
 import net.hollowbit.archipelo.hollowbitserver.HollowBitServerConnectivity;
 import net.hollowbit.archipelo.items.ItemType;
 import net.hollowbit.archipelo.network.NetworkManager;
@@ -54,6 +56,7 @@ public class ArchipeloClient extends ApplicationAdapter {
 	public static final int MAX_CHARACTERS_PER_PLAYER = 4;
 	public static boolean IS_MOBILE = false;
 	public static boolean IS_GWT = false;
+	public static final float SCREEN_INSET_FOR_WINDOWS = 0.8f;//Used in MobileCompatibleWindow.java
 	
 	public static float DELTA_TIME = 0;
 	public static float STATE_TIME = 0;//this is for looping animations where it doesn't matter where it starts.
@@ -84,6 +87,7 @@ public class ArchipeloClient extends ApplicationAdapter {
 	World world = null;
 	
 	private String playerName = "";
+	LinkedList<MobileCompatibleWindow> windows;
 	
 	@Override
 	public void create () {
@@ -109,6 +113,7 @@ public class ArchipeloClient extends ApplicationAdapter {
 		skin.getFont("chat-font").getData().markupEnabled = true;
 		
 		//Temporary way to add assets
+		//Art
 		assetManager = new AssetManager();
 		assetManager.putTextureMap("tiles", "tiles.png", TILE_SIZE, TILE_SIZE);
 		assetManager.putTextureMap("icons", "ui/icons.png", QuickUi.ICON_SIZE, QuickUi.ICON_SIZE, true);
@@ -119,12 +124,14 @@ public class ArchipeloClient extends ApplicationAdapter {
 		assetManager.putTexture("mainmenu-background", "mainmenu_background.png", true);
 		assetManager.putTexture("logo", "logo.png", true);
 		ItemType.loadAllImages();
+		EntityType.loadAllImages();
+		
+		//Music
+		assetManager.putMusic("title-screen", "music/title_screen.ogg");
 		//assetManager.putTexture("invalid", new Texture("invalid.png"));//For some reason this image cannot be loaded by html. Fix later.
 
 		elementManager = new MapElementManager();
 		elementManager.loadMapElements();
-		
-		EntityType.loadAllImages();
 		
 		//Cameras
 		cameraGame = new GameCamera();
@@ -133,6 +140,8 @@ public class ArchipeloClient extends ApplicationAdapter {
 		//Load cacert for SSL
 		//System.setProperty("javax.net.ssl.trustStore", "cacerts");
 		//System.setProperty("javax.net.ssl.trustStorePassword", "changeit");
+		
+		windows = new LinkedList<MobileCompatibleWindow>();
 		
 		//Managers
 		networkManager = new NetworkManager();
@@ -148,7 +157,7 @@ public class ArchipeloClient extends ApplicationAdapter {
 			screenManager.setScreen(new ErrorScreen(languageSpecificMessageManager.getMessage(Cat.UI, "couldNotConnectToHB")));
 		
 		//For testing purposes
-		IS_MOBILE = false;
+		IS_MOBILE = true;
 		//IS_GWT = true;
 		
 		//If on mobile device, set IS_MOBILE to true
@@ -238,6 +247,10 @@ public class ArchipeloClient extends ApplicationAdapter {
 		cameraGame.resize(width, height);
 		cameraUi.resize(width, height);
 		screenManager.resize(width, height);
+		
+		for (MobileCompatibleWindow window : windows) {
+			window.resize(width, height);
+		}
 	}
 	
 	@Override
@@ -309,6 +322,22 @@ public class ArchipeloClient extends ApplicationAdapter {
 	
 	public String getPlayerName () {
 		return playerName;
+	}
+	
+	public void addWindow (MobileCompatibleWindow window) {
+		windows.add(window);
+	}
+	
+	public void removeWindow (MobileCompatibleWindow window) {
+		windows.remove(window);
+	}
+	
+	public boolean isWindowOpen () {
+		return windows.size() > 0;
+	}
+	
+	public void clearWindows () {
+		windows.removeAll(windows);
 	}
 	
 	public static ArchipeloClient getGame () {

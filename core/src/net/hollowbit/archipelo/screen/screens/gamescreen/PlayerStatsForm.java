@@ -46,11 +46,10 @@ public class PlayerStatsForm extends Form {
 	private Label critChanceStat;
 	
 	public PlayerStatsForm () {
-		super(LM.ui("myStats"));
+		super(LM.ui("myStats"), 0.7f);
 		
 		this.setResizable(false);
 		this.setMovable(true);
-		this.setSize(400, 400);
 		QuickUi.addCloseButtonToWindow(this);
 		
 		characterDisplay = new CharacterDisplay(new Item[Player.EQUIP_SIZE], true);

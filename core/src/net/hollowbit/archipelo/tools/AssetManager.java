@@ -182,20 +182,35 @@ public class AssetManager {
 	}
 	
 	/**
-	 * Removes texture bleading from texture regions
+	 * Removes texture bleeding from texture regions. COMMENTED OUT! NOT WORKING WELL. CAUSES RIPPLE EFFECT
 	 * 
 	 * Credit to awilki01 from the LibGDX Forums. http://www.badlogicgames.com/forum/viewtopic.php?f=11&t=16368
 	 * @param tr
 	 */
-	private void fixBleeding (TextureRegion tr) {
-	    float fix = 0.01f;
+	public static TextureRegion fixBleeding (TextureRegion tr) {
+	    /*float fix = 0.01f;
 	    float x = tr.getRegionX();
 	    float y = tr.getRegionY();
 	    float width = tr.getRegionWidth();
 	    float height = tr.getRegionHeight();
 	    float invTexWidth = 1f / tr.getTexture().getWidth();
 	    float invTexHeight = 1f / tr.getTexture().getHeight();
-	    tr.setRegion((x + fix) * invTexWidth, (y + fix) * invTexHeight, (x + width - fix) * invTexWidth, (y + height - fix) * invTexHeight);
+	    tr.setRegion((x + fix) * invTexWidth, (y + fix) * invTexHeight, (x + width - fix) * invTexWidth, (y + height - fix) * invTexHeight);*/
+	    return tr;
+	}
+	
+	/**
+	 * Removes texture bleeding from spritesheet texture regions
+	 * @param tr
+	 * @return
+	 */
+	public static TextureRegion[][] fixBleedingSpriteSheet (TextureRegion[][] tr) {
+		for (int r = 0; r < tr.length; r++) {
+			for (int c = 0; c < tr[0].length; c++) {
+				fixBleeding(tr[r][c]);
+			}
+		}
+		return tr;
 	}
 	
 }

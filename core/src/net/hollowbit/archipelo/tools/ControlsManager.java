@@ -12,6 +12,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
 import net.hollowbit.archipelo.ArchipeloClient;
+import net.hollowbit.archipelo.network.packets.ControlsPacket;
 import net.hollowbit.archipelo.screen.screens.GameScreen;
 import net.hollowbit.archipeloshared.Controls;
 import net.hollowbit.archipeloshared.Direction;
@@ -26,7 +27,6 @@ public class ControlsManager {
 	
 	GameScreen game;
 	boolean[] controls;
-	boolean controlsUpdated = false;
 	boolean focused = false;
 	
 	boolean lockOn = false; 
@@ -123,108 +123,139 @@ public class ControlsManager {
 		}
 	}
 	
-	public boolean[] getControls () {
+	public synchronized boolean[] getControls () {
 		return controls;
 	}
 	
-	public boolean areControlsUpdated () {
-		return controlsUpdated;
+	public synchronized void updateControls(int index, boolean value) {
+		controls[index] = value;
 	}
 	
-	public void resetControls () {
-		controlsUpdated = false;
+	public synchronized boolean getControl(int index) {
+		return controls[index];
+	}
+	
+	public synchronized boolean[] getControlsClone () {
+		boolean[] controlsClone = new boolean[controls.length];
+		for (int i = 0; i < controls.length; i++) {
+			controlsClone[i] = controls[i];
+		}
+		return controlsClone;
+	}
+	
+	public boolean[] getBlankControls () {
+		boolean[] controls = new boolean[this.controls.length];
+		for (int i = 0; i < controls.length; i++)
+			controls[i] = false;
+		return controls;
 	}
 	
 	public void stopMovement () {
-		controls[Controls.UP] = false;
-		controls[Controls.LEFT] = false;
-		controls[Controls.DOWN] = false;
-		controls[Controls.RIGHT] = false;
+		updateControls(Controls.UP, false);
+		updateControls(Controls.LEFT, false);
+		updateControls(Controls.DOWN, false);
+		updateControls(Controls.RIGHT, false);
 	}
 	
 	/**
 	 * Update controls
 	 * @param ignoreActionButtons Whether x and z actions should be ignored
 	 */
-	public void update (boolean ignoreActionButtons) {
-		//Look for keys to add
-		for (int key : KEYS_TO_CHECK) {
-			if (ignoreActionButtons && (key == Keys.Z || key == Keys.X))
-				continue;
+	public void update (boolean ignoreActionButtons, float deltaTime, boolean canPlayerMove) {
+		canPlayerMove = canPlayerMove || (ArchipeloClient.IS_MOBILE && ArchipeloClient.getGame().isWindowOpen());
+		
+		ControlsPacket packet;
+		
+		if (!canPlayerMove)
+			packet = new ControlsPacket(getBlankControls());
+		else {
+			//Look for keys to add
+			for (int key : KEYS_TO_CHECK) {
+				if (ignoreActionButtons && (key == Keys.Z || key == Keys.X))
+					continue;
+				
+				if (Gdx.input.isKeyJustPressed(key)) {
+					keysDown.add(key);
+					keyDown(key);
+				}
+			}
 			
-			if (Gdx.input.isKeyJustPressed(key)) {
-				keysDown.add(key);
-				keyDown(key);
+			//Look for keys to remove
+			ArrayList<Integer> keysToRemove = new ArrayList<Integer>();
+			for (int key : keysDown) {
+				if (ignoreActionButtons && (key == Keys.Z || key == Keys.X))
+					continue;
+				
+				if (!Gdx.input.isKeyPressed(key)) {
+					keysToRemove.add(key);
+					keyUp(key);
+				}
 			}
-		}
-		
-		//Look for keys to remove
-		ArrayList<Integer> keysToRemove = new ArrayList<Integer>();
-		for (int key : keysDown) {
-			if (ignoreActionButtons && (key == Keys.Z || key == Keys.X))
-				continue;
+			keysDown.removeAll(keysToRemove);
 			
-			if (!Gdx.input.isKeyPressed(key)) {
-				keysToRemove.add(key);
-				keyUp(key);
+			//Look for pointers to add
+			for (int pointer = 0; pointer < POINTERS_TO_CHECK; pointer++) {
+				if (Gdx.input.isTouched(pointer) && !pointersDown.contains(pointer)) {
+					pointersDown.add(pointer);
+					touchDown(Gdx.input.getX(pointer), Gdx.input.getY(pointer), pointer);
+				}
 			}
-		}
-		keysDown.removeAll(keysToRemove);
-		
-		//Look for pointers to add
-		for (int pointer = 0; pointer < POINTERS_TO_CHECK; pointer++) {
-			if (Gdx.input.isTouched(pointer) && !pointersDown.contains(pointer)) {
-				pointersDown.add(pointer);
-				touchDown(Gdx.input.getX(pointer), Gdx.input.getY(pointer), pointer);
+			
+			//Look for pointers to remove
+			ArrayList<Integer> pointersToRemove = new ArrayList<Integer>();
+			for (int pointer : pointersDown) {
+				if (!Gdx.input.isTouched(pointer)) {
+					pointersToRemove.add(pointer);
+					touchUp(Gdx.input.getX(pointer), Gdx.input.getY(pointer), pointer);
+				}
 			}
+			pointersDown.removeAll(pointersToRemove);
+			
+			//Update pointer moving
+			for (int pointer : pointersDown)
+				pointerMoved(Gdx.input.getX(pointer), Gdx.input.getY(pointer), pointer);
+			
+			packet = new ControlsPacket(getControlsClone());
 		}
 		
-		//Look for pointers to remove
-		ArrayList<Integer> pointersToRemove = new ArrayList<Integer>();
-		for (int pointer : pointersDown) {
-			if (!Gdx.input.isTouched(pointer)) {
-				pointersToRemove.add(pointer);
-				touchUp(Gdx.input.getX(pointer), Gdx.input.getY(pointer), pointer);
-			}
+		//Get controls sample and apply it
+		if (ArchipeloClient.getGame().getWorld().getPlayer() != null) {
+			ArchipeloClient.getGame().getWorld().getPlayer().handleControls(packet, deltaTime);
+			ArchipeloClient.getGame().getNetworkManager().sendPacket(packet);
 		}
-		pointersDown.removeAll(pointersToRemove);
-		
-		//Update pointer moving
-		for (int pointer : pointersDown)
-			pointerMoved(Gdx.input.getX(pointer), Gdx.input.getY(pointer), pointer);
 	}
 	
 	public void render (SpriteBatch batch) {
-		if (ArchipeloClient.IS_MOBILE) {
+		if (ArchipeloClient.IS_MOBILE && !ArchipeloClient.getGame().isWindowOpen()) {
 			//Draw dpad
-			if (controls[Controls.UP]) {
-				if (controls[Controls.LEFT])
+			if (getControl(Controls.UP)) {
+				if (getControl(Controls.LEFT))
 					batch.draw(dpadImages[Direction.UP_LEFT.ordinal()], dpadX, dpadY, dpadSize, dpadSize);
-				else if (controls[Controls.RIGHT])
+				else if (getControl(Controls.RIGHT))
 					batch.draw(dpadImages[Direction.UP_RIGHT.ordinal()], dpadX, dpadY, dpadSize, dpadSize);
 				else
 					batch.draw(dpadImages[Direction.UP.ordinal()], dpadX, dpadY, dpadSize, dpadSize);
-			} else if (controls[Controls.DOWN]) {
-				if (controls[Controls.LEFT])
+			} else if (getControl(Controls.DOWN)) {
+				if (getControl(Controls.LEFT))
 					batch.draw(dpadImages[Direction.DOWN_LEFT.ordinal()], dpadX, dpadY, dpadSize, dpadSize);
-				else if (controls[Controls.RIGHT])
+				else if (getControl(Controls.RIGHT))
 					batch.draw(dpadImages[Direction.DOWN_RIGHT.ordinal()], dpadX, dpadY, dpadSize, dpadSize);
 				else
 					batch.draw(dpadImages[Direction.DOWN.ordinal()], dpadX, dpadY, dpadSize, dpadSize);
-			} else if (controls[Controls.LEFT])
+			} else if (getControl(Controls.LEFT))
 				batch.draw(dpadImages[Direction.LEFT.ordinal()], dpadX, dpadY, dpadSize, dpadSize);
-			else if (controls[Controls.RIGHT])
+			else if (getControl(Controls.RIGHT))
 				batch.draw(dpadImages[Direction.RIGHT.ordinal()], dpadX, dpadY, dpadSize, dpadSize);
 			else
 				batch.draw(dpadImages[Direction.TOTAL], dpadX, dpadY, dpadSize, dpadSize);
 			
 			
 			//Draw lock
-			batch.draw(lockImages[(controls[Controls.LOCK] ? IMAGE_ON : IMAGE_OFF)], lockX, lockY, lockSize, lockSize);
+			batch.draw(lockImages[(getControl(Controls.LOCK) ? IMAGE_ON : IMAGE_OFF)], lockX, lockY, lockSize, lockSize);
 			
 			//Draw buttons
-			batch.draw(zImages[(controls[Controls.ROLL] ? IMAGE_ON : IMAGE_OFF)], Gdx.graphics.getWidth() - zX, zY, buttonSize, buttonSize);
-			batch.draw(xImages[(controls[Controls.ATTACK] ? IMAGE_ON : IMAGE_OFF)], Gdx.graphics.getWidth() - xX, xY, buttonSize, buttonSize);
+			batch.draw(zImages[(getControl(Controls.ROLL) ? IMAGE_ON : IMAGE_OFF)], Gdx.graphics.getWidth() - zX, zY, buttonSize, buttonSize);
+			batch.draw(xImages[(getControl(Controls.ATTACK) ? IMAGE_ON : IMAGE_OFF)], Gdx.graphics.getWidth() - xX, xY, buttonSize, buttonSize);
 		}
 	}
 	
@@ -240,60 +271,35 @@ public class ControlsManager {
 		if (!focused)
 			return false;
 		
-		boolean updateControls = true;
 		switch (keycode) {
 		case Keys.UP:
-			if (ArchipeloClient.INVERT) {
-				controls[Controls.DOWN] = true;
-				if (game.getWorld().getPlayer() != null)
-					game.getWorld().getPlayer().controlDown(Controls.DOWN);
-			} else {
-				controls[Controls.UP] = true;
-				if (game.getWorld().getPlayer() != null)
-					game.getWorld().getPlayer().controlDown(Controls.UP);	
-			}
+			if (ArchipeloClient.INVERT)
+				updateControls(Controls.DOWN, true);
+			else
+				updateControls(Controls.UP, true);	
 			break;
 		case Keys.LEFT:
-			controls[Controls.LEFT] = true;
-			if (game.getWorld().getPlayer() != null)
-				game.getWorld().getPlayer().controlDown(Controls.LEFT);
+			updateControls(Controls.LEFT, true);
 			break;
 		case Keys.DOWN:
-			if (ArchipeloClient.INVERT) {
-				controls[Controls.UP] = true;
-				if (game.getWorld().getPlayer() != null)
-					game.getWorld().getPlayer().controlDown(Controls.UP);
-			} else {
-				controls[Controls.DOWN] = true;
-				if (game.getWorld().getPlayer() != null)
-					game.getWorld().getPlayer().controlDown(Controls.DOWN);	
-			}
+			if (ArchipeloClient.INVERT)
+				updateControls(Controls.UP, true);
+			else
+				updateControls(Controls.DOWN, true);
 			break;
 		case Keys.RIGHT:
-			controls[Controls.RIGHT] = true;
-			if (game.getWorld().getPlayer() != null)
-				game.getWorld().getPlayer().controlDown(Controls.RIGHT);
+			updateControls(Controls.RIGHT, true);
 			break;
 		case Keys.X:
-			controls[Controls.ATTACK] = true;
-			if (game.getWorld().getPlayer() != null)
-				game.getWorld().getPlayer().controlDown(Controls.ATTACK);
+			updateControls(Controls.ATTACK, true);
 			break;
 		case Keys.Z:
-			controls[Controls.ROLL] = true;
-			if (game.getWorld().getPlayer() != null)
-				game.getWorld().getPlayer().controlDown(Controls.ROLL);
+			updateControls(Controls.ROLL, true);
 			break;
 		case Keys.CONTROL_LEFT:
-			controls[Controls.LOCK] = true;
-			if (game.getWorld().getPlayer() != null)
-				game.getWorld().getPlayer().controlDown(Controls.LOCK);
-			break;
-		default:
-			updateControls = controlsUpdated;
+			updateControls(Controls.LOCK, true);
 			break;
 		}
-		controlsUpdated = updateControls;
 		return false;
 	}
 	
@@ -301,68 +307,42 @@ public class ControlsManager {
 		if (!focused)
 			return true;
 		
-		boolean updateControls = true;
 		switch (keycode) {
 		case Keys.UP:
-			if (ArchipeloClient.INVERT) {
-				controls[Controls.DOWN] = false;
-				if (game.getWorld().getPlayer() != null)
-					game.getWorld().getPlayer().controlUp(Controls.DOWN);
-			} else {
-				controls[Controls.UP] = false;
-				if (game.getWorld().getPlayer() != null)
-					game.getWorld().getPlayer().controlUp(Controls.UP);	
-			}
+			if (ArchipeloClient.INVERT)
+				updateControls(Controls.DOWN, false);
+			else
+				updateControls(Controls.UP, false);
 			break;
 		case Keys.LEFT:
-			controls[Controls.LEFT] = false;
-			if (game.getWorld().getPlayer() != null)
-				game.getWorld().getPlayer().controlUp(Controls.LEFT);
+			updateControls(Controls.LEFT, false);
 			break;
 		case Keys.DOWN:
-			if (ArchipeloClient.INVERT) {
-				controls[Controls.UP] = false;
-				if (game.getWorld().getPlayer() != null)
-					game.getWorld().getPlayer().controlUp(Controls.UP);
-			} else {
-				controls[Controls.DOWN] = false;
-				if (game.getWorld().getPlayer() != null)
-					game.getWorld().getPlayer().controlUp(Controls.DOWN);	
-			}
+			if (ArchipeloClient.INVERT)
+				updateControls(Controls.UP, false);
+			else
+				updateControls(Controls.DOWN, false);
 			break;
 		case Keys.RIGHT:
-			controls[Controls.RIGHT] = false;
-			if (game.getWorld().getPlayer() != null)
-				game.getWorld().getPlayer().controlUp(Controls.RIGHT);
+			updateControls(Controls.RIGHT, false);
 			break;
 		case Keys.X:
-			controls[Controls.ATTACK] = false;
-			if (game.getWorld().getPlayer() != null)
-				game.getWorld().getPlayer().controlUp(Controls.ATTACK);
+			updateControls(Controls.ATTACK, false);
 			break;
 		case Keys.Z:
-			controls[Controls.ROLL] = false;
-			if (game.getWorld().getPlayer() != null)
-				game.getWorld().getPlayer().controlUp(Controls.ROLL);
+			updateControls(Controls.ROLL, false);
 			break;
 		case Keys.CONTROL_LEFT:
-			controls[Controls.LOCK] = false;
-			if (game.getWorld().getPlayer() != null)
-				game.getWorld().getPlayer().controlUp(Controls.LOCK);
-			break;
-		default:
-			updateControls = controlsUpdated;
+			updateControls(Controls.LOCK, false);
 			break;
 		}
-		controlsUpdated = updateControls;
 		return false;
 	}
 	
 	public void setFocused (boolean focused) {
 		this.focused = focused;
 		if (!focused) {
-			controls = new boolean[Controls.TOTAL];
-			controlsUpdated = true;
+			controls = getBlankControls();
 		}
 	}
 
@@ -371,49 +351,46 @@ public class ControlsManager {
 			Vector2 input = new Vector2(screenX, Gdx.graphics.getHeight() - screenY);
 			if (dpadRects[Direction.TOTAL].contains(input.x, input.y) && !lockRect.contains(input.x, input.y)) {//If is touching dpad
 				dpadPointer = pointer;//Set dpad pointer
-				controlsUpdated = true;
 				
 				//Update controls based on where dpad is pressed
 				if (dpadRects[Direction.UP.ordinal()].contains(input.x, input.y)) {
-					controls[Controls.UP] = true;
+					updateControls(Controls.UP, true);
 					dpadDirectionSelected = Direction.UP;
 				} else if (dpadRects[Direction.UP_RIGHT.ordinal()].contains(input.x, input.y)) {
-					controls[Controls.UP] = true;
-					controls[Controls.RIGHT] = true;
+					updateControls(Controls.UP, true);
+					updateControls(Controls.RIGHT, true);
 					dpadDirectionSelected = Direction.UP_RIGHT;
 				} else if (dpadRects[Direction.RIGHT.ordinal()].contains(input.x, input.y)) {
-					controls[Controls.RIGHT] = true;
+					updateControls(Controls.RIGHT, true);
 					dpadDirectionSelected = Direction.RIGHT;
 				} else if (dpadRects[Direction.DOWN_RIGHT.ordinal()].contains(input.x, input.y)) {
-					controls[Controls.DOWN] = true;
-					controls[Controls.RIGHT] = true;
+					updateControls(Controls.DOWN, true);
+					updateControls(Controls.RIGHT, true);
 					dpadDirectionSelected = Direction.DOWN_RIGHT;
 				} else if (dpadRects[Direction.DOWN.ordinal()].contains(input.x, input.y)) {
-					controls[Controls.DOWN] = true;
+					updateControls(Controls.DOWN, true);
 					dpadDirectionSelected = Direction.DOWN;
 				} else if (dpadRects[Direction.DOWN_LEFT.ordinal()].contains(input.x, input.y)) {
-					controls[Controls.DOWN] = true;
-					controls[Controls.LEFT] = true;
+					updateControls(Controls.DOWN, true);
+					updateControls(Controls.LEFT, true);
 					dpadDirectionSelected = Direction.DOWN_LEFT;
 				} else if (dpadRects[Direction.LEFT.ordinal()].contains(input.x, input.y)) {
-					controls[Controls.LEFT] = true;
+					updateControls(Controls.LEFT, true);
 					dpadDirectionSelected = Direction.LEFT;
 				} else if (dpadRects[Direction.UP_LEFT.ordinal()].contains(input.x, input.y)) {
-					controls[Controls.UP] = true;
-					controls[Controls.LEFT] = true;
+					updateControls(Controls.UP, true);
+					updateControls(Controls.LEFT, true);
 					dpadDirectionSelected = Direction.UP_LEFT;
 				}
 				return true;
 			} else if (zCircle.contains(input.x, input.y)) {
-				controlsUpdated = true;
 				buttonPointer = pointer;
-				controls[Controls.ROLL] = true;
+				updateControls(Controls.ROLL, true);
 				buttonSelected = 0;
 				return true;
 			} else if (xCircle.contains(input.x, input.y)) {
-				controlsUpdated = true;
 				buttonPointer = pointer;
-				controls[Controls.ATTACK] = true;
+				updateControls(Controls.ATTACK, true);
 				buttonSelected = 1;
 				return true;
 			}
@@ -429,54 +406,53 @@ public class ControlsManager {
 					//Update controls based on where dpad is pressed
 					if (dpadRects[Direction.UP.ordinal()].contains(input.x, input.y) && dpadDirectionSelected != Direction.UP) {
 							clearDPadForUpdate();
-							controls[Controls.UP] = true;
+							updateControls(Controls.UP, true);
 							dpadDirectionSelected = Direction.UP;
+							ArchipeloClient.getGame().getWorld().getPlayer().controlDown(Controls.UP);
 					} else if (dpadRects[Direction.UP_RIGHT.ordinal()].contains(input.x, input.y) && dpadDirectionSelected != Direction.UP_RIGHT) {
 						clearDPadForUpdate();
-						controls[Controls.UP] = true;
-						controls[Controls.RIGHT] = true;
+						updateControls(Controls.UP, true);
+						updateControls(Controls.RIGHT, true);
 						dpadDirectionSelected = Direction.UP_RIGHT;
 					} else if (dpadRects[Direction.RIGHT.ordinal()].contains(input.x, input.y) && dpadDirectionSelected != Direction.RIGHT) {
 						clearDPadForUpdate();
-						controls[Controls.RIGHT] = true;
+						updateControls(Controls.RIGHT, true);
 						dpadDirectionSelected = Direction.RIGHT;
 					} else if (dpadRects[Direction.DOWN_RIGHT.ordinal()].contains(input.x, input.y) && dpadDirectionSelected != Direction.DOWN_RIGHT) {
 						clearDPadForUpdate();
-						controls[Controls.DOWN] = true;
-						controls[Controls.RIGHT] = true;
+						updateControls(Controls.DOWN, true);
+						updateControls(Controls.RIGHT, true);
 						dpadDirectionSelected = Direction.DOWN_RIGHT;
 					} else if (dpadRects[Direction.DOWN.ordinal()].contains(input.x, input.y) && dpadDirectionSelected != Direction.DOWN) {
 						clearDPadForUpdate();
-						controls[Controls.DOWN] = true;
+						updateControls(Controls.DOWN, true);
 						dpadDirectionSelected = Direction.DOWN;
 					} else if (dpadRects[Direction.DOWN_LEFT.ordinal()].contains(input.x, input.y) && dpadDirectionSelected != Direction.DOWN_LEFT) {
 						clearDPadForUpdate();
-						controls[Controls.DOWN] = true;
-						controls[Controls.LEFT] = true;
+						updateControls(Controls.DOWN, true);
+						updateControls(Controls.LEFT, true);
 						dpadDirectionSelected = Direction.DOWN_LEFT;
 					} else if (dpadRects[Direction.LEFT.ordinal()].contains(input.x, input.y) && dpadDirectionSelected != Direction.LEFT) {
 						clearDPadForUpdate();
-						controls[Controls.LEFT] = true;
+						updateControls(Controls.LEFT, true);
 						dpadDirectionSelected = Direction.LEFT;
 					} else if (dpadRects[Direction.UP_LEFT.ordinal()].contains(input.x, input.y) && dpadDirectionSelected != Direction.UP_LEFT) {
 						clearDPadForUpdate();
-						controls[Controls.UP] = true;
-						controls[Controls.LEFT] = true;
+						updateControls(Controls.UP, true);
+						updateControls(Controls.LEFT, true);
 						dpadDirectionSelected = Direction.UP_LEFT;
 					}
 					return true;
 				}
 			} else if (pointer == buttonPointer) {
 				if (zCircle.contains(input.x, input.y) && buttonSelected != 0) {
-					controlsUpdated = true;
-					controls[Controls.ROLL] = true;
-					controls[Controls.ATTACK] = false;
+					updateControls(Controls.ROLL, true);
+					updateControls(Controls.ATTACK, false);
 					buttonSelected = 0;
 					return true;
 				} else if (xCircle.contains(input.x, input.y) && buttonSelected != 1) {
-					controlsUpdated = true;
-					controls[Controls.ATTACK] = true;
-					controls[Controls.ROLL] = false;
+					updateControls(Controls.ATTACK, true);
+					updateControls(Controls.ROLL, false);
 					buttonSelected = 1;
 					return true;
 				}
@@ -494,15 +470,13 @@ public class ControlsManager {
 				dpadDirectionSelected = null;
 				return true;
 			} else if (pointer == buttonPointer) {
-				controls[Controls.ATTACK] = false;
-				controls[Controls.ROLL] = false;
-				controlsUpdated = true;
+				updateControls(Controls.ATTACK, false);
+				updateControls(Controls.ROLL, false);
 				buttonPointer = -1;
 				buttonSelected = -1;
 				return true;
 			} else if (lockRect.contains(input.x, input.y)) {
-				controls[Controls.LOCK] = !controls[Controls.LOCK];
-				controlsUpdated = true;
+				updateControls(Controls.LOCK, !getControl(Controls.LOCK));
 				return true;
 			}
 		}
@@ -510,11 +484,10 @@ public class ControlsManager {
 	}
 	
 	private void clearDPadForUpdate () {
-		controlsUpdated = true;
-		controls[Controls.UP] = false;
-		controls[Controls.LEFT] = false;
-		controls[Controls.DOWN] = false;
-		controls[Controls.RIGHT] = false;
+		updateControls(Controls.UP, false);
+		updateControls(Controls.LEFT, false);
+		updateControls(Controls.DOWN, false);
+		updateControls(Controls.RIGHT, false);
 	}
 	
 }

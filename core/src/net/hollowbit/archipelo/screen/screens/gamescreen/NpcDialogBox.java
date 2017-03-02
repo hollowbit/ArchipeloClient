@@ -7,17 +7,18 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 
 import net.hollowbit.archipelo.ArchipeloClient;
+import net.hollowbit.archipelo.form.MobileCompatibleWindow;
 import net.hollowbit.archipelo.network.packets.NpcDialogPacket;
 import net.hollowbit.archipelo.network.packets.NpcDialogRequestPacket;
+import net.hollowbit.archipelo.screen.screens.GameScreen;
 import net.hollowbit.archipelo.tools.QuickUi;
 import net.hollowbit.archipelo.tools.npcdialogs.NpcDialog;
 
-public class NpcDialogBox extends Window {
+public class NpcDialogBox extends MobileCompatibleWindow {
 	
 	public static final float LETTER_ADD_TIME = 0.03f;
 	public static final int WIDTH = 400;
@@ -41,10 +42,10 @@ public class NpcDialogBox extends Window {
 	private int messageIndex = -1;
 	
 	public NpcDialogBox (String name, NpcDialogPacket packet) {
-		super(name, ArchipeloClient.getGame().getUiSkin());
+		super(name, ArchipeloClient.getGame().getUiSkin(), 0.5f);
 		
 		this.setMovable(false);
-		this.setBounds(this.getX(), this.getY(), 400, HEIGHT);
+		this.setBounds(this.getX(), this.getY(), WIDTH, HEIGHT);
 		
 		this.usesId = packet.usesId;
 		if (this.usesId) {
@@ -82,6 +83,15 @@ public class NpcDialogBox extends Window {
 				return super.keyDown(event, keycode);
 			}
 		});
+		
+		this.pack();
+	}
+	
+	@Override
+	public void pack () {
+		super.pack();
+		this.setY(GameScreen.NPC_DIALOG_BOX_HEIGHT);
+		this.setBounds(this.getX(), this.getY(), WIDTH, HEIGHT);
 	}
 	
 	/**

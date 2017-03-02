@@ -6,11 +6,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
-import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 
 import net.hollowbit.archipelo.ArchipeloClient;
+import net.hollowbit.archipelo.form.MobileCompatibleWindow;
 import net.hollowbit.archipelo.hollowbitserver.HollowBitServerConnectivity;
 import net.hollowbit.archipelo.hollowbitserver.HollowBitServerQueryResponseHandler;
 import net.hollowbit.archipelo.tools.LM;
@@ -18,7 +18,7 @@ import net.hollowbit.archipelo.tools.QuickUi;
 import net.hollowbit.archipelo.tools.QuickUi.TextFieldMessageListener;
 import net.hollowbit.archipeloshared.StringValidator;
 
-public class RegisterWindow extends Window {
+public class RegisterWindow extends MobileCompatibleWindow {
 	
 	//Ui
 	TextButton loginBtn;

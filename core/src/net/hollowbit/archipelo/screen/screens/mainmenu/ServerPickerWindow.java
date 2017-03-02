@@ -9,16 +9,16 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 import net.hollowbit.archipelo.ArchipeloClient;
+import net.hollowbit.archipelo.form.MobileCompatibleWindow;
 import net.hollowbit.archipelo.hollowbitserver.HollowBitServerConnectivity;
 import net.hollowbit.archipelo.hollowbitserver.HollowBitServerQueryResponseHandler;
 import net.hollowbit.archipelo.network.PingGetter;
 import net.hollowbit.archipelo.tools.LM;
 
-public class ServerPickerWindow extends Window {
+public class ServerPickerWindow extends MobileCompatibleWindow {
 	
 	ScrollPane serverListScrollPane;
 	Label infoLabel;

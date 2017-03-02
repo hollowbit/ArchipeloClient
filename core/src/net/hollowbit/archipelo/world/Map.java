@@ -151,7 +151,7 @@ public class Map {
 			//Render entities for row
 			ArrayList<Entity> entitiesInThisTileRow = new ArrayList<Entity>();
 			for (Entity entity : entities) {
-				float y = entity.getViewRect().y;
+				float y = entity.getDrawOrderY();
 				if (y >= elementData.length * ArchipeloClient.TILE_SIZE - r * ArchipeloClient.TILE_SIZE - ArchipeloClient.TILE_SIZE - 1 && y < elementData.length * ArchipeloClient.TILE_SIZE - r * ArchipeloClient.TILE_SIZE + 1) {
 					entitiesInThisTileRow.add(entity);
 				}
@@ -162,7 +162,7 @@ public class Map {
 			//Render entities in tile row
 			for (Entity entity : entitiesInThisTileRow) {
 				if (cameraViewRect.collidesWith(entity.getViewRect()))
-					entity.render(batch);
+					entity.renderStart(batch);
 			}
 		}
 		

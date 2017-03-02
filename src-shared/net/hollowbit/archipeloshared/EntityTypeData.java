@@ -13,6 +13,8 @@ public class EntityTypeData {
 	public int imgWidth = 16;
 	public int imgHeight = 16;
 	
+	public float drawOrderOffsetY = 0;//Used to offset render order of an entity
+	
 	//View rect
 	public float viewRectOffsetX = 0;
 	public float viewRectOffsetY = 0;

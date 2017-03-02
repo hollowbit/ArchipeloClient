@@ -7,16 +7,16 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 import net.hollowbit.archipelo.ArchipeloClient;
+import net.hollowbit.archipelo.form.MobileCompatibleWindow;
 import net.hollowbit.archipelo.network.packets.FormRequestPacket;
 import net.hollowbit.archipelo.network.packets.LogoutPacket;
 import net.hollowbit.archipelo.screen.screens.GameScreen;
 import net.hollowbit.archipelo.tools.LM;
 
-public class MainMenuWindow extends Window {
+public class MainMenuWindow extends MobileCompatibleWindow {
 	
 	GameScreen screen;
 	
@@ -28,10 +28,9 @@ public class MainMenuWindow extends Window {
 	TextButton returnBtn;
 	
 	public MainMenuWindow (final GameScreen screen, Stage stage) {
-		super(LM.ui("mainMenu"), ArchipeloClient.getGame().getUiSkin());
+		super(LM.ui("mainMenu"), ArchipeloClient.getGame().getUiSkin(), 0.5f);
 		this.screen = screen;
 		this.setStage(stage);
-		this.setBounds(0, 0, 350, 250);
 		this.setMovable(false);
 		
 		inventoryBtn = new TextButton(LM.ui("inventory"), getSkin());
@@ -110,6 +109,8 @@ public class MainMenuWindow extends Window {
 				return super.keyDown(event, keycode);
 			}
 		});
+		
+		this.pack();
 	}
 
 }

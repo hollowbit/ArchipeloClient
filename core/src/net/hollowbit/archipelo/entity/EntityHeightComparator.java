@@ -6,7 +6,7 @@ public class EntityHeightComparator implements Comparator<Entity> {
 
 	@Override
 	public int compare(Entity entity1, Entity entity2) {
-		return (entity1.location.getY() < entity2.location.getY() ? 1 : -1);
+		return (entity1.getDrawOrderY() < entity2.getDrawOrderY() ? 1 : -1);
 	}
 
 }

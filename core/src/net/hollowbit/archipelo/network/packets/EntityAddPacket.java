@@ -7,9 +7,11 @@ import net.hollowbit.archipelo.network.PacketType;
 
 public class EntityAddPacket extends Packet {
 
-	public String username;
+	public String name;
 	public String type;
-	public int style;
+	public String anim;
+	public String animMeta;
+	public float animTime;
 	public HashMap<String, String> properties;
 	
 	public EntityAddPacket () {

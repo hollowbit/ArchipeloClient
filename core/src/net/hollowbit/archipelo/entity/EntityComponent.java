@@ -15,9 +15,8 @@ public abstract class EntityComponent {
 	/**
 	 * Update this entity component.
 	 * @param deltaTime
-	 * @param timeUntilNextInterp
 	 */
-	public void update (float deltaTime, float timeUntilNextInterp) {}
+	public void update (float deltaTime) {}
 	
 	/**
 	 * Render anything necessary for this entity component. Returns true if all rendering after it should be overridden.
@@ -47,7 +46,7 @@ public abstract class EntityComponent {
 		batch.draw(entity.getEntityType().getAnimationFrame(animation, entity.getLocation().getDirection(), stateTime, entity.getStyle()), entity.getLocation().getX(), entity.getLocation().getY());;
 	}
 	
-	public void applyInterpSnapshot (long timeStamp, EntitySnapshot snapshot1, EntitySnapshot snapshot2, float fraction) {}
+	public void interpolate (long timeStamp, EntitySnapshot snapshot1, EntitySnapshot snapshot2, float fraction) {}
 	
 	public void applyChangesSnapshot (EntitySnapshot snapshot) {}
 	

@@ -2,31 +2,33 @@ package net.hollowbit.archipelo.entity.living.player;
 
 import java.util.ArrayList;
 
+import net.hollowbit.archipelo.network.packets.ControlsPacket;
+
 public class MovementLog {
 	
-	ArrayList<MovementLogEntry> movementLogEntries;
+	ArrayList<ControlsPacket> commandEntries;
 	
 	public MovementLog () {
-		movementLogEntries = new ArrayList<MovementLogEntry>();
+		commandEntries = new ArrayList<ControlsPacket>();
 	}
 	
-	public synchronized void removeFromBeforeTimeStamp (double timeStamp) {
-		ArrayList<MovementLogEntry> movementLogEntriesToRemove = new ArrayList<MovementLogEntry>();
-		for (MovementLogEntry logEntry : movementLogEntries) {
+	public synchronized void removeCommandsOlderThan (long timeStamp) {
+		ArrayList<ControlsPacket> commandEntriesToRemove = new ArrayList<ControlsPacket>();
+		for (ControlsPacket logEntry : commandEntries) {
 			if (logEntry.timeStamp < timeStamp)
-				movementLogEntriesToRemove.add(logEntry);
+				commandEntriesToRemove.add(logEntry);
 		}
-		movementLogEntries.removeAll(movementLogEntriesToRemove);
+		commandEntries.removeAll(commandEntriesToRemove);
 	}
 	
-	public synchronized void add (MovementLogEntry logEntry) {
-		movementLogEntries.add(logEntry);
+	public synchronized void add (ControlsPacket logEntry) {
+		commandEntries.add(logEntry);
 	}
 	
-	public synchronized ArrayList<MovementLogEntry> getCurrentLogs () {
-		ArrayList<MovementLogEntry> currentMovementLogEntries = new ArrayList<MovementLogEntry>();
-		currentMovementLogEntries.addAll(movementLogEntries);
-		return currentMovementLogEntries;
+	public synchronized ArrayList<ControlsPacket> getCurrentlyStoredCommands () {
+		ArrayList<ControlsPacket> currentCommands = new ArrayList<ControlsPacket>();
+		currentCommands.addAll(commandEntries);
+		return currentCommands;
 	}
 	
 }

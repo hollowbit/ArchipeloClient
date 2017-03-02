@@ -11,7 +11,6 @@ public class EntityAnimationManager {
 	private String id;
 	private EntityAnimationData data;
 	private float stateTime;
-	private float goalStateTime;
 	private String meta;
 	private float animationLength;
 	
@@ -19,7 +18,6 @@ public class EntityAnimationManager {
 		this.entity = entity;
 		this.id = animation;
 		this.stateTime = stateTime;
-		this.goalStateTime = stateTime;
 		this.meta = animationMeta;
 		this.data = entity.getEntityType().getEntityAnimation(animation).getData();
 		animationLength = data.totalRuntime;
@@ -34,15 +32,10 @@ public class EntityAnimationManager {
 	}
 	
 	/**
-	 * Updates time of animation
+	 * Updates time of animation. Only call if using client-side prediction
 	 * @param deltaTime
-	 * @param timeUntilNextInterp
 	 */
-	public void update (float deltaTime, float timeUntilNextInterp) {
-		stateTime = StaticTools.singleDimensionLerp(stateTime, goalStateTime, timeUntilNextInterp);
-	}
-	
-	public void updateOverriden (float deltaTime) {
+	public void update (float deltaTime) {
 		stateTime += deltaTime;
 		
 		//If this animation doesn't loop and is over time limit, call change event on entities to get a new animation to replace it.
@@ -69,7 +62,7 @@ public class EntityAnimationManager {
 		this.id = snapshot2.anim;
 		this.meta = snapshot2.animMeta;
 		float snapshot1Time = (snapshot1.anim.equals(snapshot2.anim) ? snapshot1.animTime : 0);
-		this.goalStateTime = StaticTools.singleDimensionLerp(snapshot1Time, snapshot2.animTime, fraction);
+		this.stateTime = StaticTools.singleDimensionLerp(snapshot1Time, snapshot2.animTime, fraction);
 	}
 	
 	public void change (String animationId) {

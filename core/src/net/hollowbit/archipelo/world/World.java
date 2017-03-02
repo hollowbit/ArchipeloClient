@@ -24,7 +24,6 @@ import net.hollowbit.archipelo.screen.screens.GameScreen;
 import net.hollowbit.archipelo.screen.screens.gamescreen.MapTagPopupText;
 import net.hollowbit.archipelo.tools.FlagsManager;
 import net.hollowbit.archipelo.tools.StaticTools;
-import net.hollowbit.archipelo.tools.WorldSnapshotManager;
 import net.hollowbit.archipeloshared.CollisionRect;
 import net.hollowbit.archipeloshared.Direction;
 
@@ -38,7 +37,6 @@ public class World implements PacketHandler {
 	public static final int TIME_SPEED = 20;//Time moves at 20 ticks per second.
 	
 	private float time;
-	private float goalTime;
 	private ArrayList<Entity> entities;
 	private Map map;
 	private MapSnapshot nextMapSnapshot;
@@ -51,8 +49,6 @@ public class World implements PacketHandler {
 	private boolean firstTimeLoading;
 	FlagsManager flagsManager;
 	
-	private float timeSinceLastInterp = 0;
-	
 	public World (GameScreen gameScreen) {
 		this.gameScreen = gameScreen;
 		entities = new ArrayList<Entity>();
@@ -61,27 +57,16 @@ public class World implements PacketHandler {
 		fadeTimer = 0;
 		firstTimeLoading = true;
 		fadeColor = getFadeColor(FADE_COLOR_BLACK);
-		goalTime = time;
 		flagsManager = new FlagsManager();
 		ArchipeloClient.getGame().getNetworkManager().addPacketHandler(this);
 	}
 	
 	public synchronized void update (float deltaTime) {
-		timeSinceLastInterp += deltaTime;
-		
-		if (time < goalTime) 
-			time += deltaTime * TIME_SPEED;
-		
 		if (map != null)
 			map.update(deltaTime);
 		
-		//Calculate fraction of time until next interp snapshot
-		float timeUntilNextInterp = timeSinceLastInterp / WorldSnapshotManager.TIME_BETWEEN_UPDATES;
-		if (timeUntilNextInterp > 1)//Can cause bugs if over 1 aka 100%
-			timeUntilNextInterp = 1;
-		
 		for (Entity entity : entities) {
-			entity.update(deltaTime, timeUntilNextInterp);
+			entity.update(deltaTime);
 		}
 		
 		//Fade map in
@@ -145,10 +130,10 @@ public class World implements PacketHandler {
 		batch.setColor(1, 1, 1, 1);
 	}
 	
-	public synchronized void applyInterpWorldSnapshot (long timeStamp, WorldSnapshot snapshot1, WorldSnapshot snapshot2, float fraction) {
-		goalTime = StaticTools.singleDimensionLerp(snapshot1.time, snapshot2.time, fraction);
+	public synchronized void interpolate (long timeStamp, WorldSnapshot snapshot1, WorldSnapshot snapshot2, float fraction) {
+		time = StaticTools.singleDimensionLerp(snapshot1.time, snapshot2.time, fraction);
 		
-		if (teleportPacket != null)//Don't apply interp if client is teleporting
+		if (teleportPacket != null)//Don't bother apply interp if client is teleporting
 			return;
 		
 		for (Entity entity : entities) {
@@ -156,10 +141,8 @@ public class World implements PacketHandler {
 			EntitySnapshot entitySnapshot2 = snapshot2.entitySnapshots.get(entity.getName());
 			
 			if (entitySnapshot1 != null && entitySnapshot2 != null)
-				entity.applyInterpSnapshot(timeStamp, entitySnapshot1, entitySnapshot2, fraction);
+				entity.interpolate(timeStamp, entitySnapshot1, entitySnapshot2, fraction);
 		}
-		
-		timeSinceLastInterp = 0;
 	}
 	
 	public synchronized void applyChangesWorldSnapshot (WorldSnapshot snapshot) {
@@ -317,6 +300,10 @@ public class World implements PacketHandler {
 			return new Color(Color.BLACK);
 		}
 		return Color.BLACK;
+	}
+	
+	public float getTime () {
+		return time;
 	}
 	
 }

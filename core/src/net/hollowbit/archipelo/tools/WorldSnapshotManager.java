@@ -8,6 +8,7 @@ import com.badlogic.gdx.utils.Json;
 
 import net.hollowbit.archipelo.ArchipeloClient;
 import net.hollowbit.archipelo.entity.EntitySnapshot;
+import net.hollowbit.archipelo.entity.living.CurrentPlayer;
 import net.hollowbit.archipelo.network.Packet;
 import net.hollowbit.archipelo.network.PacketHandler;
 import net.hollowbit.archipelo.network.PacketType;
@@ -19,50 +20,46 @@ import net.hollowbit.archipelo.world.WorldSnapshot;
 public class WorldSnapshotManager implements PacketHandler {
 	
 	public static final int DELAY = 100;//milliseconds  This delay is a set delay between server and client to keep it consistent. 
-	public static final float TIME_BETWEEN_UPDATES = 1 / 20f;
 	
 	//Stored in packets, rather than the snapshots themselves.
 	//The reason for this is to prevent decoding of packets that won't be used.
-	private ArrayList<WorldSnapshotPacket> worldInterpSnapshotPackets;
-	private ArrayList<WorldSnapshotPacket> worldChangesSnapshotPackets;
+	private ArrayList<WorldSnapshot> worldInterpSnapshotPackets;
+	private ArrayList<WorldSnapshot> worldChangesSnapshotPackets;
 	private World world;
-	private float timer = 0;
 	
 	public WorldSnapshotManager (World world) {
 		this.world = world;
-		this.worldInterpSnapshotPackets = new ArrayList<WorldSnapshotPacket>();
-		this.worldChangesSnapshotPackets = new ArrayList<WorldSnapshotPacket>();
+		this.worldInterpSnapshotPackets = new ArrayList<WorldSnapshot>();
+		this.worldChangesSnapshotPackets = new ArrayList<WorldSnapshot>();
 		ArchipeloClient.getGame().getNetworkManager().addPacketHandler(this);
 	}
 	
+	/**
+	 * Perform interpolation update
+	 * @param delta
+	 */
 	public void update (float delta) {
-		timer += delta;
-		if (timer >= TIME_BETWEEN_UPDATES) {
-			timer -= TIME_BETWEEN_UPDATES;
-			
-			//Perform update
-			double timeOfPacket = System.currentTimeMillis() - DELAY;
-			updateInterp(timeOfPacket);
-			updateChange(timeOfPacket);
-		}
+		double timeOfPacket = System.currentTimeMillis() - DELAY;
+		updateInterp(timeOfPacket);
+		updateChange(timeOfPacket);
 	}
 	
 	private synchronized void updateInterp (double timeOfPacket) {
 		if (worldInterpSnapshotPackets.isEmpty())
 			return;
 		
-		ArrayList<WorldSnapshotPacket> oldPackets = getPacketsFromBeforeMillis(timeOfPacket, worldInterpSnapshotPackets);
+		ArrayList<WorldSnapshot> oldPackets = getPacketsFromBeforeMillis(timeOfPacket, worldInterpSnapshotPackets);
 
 		if (oldPackets.isEmpty())
 			return;
 		
-		WorldSnapshotPacket packet1 = oldPackets.get(oldPackets.size() - 1);
+		WorldSnapshot packet1 = oldPackets.get(oldPackets.size() - 1);
 		worldInterpSnapshotPackets.removeAll(oldPackets);
 		
 		if (worldInterpSnapshotPackets.isEmpty())
 			return;
 		
-		WorldSnapshotPacket packet2 = worldInterpSnapshotPackets.get(0);
+		WorldSnapshot packet2 = worldInterpSnapshotPackets.get(0);
 		
 		double delta = packet2.timeCreatedMillis - packet1.timeCreatedMillis;
 		double deltaF = timeOfPacket - packet1.timeCreatedMillis;
@@ -70,22 +67,22 @@ public class WorldSnapshotManager implements PacketHandler {
 		double fraction = deltaF / delta;
 		
 		//Find the latest packet
-		world.applyInterpWorldSnapshot((long) timeOfPacket, decode(packet1), decode(packet2), (float) fraction);
+		world.interpolate((long) timeOfPacket, packet1, packet2, (float) fraction);
 		worldInterpSnapshotPackets.remove(packet2);
 	}
 	
 	private synchronized void updateChange (double timeOfPacket) {
 		//Apply all changes packets to world that are at proper time
-		ArrayList<WorldSnapshotPacket> packetsToApply = getPacketsFromBeforeMillis(timeOfPacket, worldChangesSnapshotPackets);
-		for (WorldSnapshotPacket packet : packetsToApply) {
-			world.applyChangesWorldSnapshot(decode(packet));
+		ArrayList<WorldSnapshot> packetsToApply = getPacketsFromBeforeMillis(timeOfPacket, worldChangesSnapshotPackets);
+		for (WorldSnapshot packet : packetsToApply) {
+			world.applyChangesWorldSnapshot(packet);
 		}
 		worldChangesSnapshotPackets.removeAll(packetsToApply);
 	}
 	
-	private ArrayList<WorldSnapshotPacket> getPacketsFromBeforeMillis (double millis, ArrayList<WorldSnapshotPacket> packetList) {
-		ArrayList<WorldSnapshotPacket> packets = new ArrayList<WorldSnapshotPacket>();
-		for (WorldSnapshotPacket packet : packetList) {
+	private ArrayList<WorldSnapshot> getPacketsFromBeforeMillis (double millis, ArrayList<WorldSnapshot> packetList) {
+		ArrayList<WorldSnapshot> packets = new ArrayList<WorldSnapshot>();
+		for (WorldSnapshot packet : packetList) {
 			if (packet.timeCreatedMillis <= millis)
 				packets.add(packet);
 		}
@@ -130,11 +127,16 @@ public class WorldSnapshotManager implements PacketHandler {
 	}
 	
 	private synchronized void addInterpSnapshot (WorldSnapshotPacket packet) {
-		worldInterpSnapshotPackets.add(packet);
+		worldInterpSnapshotPackets.add(decode(packet));
 	}
 	
 	private synchronized void addChangesSnapshot (WorldSnapshotPacket packet) {
-		worldChangesSnapshotPackets.add(packet);
+		WorldSnapshot snapshot = decode(packet);
+		CurrentPlayer player = ArchipeloClient.getGame().getWorld().getPlayer();
+		if (player != null)
+			player.applyInterpSnapshot(snapshot.entitySnapshots.get(player.getName()), (long) snapshot.timeCreatedMillis);
+		
+		worldChangesSnapshotPackets.add(snapshot);
 	}
 	
 	private synchronized void clearLists () {

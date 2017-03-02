@@ -21,8 +21,6 @@ public abstract class Entity {
 	protected EntityAnimationManager animationManager;
 	protected ArrayList<EntityComponent> components;
 	
-	protected boolean overriddenAnimationControl = false;//Use by player to override animation changes
-	
 	public Entity () {
 		components = new ArrayList<EntityComponent>();
 	}
@@ -67,15 +65,24 @@ public abstract class Entity {
 	/**
 	 * Tick the entity forward in time
 	 * @param deltaTime
-	 * @param timeUntilNextInterp
 	 */
-	public void update (float deltaTime, float timeUntilNextInterp) {
-		if (overriddenAnimationControl)
-			animationManager.updateOverriden(deltaTime);
-		else
-			animationManager.update(deltaTime, timeUntilNextInterp);
+	public void update (float deltaTime) {
 		for (EntityComponent component : components)
-			component.update(deltaTime, timeUntilNextInterp);
+			component.update(deltaTime);
+	}
+	
+	/**
+	 * Interpolate the movement or other for this entity.
+	 * @param timeStamp
+	 * @param snapshotFrom
+	 * @param snapshotTo
+	 * @param fraction
+	 */
+	public void interpolate (long timeStamp, EntitySnapshot snapshotFrom, EntitySnapshot snapshotTo, float fraction) {
+		animationManager.change(timeStamp, snapshotFrom, snapshotTo, fraction);
+		
+		for (EntityComponent component : components)
+			component.interpolate(timeStamp, snapshotFrom, snapshotTo, fraction);
 	}
 	
 	/**
@@ -108,14 +115,6 @@ public abstract class Entity {
 	public void unload () {
 		for (EntityComponent component : components)
 			component.unload();
-	}
-	
-	public void applyInterpSnapshot (long timeStamp, EntitySnapshot snapshot1, EntitySnapshot snapshot2, float fraction) {
-		if (!overriddenAnimationControl)
-			animationManager.change(timeStamp, snapshot1, snapshot2, fraction);
-		
-		for (EntityComponent component : components)
-			component.applyInterpSnapshot(timeStamp, snapshot1, snapshot2, fraction);
 	}
 	
 	public void applyChangesSnapshot (EntitySnapshot snapshot) {

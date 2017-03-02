@@ -12,7 +12,6 @@ import net.hollowbit.archipelo.entity.EntitySnapshot;
 import net.hollowbit.archipelo.entity.EntityType;
 import net.hollowbit.archipelo.entity.LivingEntity;
 import net.hollowbit.archipelo.entity.living.player.MovementLog;
-import net.hollowbit.archipelo.entity.living.player.MovementLogEntry;
 import net.hollowbit.archipelo.items.Item;
 import net.hollowbit.archipelo.network.packets.ControlsPacket;
 import net.hollowbit.archipelo.screen.screens.GameScreen;
@@ -32,6 +31,7 @@ public class CurrentPlayer extends Player {
 	MovementLog movementLog;
 	boolean[] controls;
 	float speed;
+	ControlsPacket lastControlsPacket;
 	
 	/**
 	 * This method is used when creating a player that is the current one.
@@ -39,7 +39,6 @@ public class CurrentPlayer extends Player {
 	*/
 	public void create (EntitySnapshot fullSnapshot, Map map, EntityType entityType) {
 		super.create(fullSnapshot, map, entityType);
-		this.overriddenAnimationControl = true;
 		movementLog = new MovementLog();
 		this.controls = new boolean[Controls.TOTAL];
 		animationManager.change("default");
@@ -47,8 +46,9 @@ public class CurrentPlayer extends Player {
 	}
 	
 	@Override
-	public void update(float deltaTime, float timeUntilNextInterp) {
-		super.update(deltaTime, timeUntilNextInterp);
+	public void update(float deltaTime) {
+		super.update(deltaTime);
+		animationManager.update(deltaTime);
 		
 		//Tick timer for roll double-click
 		if (rollDoubleClickTimer >= 0) {
@@ -58,7 +58,13 @@ public class CurrentPlayer extends Player {
 		}
 	}
 	
-	public void handleControls (ControlsPacket packet, float deltaTime) {
+	public void addCommand (ControlsPacket packet, float deltaTime) {
+		packet.timeStamp = System.currentTimeMillis();
+		packet.deltaTime = deltaTime;
+		movementLog.add(packet);
+	}
+	
+	protected void applyCommand (ControlsPacket packet, float deltaTime) {
 		if (!(ArchipeloClient.getGame().getScreenManager().getScreen() instanceof GameScreen))
 			return;
 		GameScreen gameScreen = (GameScreen) ArchipeloClient.getGame().getScreenManager().getScreen();
@@ -86,7 +92,7 @@ public class CurrentPlayer extends Player {
 			location.direction = direction;
 		
 		if (isMoving()) {
-			Vector2 pos = new Vector2(goal);
+			Vector2 pos = new Vector2(location.pos);
 			double speedMoved = 0;
 			switch (direction) {
 			case UP:
@@ -131,64 +137,37 @@ public class CurrentPlayer extends Player {
 				}
 			}
 			
+			//If it doesn't collide with map, move
 			if (!collidesWithMap) {
-				goal.set(pos);
-				
-				//Add new log entry to movement log manager
+				location.pos.set(pos);
 				gameScreen.playerMoved();
-				movementLog.add(new MovementLogEntry(location.direction, getSpeed()));
 			}
 		}
 	}
 	
 	@Override
-	public void applyInterpSnapshot(long timeStamp, EntitySnapshot snapshot1, EntitySnapshot snapshot2, float fraction) {
-		//Correct player position using interp snapshot and time stamp from server
-		movementLog.removeFromBeforeTimeStamp(timeStamp);
-		Vector2 packet1Pos = new Vector2(snapshot1.getFloat("x", location.getX()), snapshot1.getFloat("y", location.getY()));
-		Vector2 packet2Pos = new Vector2(snapshot2.getFloat("x", location.getX()), snapshot2.getFloat("y", location.getY()));
-		goal.set(packet1Pos.lerp(packet2Pos, fraction));
-		
-		double lastTime = timeStamp;
-		
-		//Redo player prediction movements
-		for (MovementLogEntry logEntry : movementLog.getCurrentLogs()) {
-			float deltatime = (float) ((logEntry.timeStamp - lastTime) / 1000);
-			
-			//Move depending on direction
-			switch(logEntry.direction) {
-			case UP:
-				goal.add(0, (float) (deltatime * logEntry.speed));
-				break;
-			case UP_LEFT:
-				goal.add((float) (-deltatime * logEntry.speed), (float) (deltatime * logEntry.speed));
-				break;
-			case UP_RIGHT:
-				goal.add((float) (deltatime * logEntry.speed), (float) (deltatime * logEntry.speed));
-				break;
-			case DOWN:
-				goal.add(0, (float) (-deltatime * logEntry.speed));
-				break;
-			case DOWN_LEFT:
-				goal.add((float) (-deltatime * logEntry.speed), (float) (-deltatime * logEntry.speed));
-				break;
-			case DOWN_RIGHT:
-				goal.add((float) (deltatime * logEntry.speed), (float) (-deltatime * logEntry.speed));
-				break;
-			case LEFT:
-				goal.add((float) (-deltatime * logEntry.speed), 0);
-				break;
-			case RIGHT:
-				goal.add((float) (deltatime * logEntry.speed), 0);
-				break;
-			}
-			
-			lastTime = logEntry.timeStamp;
-		}
+	public void interpolate(long timeStamp, EntitySnapshot snapshotFrom, EntitySnapshot snapshotTo, float fraction) {
+		//Do not interpolate since we are predicting
+		//super.interpolate(timeStamp, snapshotFrom, snapshotTo, fraction);
 	}
 	
+	public void applyInterpSnapshot (EntitySnapshot snapshot, long timeStamp) {
+		//Correct player position using interp snapshot and time stamp from server
+		movementLog.removeCommandsOlderThan(timeStamp);
+		location.pos.set(snapshot.getFloat("x", location.getX()), snapshot.getFloat("y", location.getY()));
+		
+		//double lastTime = timeStamp;
+		
+		//Redo player prediction movements
+		for (ControlsPacket command : movementLog.getCurrentlyStoredCommands()) {
+			//float deltaTime = (float) ((command.timeStamp - lastTime) / 1000);
+			applyCommand(command, command.deltaTime);
+			//lastTime = command.timeStamp;
+		}
+	}	
 	/**
-	 * May be used to allow players to free themselves when stuck but it's a bit glitchy right now.
+	 * MAY NOT BE USED SINCE IT CAN CAUSE CHEATING
+	 * May be used to allow players to free themselves when stuck.
 	 * @return
 	 */
 	protected boolean doesCurrentPositionCollideWithMap () {
@@ -365,7 +344,6 @@ public class CurrentPlayer extends Player {
 	
 	public void stopMovement () {
 		rollDoubleClickTimer = 0;
-		goal.set(location.pos);
 	}
 	
 	public float getSpeed () {

@@ -220,8 +220,8 @@ public class ControlsManager {
 		
 		//Get controls sample and apply it
 		if (ArchipeloClient.getGame().getWorld().getPlayer() != null) {
-			ArchipeloClient.getGame().getWorld().getPlayer().handleControls(packet, deltaTime);
 			ArchipeloClient.getGame().getNetworkManager().sendPacket(packet);
+			ArchipeloClient.getGame().getWorld().getPlayer().addCommand(packet, deltaTime);
 		}
 	}
 	

@@ -20,7 +20,6 @@ import net.hollowbit.archipelo.network.PacketType;
 import net.hollowbit.archipelo.network.packets.ControlsPacket;
 import net.hollowbit.archipelo.network.packets.PositionCorrectionPacket;
 import net.hollowbit.archipelo.screen.screens.GameScreen;
-import net.hollowbit.archipelo.tools.StaticTools;
 import net.hollowbit.archipelo.world.Map;
 import net.hollowbit.archipeloshared.CollisionRect;
 import net.hollowbit.archipeloshared.Controls;
@@ -31,7 +30,7 @@ public class CurrentPlayer extends Player implements PacketHandler {
 	
 	public static final float EMPTY_HAND_USE_ANIMATION_LENTH = 0.5f;
 	public static final float HIT_RANGE = 8;
-	public static final float CORRECTION_RATE = 0.1f;
+	public static final float CORRECTION_RATE = 0.3f;
 	
 	float rollDoubleClickTimer = 0;
 	
@@ -42,8 +41,6 @@ public class CurrentPlayer extends Player implements PacketHandler {
 	
 	float timeSinceLastInterp = 0;
 	Vector2 serverPos;
-	Vector2 goal;
-	Vector2 startInterpPos;
 	
 	/**
 	 * This method is used when creating a player that is the current one.
@@ -56,8 +53,6 @@ public class CurrentPlayer extends Player implements PacketHandler {
 		animationManager.change("default");
 		this.speed = fullSnapshot.getFloat("speed", entityType.getSpeed());
 		this.serverPos = new Vector2(location.pos);
-		this.goal = new Vector2(location.pos);
-		this.startInterpPos = new Vector2(location.pos);
 		ArchipeloClient.getGame().getNetworkManager().addPacketHandler(this);
 	}
 	
@@ -70,17 +65,6 @@ public class CurrentPlayer extends Player implements PacketHandler {
 	@Override
 	public void update(float deltaTime) {
 		super.update(deltaTime);
-		timeSinceLastInterp += deltaTime;
-		if (timeSinceLastInterp > CORRECTION_RATE)
-			timeSinceLastInterp -= CORRECTION_RATE;
-		
-		float fraction = timeSinceLastInterp / CORRECTION_RATE;
-		
-		if (fraction > 1)
-			fraction = 1;
-		location.pos.x = StaticTools.singleDimensionLerp(startInterpPos.x, goal.x, fraction);
-		location.pos.y = StaticTools.singleDimensionLerp(startInterpPos.y, goal.y, fraction);
-		//location.pos.lerp(goal, fraction);
 		
 		animationManager.update(deltaTime);
 		
@@ -133,7 +117,7 @@ public class CurrentPlayer extends Player implements PacketHandler {
 			location.direction = direction;
 		
 		if (isMoving()) {
-			Vector2 pos = new Vector2(goal);
+			Vector2 pos = new Vector2(location.pos);
 			double speedMoved = 0;
 			switch (direction) {
 			case UP:
@@ -180,7 +164,7 @@ public class CurrentPlayer extends Player implements PacketHandler {
 			
 			//If it doesn't collide with map, move
 			if (!collidesWithMap) {
-				goal.set(pos);
+				location.pos.set(pos);
 				gameScreen.playerMoved();
 			}
 		}
@@ -403,15 +387,12 @@ public class CurrentPlayer extends Player implements PacketHandler {
 			//Correct player position using interp snapshot and time stamp from server
 			movementLog.removeCommandsOlderThan(posPacket.id);
 			serverPos = new Vector2(posPacket.x, posPacket.y);
-			System.out.println("CurrentPlayer Server:  " + serverPos);
-			System.out.println("CurrentPlayer Client:  " + location.pos);
-			goal.set(serverPos);
+			location.pos.set(serverPos);
 			
 			//Redo player prediction movements
 			for (ControlsPacket command : movementLog.getCurrentlyStoredCommands()) {
 				applyCommand(command, command.deltaTime);
 			}
-			startInterpPos.set(location.pos);
 			return true;
 		}
 		return false;

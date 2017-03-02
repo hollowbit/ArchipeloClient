@@ -8,7 +8,6 @@ import com.badlogic.gdx.utils.Json;
 
 import net.hollowbit.archipelo.ArchipeloClient;
 import net.hollowbit.archipelo.entity.EntitySnapshot;
-import net.hollowbit.archipelo.entity.living.CurrentPlayer;
 import net.hollowbit.archipelo.network.Packet;
 import net.hollowbit.archipelo.network.PacketHandler;
 import net.hollowbit.archipelo.network.PacketType;
@@ -129,11 +128,7 @@ public class WorldSnapshotManager implements PacketHandler {
 	}
 	
 	private synchronized void addInterpSnapshot (WorldSnapshotPacket packet) {
-		WorldSnapshot snapshot = decode(packet);
-		/*CurrentPlayer player = ArchipeloClient.getGame().getWorld().getPlayer();
-		if (player != null)
-			player.applyInterpSnapshot(snapshot.entitySnapshots.get(player.getName()), (long) snapshot.timeCreatedMillis);*/
-		worldInterpSnapshotPackets.add(snapshot);
+		worldInterpSnapshotPackets.add(decode(packet));
 	}
 	
 	private synchronized void addChangesSnapshot (WorldSnapshotPacket packet) {

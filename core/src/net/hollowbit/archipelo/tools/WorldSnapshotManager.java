@@ -19,7 +19,7 @@ import net.hollowbit.archipelo.world.WorldSnapshot;
 
 public class WorldSnapshotManager implements PacketHandler {
 	
-	public static final int DELAY = 100;//milliseconds  This delay is a set delay between server and client to keep it consistent. 
+	public static final int DELAY = 100;//milliseconds  This delay is a set delay between server and client to keep it consistent.
 	
 	//Stored in packets, rather than the snapshots themselves.
 	//The reason for this is to prevent decoding of packets that won't be used.
@@ -65,6 +65,8 @@ public class WorldSnapshotManager implements PacketHandler {
 		double deltaF = timeOfPacket - packet1.timeCreatedMillis;
 		
 		double fraction = deltaF / delta;
+		if (fraction > 1)//This could happen and causes undesired effects
+			fraction = 1;
 		
 		//Find the latest packet
 		world.interpolate((long) timeOfPacket, packet1, packet2, (float) fraction);
@@ -127,16 +129,15 @@ public class WorldSnapshotManager implements PacketHandler {
 	}
 	
 	private synchronized void addInterpSnapshot (WorldSnapshotPacket packet) {
-		worldInterpSnapshotPackets.add(decode(packet));
-	}
-	
-	private synchronized void addChangesSnapshot (WorldSnapshotPacket packet) {
 		WorldSnapshot snapshot = decode(packet);
 		CurrentPlayer player = ArchipeloClient.getGame().getWorld().getPlayer();
 		if (player != null)
 			player.applyInterpSnapshot(snapshot.entitySnapshots.get(player.getName()), (long) snapshot.timeCreatedMillis);
-		
-		worldChangesSnapshotPackets.add(snapshot);
+		worldInterpSnapshotPackets.add(snapshot);
+	}
+	
+	private synchronized void addChangesSnapshot (WorldSnapshotPacket packet) {
+		worldChangesSnapshotPackets.add(decode(packet));
 	}
 	
 	private synchronized void clearLists () {

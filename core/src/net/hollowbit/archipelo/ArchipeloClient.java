@@ -128,7 +128,7 @@ public class ArchipeloClient extends ApplicationAdapter {
 		
 		//Music
 		assetManager.putMusic("title-screen", "music/title_screen.ogg");
-		//assetManager.putTexture("invalid", new Texture("invalid.png"));//For some reason this image cannot be loaded by html. Fix later.
+		assetManager.putTexture("invalid", "invalid.png");//For some reason this image cannot be loaded by html. Fix later.
 
 		elementManager = new MapElementManager();
 		elementManager.loadMapElements();

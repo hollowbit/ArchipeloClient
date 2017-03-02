@@ -130,9 +130,9 @@ public class WorldSnapshotManager implements PacketHandler {
 	
 	private synchronized void addInterpSnapshot (WorldSnapshotPacket packet) {
 		WorldSnapshot snapshot = decode(packet);
-		CurrentPlayer player = ArchipeloClient.getGame().getWorld().getPlayer();
+		/*CurrentPlayer player = ArchipeloClient.getGame().getWorld().getPlayer();
 		if (player != null)
-			player.applyInterpSnapshot(snapshot.entitySnapshots.get(player.getName()), (long) snapshot.timeCreatedMillis);
+			player.applyInterpSnapshot(snapshot.entitySnapshots.get(player.getName()), (long) snapshot.timeCreatedMillis);*/
 		worldInterpSnapshotPackets.add(snapshot);
 	}
 	

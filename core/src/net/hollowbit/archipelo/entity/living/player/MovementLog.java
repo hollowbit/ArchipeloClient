@@ -12,10 +12,10 @@ public class MovementLog {
 		commandEntries = new ArrayList<ControlsPacket>();
 	}
 	
-	public synchronized void removeCommandsOlderThan (long timeStamp) {
+	public synchronized void removeCommandsOlderThan (int id) {
 		ArrayList<ControlsPacket> commandEntriesToRemove = new ArrayList<ControlsPacket>();
 		for (ControlsPacket logEntry : commandEntries) {
-			if (logEntry.timeStamp < timeStamp)
+			if (logEntry.id <= id)
 				commandEntriesToRemove.add(logEntry);
 		}
 		commandEntries.removeAll(commandEntriesToRemove);

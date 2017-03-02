@@ -5,11 +5,13 @@ import net.hollowbit.archipelo.network.PacketType;
 
 public class ControlsPacket extends Packet {
 	
+	private static int idNext = 0;
+	
 	public String c;
+	public int id;
 	
 	//Will only be used in client
 	public float deltaTime = 0;
-	public long timeStamp = 0;
 
 	public ControlsPacket (boolean[] controls) {
 		super(PacketType.CONTROLS);
@@ -17,6 +19,7 @@ public class ControlsPacket extends Packet {
 		for (int i = 0; i < controls.length; i++) {
 			this.c += (controls[i] ? 1:0);
 		}
+		this.id = idNext++;
 	}
 	
 	public boolean[] parse() {

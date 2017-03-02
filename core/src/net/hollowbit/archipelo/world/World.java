@@ -107,6 +107,8 @@ public class World implements PacketHandler {
 	 * Properly dispose of game world
 	 */
 	public void dispose () {
+		for (Entity entity : entities)
+			entity.unload();
 		this.flagsManager.dispose();
 		ArchipeloClient.getGame().getNetworkManager().removePacketHandler(this);
 	}

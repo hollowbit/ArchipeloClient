@@ -14,7 +14,11 @@ import net.hollowbit.archipelo.entity.EntityType;
 import net.hollowbit.archipelo.entity.LivingEntity;
 import net.hollowbit.archipelo.entity.living.player.MovementLog;
 import net.hollowbit.archipelo.items.Item;
+import net.hollowbit.archipelo.network.Packet;
+import net.hollowbit.archipelo.network.PacketHandler;
+import net.hollowbit.archipelo.network.PacketType;
 import net.hollowbit.archipelo.network.packets.ControlsPacket;
+import net.hollowbit.archipelo.network.packets.PositionCorrectionPacket;
 import net.hollowbit.archipelo.screen.screens.GameScreen;
 import net.hollowbit.archipelo.tools.StaticTools;
 import net.hollowbit.archipelo.world.Map;
@@ -23,7 +27,7 @@ import net.hollowbit.archipeloshared.Controls;
 import net.hollowbit.archipeloshared.Direction;
 import net.hollowbit.archipeloshared.HitCalculator;
 
-public class CurrentPlayer extends Player {
+public class CurrentPlayer extends Player implements PacketHandler {
 	
 	public static final float EMPTY_HAND_USE_ANIMATION_LENTH = 0.5f;
 	public static final float HIT_RANGE = 8;
@@ -54,6 +58,13 @@ public class CurrentPlayer extends Player {
 		this.serverPos = new Vector2(location.pos);
 		this.goal = new Vector2(location.pos);
 		this.startInterpPos = new Vector2(location.pos);
+		ArchipeloClient.getGame().getNetworkManager().addPacketHandler(this);
+	}
+	
+	@Override
+	public void unload() {
+		ArchipeloClient.getGame().getNetworkManager().removePacketHandler(this);
+		super.unload();
 	}
 	
 	@Override
@@ -89,7 +100,6 @@ public class CurrentPlayer extends Player {
 	}
 	
 	public void addCommand (ControlsPacket packet, float deltaTime) {
-		packet.timeStamp = System.currentTimeMillis();
 		packet.deltaTime = deltaTime;
 		movementLog.add(packet);
 		applyCommand(packet, deltaTime);
@@ -182,25 +192,6 @@ public class CurrentPlayer extends Player {
 		//super.interpolate(timeStamp, snapshotFrom, snapshotTo, fraction);
 	}
 	
-	public void applyInterpSnapshot (EntitySnapshot snapshot, long timeStamp) {
-		//Correct player position using interp snapshot and time stamp from server
-		movementLog.removeCommandsOlderThan(timeStamp);
-		serverPos = new Vector2(snapshot.getFloat("x", location.getX()), snapshot.getFloat("y", location.getY()));
-		System.out.println("CurrentPlayer Server:  " + serverPos);
-		System.out.println("CurrentPlayer Client:  " + location.pos);
-		goal.set(serverPos);
-		
-		double lastTime = timeStamp;
-		
-		//Redo player prediction movements
-		for (ControlsPacket command : movementLog.getCurrentlyStoredCommands()) {
-			float deltaTime = (float) ((command.timeStamp - lastTime) / 1000);
-			applyCommand(command, deltaTime);
-			lastTime = command.timeStamp;
-		}
-		timeSinceLastInterp = 0;
-		startInterpPos.set(location.pos);
-	}	
 	/**
 	 * MAY NOT BE USED SINCE IT CAN CAUSE WEIRD STUFF
 	 * May be used to allow players to free themselves when stuck.
@@ -402,6 +393,28 @@ public class CurrentPlayer extends Player {
 	public void applyChangesSnapshot(EntitySnapshot snapshot) {
 		super.applyChangesSnapshot(snapshot);
 		this.speed = snapshot.getFloat("speed", speed);
+	}
+
+	@Override
+	public boolean handlePacket(Packet packet) {
+		if (packet.packetType == PacketType.POSITION_CORRECTION) {
+			PositionCorrectionPacket posPacket = (PositionCorrectionPacket) packet;
+			
+			//Correct player position using interp snapshot and time stamp from server
+			movementLog.removeCommandsOlderThan(posPacket.id);
+			serverPos = new Vector2(posPacket.x, posPacket.y);
+			System.out.println("CurrentPlayer Server:  " + serverPos);
+			System.out.println("CurrentPlayer Client:  " + location.pos);
+			goal.set(serverPos);
+			
+			//Redo player prediction movements
+			for (ControlsPacket command : movementLog.getCurrentlyStoredCommands()) {
+				applyCommand(command, command.deltaTime);
+			}
+			startInterpPos.set(location.pos);
+			return true;
+		}
+		return false;
 	}
 	
 }

@@ -28,8 +28,8 @@ public class ClothesRenderEntityComponent extends EntityComponent {
 		if (previouslyCancelled)
 			return false;
 		
-		float x = entity.getLocation().getX();
-		float y = entity.getLocation().getY();
+		int x = (int) entity.getLocation().getX();
+		int y = (int) entity.getLocation().getY();
 		Direction direction = entity.getDirection();
 		String animationId = entity.getAnimationManager().getAnimationId();
 		float stateTime = entity.getAnimationManager().getStateTime();

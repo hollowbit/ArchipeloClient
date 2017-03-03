@@ -20,6 +20,7 @@ import net.hollowbit.archipelo.network.PacketType;
 import net.hollowbit.archipelo.network.packets.ControlsPacket;
 import net.hollowbit.archipelo.network.packets.PositionCorrectionPacket;
 import net.hollowbit.archipelo.screen.screens.GameScreen;
+import net.hollowbit.archipelo.tools.ControlsManager;
 import net.hollowbit.archipelo.world.Map;
 import net.hollowbit.archipeloshared.CollisionRect;
 import net.hollowbit.archipeloshared.Controls;
@@ -30,22 +31,15 @@ public class CurrentPlayer extends Player implements PacketHandler {
 	
 	public static final float EMPTY_HAND_USE_ANIMATION_LENTH = 0.5f;
 	public static final float HIT_RANGE = 8;
-	public static final float CORRECTION_RATE = 0.3f;
 	
 	float rollDoubleClickTimer = 0;
 	
 	MovementLog movementLog;
 	boolean[] controls;
 	float speed;
-	ControlsPacket lastControlsPacket;
 	
-	float timeSinceLastInterp = 0;
 	Vector2 serverPos;
 	
-	/**
-	 * This method is used when creating a player that is the current one.
-	 * No point in initializing variables if they won't be used, right?
-	*/
 	public void create (EntitySnapshot fullSnapshot, Map map, EntityType entityType) {
 		super.create(fullSnapshot, map, entityType);
 		movementLog = new MovementLog();
@@ -83,16 +77,8 @@ public class CurrentPlayer extends Player implements PacketHandler {
 			batch.draw(ArchipeloClient.getGame().getAssetManager().getTexture("invalid"), serverPos.x, serverPos.y, ArchipeloClient.PLAYER_SIZE, ArchipeloClient.PLAYER_SIZE);
 	}
 	
-	public void addCommand (ControlsPacket packet, float deltaTime) {
-		packet.deltaTime = deltaTime;
+	public void addCommand (ControlsPacket packet) {
 		movementLog.add(packet);
-		applyCommand(packet, deltaTime);
-	}
-	
-	protected void applyCommand (ControlsPacket packet, float deltaTime) {
-		if (!(ArchipeloClient.getGame().getScreenManager().getScreen() instanceof GameScreen))
-			return;
-		GameScreen gameScreen = (GameScreen) ArchipeloClient.getGame().getScreenManager().getScreen();
 		
 		//duplicate controls since they will be replaced
 		boolean[] oldControls = new boolean[controls.length];
@@ -111,6 +97,17 @@ public class CurrentPlayer extends Player implements PacketHandler {
 					controlDown(i);
 			}
 		}
+		
+		applyCommand(packet);
+	}
+	
+	protected void applyCommand (ControlsPacket packet) {
+		float deltaTime = ControlsManager.UPDATE_RATE;
+		if (!(ArchipeloClient.getGame().getScreenManager().getScreen() instanceof GameScreen))
+			return;
+		GameScreen gameScreen = (GameScreen) ArchipeloClient.getGame().getScreenManager().getScreen();
+		
+		this.controls = packet.parse();
 		
 		Direction direction = getMovementDirection();
 		if (!isDirectionLocked() && direction != null)
@@ -168,6 +165,7 @@ public class CurrentPlayer extends Player implements PacketHandler {
 				gameScreen.playerMoved();
 			}
 		}
+		System.out.println("CurrencPlayer.java  Server: " + location.pos);
 	}
 	
 	@Override
@@ -387,11 +385,12 @@ public class CurrentPlayer extends Player implements PacketHandler {
 			//Correct player position using interp snapshot and time stamp from server
 			movementLog.removeCommandsOlderThan(posPacket.id);
 			serverPos = new Vector2(posPacket.x, posPacket.y);
+			
 			location.pos.set(serverPos);
 			
 			//Redo player prediction movements
 			for (ControlsPacket command : movementLog.getCurrentlyStoredCommands()) {
-				applyCommand(command, command.deltaTime);
+				applyCommand(command);
 			}
 			return true;
 		}

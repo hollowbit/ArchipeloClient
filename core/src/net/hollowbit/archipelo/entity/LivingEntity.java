@@ -6,7 +6,6 @@ import net.hollowbit.archipelo.world.Map;
 
 public abstract class LivingEntity extends Entity {
 	
-	public static final float MOVEMENT_STATETIME_START = 0.9f / 8;
 	public static final double DIAGONAL_FACTOR = Math.sqrt(2);
 	
 	protected boolean isMoving;

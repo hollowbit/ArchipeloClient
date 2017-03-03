@@ -189,6 +189,7 @@ public class GameScreen extends Screen implements PacketHandler, InputProcessor 
 
 	@Override
 	public void dispose () {
+		controlsManager.dispose();
 		worldSnapshotManager.dispose();
 		world.dispose();
 		ArchipeloClient.getGame().getNetworkManager().removePacketHandler(this);

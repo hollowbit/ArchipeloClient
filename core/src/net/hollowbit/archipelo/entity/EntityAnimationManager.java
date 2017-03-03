@@ -28,7 +28,8 @@ public class EntityAnimationManager {
 	 * @param batch
 	 */
 	public void render (SpriteBatch batch) {
-		batch.draw(entity.getEntityType().getAnimationFrame(id, entity.getLocation().getDirection(), stateTime, entity.getStyle()), entity.getLocation().getX(), entity.getLocation().getY());
+		System.out.println("EntityAnimationManager   " + entity.getLocation().pos);
+		batch.draw(entity.getEntityType().getAnimationFrame(id, entity.getLocation().getDirection(), stateTime, entity.getStyle()), (int) entity.getLocation().getX(), (int) entity.getLocation().getY());
 	}
 	
 	/**

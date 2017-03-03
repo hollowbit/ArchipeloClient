@@ -10,6 +10,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Timer;
+import com.badlogic.gdx.utils.Timer.Task;
 
 import net.hollowbit.archipelo.ArchipeloClient;
 import net.hollowbit.archipelo.network.packets.ControlsPacket;
@@ -24,6 +26,8 @@ public class ControlsManager {
 	
 	private static final int[] KEYS_TO_CHECK = new int[] {Keys.UP, Keys.DOWN, Keys.LEFT, Keys.RIGHT, Keys.X, Keys.Z, Keys.CONTROL_LEFT};
 	private static final int POINTERS_TO_CHECK = 5;
+	
+	public static final float UPDATE_RATE = 1 / 30f;
 	
 	GameScreen game;
 	boolean[] controls;
@@ -58,6 +62,9 @@ public class ControlsManager {
 	
 	private ArrayList<Integer> keysDown;
 	private ArrayList<Integer> pointersDown;
+	private Task task;
+	
+	private boolean canPlayerMove = true;
 	
 	public ControlsManager (GameScreen game) {
 		this.game = game;
@@ -121,6 +128,29 @@ public class ControlsManager {
 			zCircle = new Circle(Gdx.graphics.getWidth() - zX + buttonSize / 2, zY + buttonSize / 2, buttonSize / 2);
 			xCircle = new Circle(Gdx.graphics.getWidth() - xX + buttonSize / 2, xY + buttonSize / 2, buttonSize / 2);
 		}
+		
+		task = new Task() {
+			
+			@Override
+			public void run() {
+				ControlsPacket packet;
+				if (canPlayerMove)
+					packet = new ControlsPacket(getControlsClone());
+				else
+					packet = new ControlsPacket(getBlankControls());
+				
+				//Get controls sample and apply it
+				if (ArchipeloClient.getGame().getWorld().getPlayer() != null) {
+					ArchipeloClient.getGame().getWorld().getPlayer().addCommand(packet);
+					ArchipeloClient.getGame().getNetworkManager().sendPacket(packet);
+				}
+			}
+		};
+		Timer.schedule(task, 0, UPDATE_RATE);
+	}
+	
+	public void dispose() {
+		task.cancel();
 	}
 	
 	public synchronized boolean[] getControls () {
@@ -162,67 +192,53 @@ public class ControlsManager {
 	 * @param ignoreActionButtons Whether x and z actions should be ignored
 	 */
 	public void update (boolean ignoreActionButtons, float deltaTime, boolean canPlayerMove) {
-		canPlayerMove = canPlayerMove || (ArchipeloClient.IS_MOBILE && ArchipeloClient.getGame().isWindowOpen());
+		this.canPlayerMove = canPlayerMove || (ArchipeloClient.IS_MOBILE && ArchipeloClient.getGame().isWindowOpen());
 		
-		ControlsPacket packet;
-		
-		if (!canPlayerMove)
-			packet = new ControlsPacket(getBlankControls());
-		else {
-			//Look for keys to add
-			for (int key : KEYS_TO_CHECK) {
-				if (ignoreActionButtons && (key == Keys.Z || key == Keys.X))
-					continue;
-				
-				if (Gdx.input.isKeyJustPressed(key)) {
-					keysDown.add(key);
-					keyDown(key);
-				}
+		//Look for keys to add
+		for (int key : KEYS_TO_CHECK) {
+			if (ignoreActionButtons && (key == Keys.Z || key == Keys.X))
+				continue;
+			
+			if (Gdx.input.isKeyJustPressed(key)) {
+				keysDown.add(key);
+				keyDown(key);
 			}
-			
-			//Look for keys to remove
-			ArrayList<Integer> keysToRemove = new ArrayList<Integer>();
-			for (int key : keysDown) {
-				if (ignoreActionButtons && (key == Keys.Z || key == Keys.X))
-					continue;
-				
-				if (!Gdx.input.isKeyPressed(key)) {
-					keysToRemove.add(key);
-					keyUp(key);
-				}
-			}
-			keysDown.removeAll(keysToRemove);
-			
-			//Look for pointers to add
-			for (int pointer = 0; pointer < POINTERS_TO_CHECK; pointer++) {
-				if (Gdx.input.isTouched(pointer) && !pointersDown.contains(pointer)) {
-					pointersDown.add(pointer);
-					touchDown(Gdx.input.getX(pointer), Gdx.input.getY(pointer), pointer);
-				}
-			}
-			
-			//Look for pointers to remove
-			ArrayList<Integer> pointersToRemove = new ArrayList<Integer>();
-			for (int pointer : pointersDown) {
-				if (!Gdx.input.isTouched(pointer)) {
-					pointersToRemove.add(pointer);
-					touchUp(Gdx.input.getX(pointer), Gdx.input.getY(pointer), pointer);
-				}
-			}
-			pointersDown.removeAll(pointersToRemove);
-			
-			//Update pointer moving
-			for (int pointer : pointersDown)
-				pointerMoved(Gdx.input.getX(pointer), Gdx.input.getY(pointer), pointer);
-			
-			packet = new ControlsPacket(getControlsClone());
 		}
 		
-		//Get controls sample and apply it
-		if (ArchipeloClient.getGame().getWorld().getPlayer() != null) {
-			ArchipeloClient.getGame().getNetworkManager().sendPacket(packet);
-			ArchipeloClient.getGame().getWorld().getPlayer().addCommand(packet, deltaTime);
+		//Look for keys to remove
+		ArrayList<Integer> keysToRemove = new ArrayList<Integer>();
+		for (int key : keysDown) {
+			if (ignoreActionButtons && (key == Keys.Z || key == Keys.X))
+				continue;
+			
+			if (!Gdx.input.isKeyPressed(key)) {
+				keysToRemove.add(key);
+				keyUp(key);
+			}
 		}
+		keysDown.removeAll(keysToRemove);
+		
+		//Look for pointers to add
+		for (int pointer = 0; pointer < POINTERS_TO_CHECK; pointer++) {
+			if (Gdx.input.isTouched(pointer) && !pointersDown.contains(pointer)) {
+				pointersDown.add(pointer);
+				touchDown(Gdx.input.getX(pointer), Gdx.input.getY(pointer), pointer);
+			}
+		}
+		
+		//Look for pointers to remove
+		ArrayList<Integer> pointersToRemove = new ArrayList<Integer>();
+		for (int pointer : pointersDown) {
+			if (!Gdx.input.isTouched(pointer)) {
+				pointersToRemove.add(pointer);
+				touchUp(Gdx.input.getX(pointer), Gdx.input.getY(pointer), pointer);
+			}
+		}
+		pointersDown.removeAll(pointersToRemove);
+		
+		//Update pointer moving
+		for (int pointer : pointersDown)
+			pointerMoved(Gdx.input.getX(pointer), Gdx.input.getY(pointer), pointer);
 	}
 	
 	public void render (SpriteBatch batch) {

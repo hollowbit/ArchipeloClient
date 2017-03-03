@@ -282,6 +282,7 @@ public class World implements PacketHandler {
 		} else
 		if (packet.packetType == PacketType.TELEPORT) {
 			TeleportPacket tpPacket = (TeleportPacket) packet;
+			System.out.println("World.java test!!");
 			Entity entity = getEntity(tpPacket.username);
 			if (entity == player && tpPacket.newMap) {
 				teleportPacket = tpPacket;

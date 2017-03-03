@@ -16,11 +16,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.PixmapIO;
-import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.BufferUtils;
@@ -68,7 +65,6 @@ public class ArchipeloClient extends ApplicationAdapter {
 	private static ArchipeloClient game;
 	
 	SpriteBatch batch;
-	FrameBuffer fbo;
 	ShaderProgram shader;
 	
 	AssetManager assetManager;
@@ -102,8 +98,6 @@ public class ArchipeloClient extends ApplicationAdapter {
 		shader = new ShaderProgram(Gdx.files.internal("shaders/test.vsh"), Gdx.files.internal("shaders/test.fsh"));
 		System.out.println(shader.isCompiled() ? "Shader compiled!" : shader.getLog());
 		batch.setShader(shader);
-		fbo = new FrameBuffer(Format.RGBA8888, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), false);
-		fbo.getColorBufferTexture().setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
 		
 		skin = new Skin(Gdx.files.internal("ui/uiskin.json"));
 		
@@ -198,11 +192,6 @@ public class ArchipeloClient extends ApplicationAdapter {
 		
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		
-		fbo.begin();
-		
-		Gdx.gl.glClearColor(0, 0, 0, 1);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
 		DELTA_TIME = Gdx.graphics.getDeltaTime();
 		STATE_TIME += DELTA_TIME;
@@ -217,25 +206,18 @@ public class ArchipeloClient extends ApplicationAdapter {
 		batch.begin();
 		networkManager.update();
 		screenManager.update(DELTA_TIME);
-		screenManager.render(batch, cameraGame.getWidth(), cameraGame.getHeight());
-		batch.end();
-		
-		fbo.end();
-		
 		if (INVERT)
 			batch.setShader(shader);
-		batch.setProjectionMatrix(cameraUi.combined());
-		batch.begin();
-		batch.draw(fbo.getColorBufferTexture(), 0, Gdx.graphics.getHeight(), Gdx.graphics.getWidth(), -Gdx.graphics.getHeight());
-		batch.end();
-		
+		screenManager.render(batch, cameraGame.getWidth(), cameraGame.getHeight());
 		batch.setShader(null);
+		batch.end();
 		
 		if (batch.isDrawing())
 			batch.end();
 		
 		if (!CINEMATIC_MODE) {
 			batch.begin();
+			batch.setProjectionMatrix(cameraUi.combined());
 			screenManager.renderUi(batch, cameraUi.getWidth(), cameraUi.getHeight());
 			batch.end();
 		}
@@ -256,7 +238,6 @@ public class ArchipeloClient extends ApplicationAdapter {
 	@Override
 	public void dispose() {
 		super.dispose();
-		fbo.dispose();
 		batch.dispose();
 	}
 	

@@ -74,7 +74,7 @@ public class CurrentPlayer extends Player implements PacketHandler {
 	protected void render(SpriteBatch batch) {
 		super.render(batch);
 		if (ArchipeloClient.DEBUGMODE)
-			batch.draw(ArchipeloClient.getGame().getAssetManager().getTexture("invalid"), serverPos.x, serverPos.y, ArchipeloClient.PLAYER_SIZE, ArchipeloClient.PLAYER_SIZE);
+			batch.draw(ArchipeloClient.getGame().getAssetManager().getTexture("invalid"), location.getX(), location.getY(), ArchipeloClient.PLAYER_SIZE, ArchipeloClient.PLAYER_SIZE);
 	}
 	
 	public void addCommand (ControlsPacket packet) {
@@ -165,7 +165,6 @@ public class CurrentPlayer extends Player implements PacketHandler {
 				gameScreen.playerMoved();
 			}
 		}
-		System.out.println("CurrencPlayer.java  Server: " + location.pos);
 	}
 	
 	@Override
@@ -385,12 +384,15 @@ public class CurrentPlayer extends Player implements PacketHandler {
 			//Correct player position using interp snapshot and time stamp from server
 			movementLog.removeCommandsOlderThan(posPacket.id);
 			serverPos = new Vector2(posPacket.x, posPacket.y);
+			System.out.println("CurrentPlayer.java  Server:   " + serverPos + "   " + posPacket.id);
+			System.out.println("CurrentPlayer.java  Client:   " + location.pos);
 			
 			location.pos.set(serverPos);
 			
 			//Redo player prediction movements
 			for (ControlsPacket command : movementLog.getCurrentlyStoredCommands()) {
 				applyCommand(command);
+				System.out.println("CurrentPlayer.java  Pred:   " + location.pos + "   " + command.id);
 			}
 			return true;
 		}

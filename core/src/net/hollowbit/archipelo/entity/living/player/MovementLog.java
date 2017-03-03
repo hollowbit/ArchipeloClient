@@ -1,19 +1,19 @@
 package net.hollowbit.archipelo.entity.living.player;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 
 import net.hollowbit.archipelo.network.packets.ControlsPacket;
 
 public class MovementLog {
 	
-	ArrayList<ControlsPacket> commandEntries;
+	LinkedList<ControlsPacket> commandEntries;
 	
 	public MovementLog () {
-		commandEntries = new ArrayList<ControlsPacket>();
+		commandEntries = new LinkedList<ControlsPacket>();
 	}
 	
 	public synchronized void removeCommandsOlderThan (int id) {
-		ArrayList<ControlsPacket> commandEntriesToRemove = new ArrayList<ControlsPacket>();
+		LinkedList<ControlsPacket> commandEntriesToRemove = new LinkedList<ControlsPacket>();
 		for (ControlsPacket logEntry : commandEntries) {
 			if (logEntry.id <= id)
 				commandEntriesToRemove.add(logEntry);
@@ -25,10 +25,14 @@ public class MovementLog {
 		commandEntries.add(logEntry);
 	}
 	
-	public synchronized ArrayList<ControlsPacket> getCurrentlyStoredCommands () {
-		ArrayList<ControlsPacket> currentCommands = new ArrayList<ControlsPacket>();
+	public synchronized LinkedList<ControlsPacket> getCurrentlyStoredCommands () {
+		LinkedList<ControlsPacket> currentCommands = new LinkedList<ControlsPacket>();
 		currentCommands.addAll(commandEntries);
 		return currentCommands;
+	}
+	
+	public synchronized int getLatestCommandId () {
+		return commandEntries.get(commandEntries.size() - 1).id;
 	}
 	
 }

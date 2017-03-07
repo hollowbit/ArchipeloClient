@@ -61,11 +61,11 @@ public class World implements PacketHandler {
 		ArchipeloClient.getGame().getNetworkManager().addPacketHandler(this);
 	}
 	
-	public synchronized void update (float deltaTime) {
+	public void update (float deltaTime) {
 		if (map != null)
 			map.update(deltaTime);
 		
-		for (Entity entity : entities) {
+		for (Entity entity : cloneEntitiesList()) {
 			entity.update(deltaTime);
 		}
 		
@@ -98,9 +98,9 @@ public class World implements PacketHandler {
 		}
 	}
 	
-	public synchronized void render (SpriteBatch batch) {
+	public void render (SpriteBatch batch) {
 		if (map != null)
-			map.render(batch, entities);//Entities is passed because they are drawn by the map. This allows map elements to appear in front of entities if they belong there.
+			map.render(batch, cloneEntitiesList());//Entities is passed because they are drawn by the map. This allows map elements to appear in front of entities if they belong there.
 	}
 	
 	/**
@@ -132,13 +132,13 @@ public class World implements PacketHandler {
 		batch.setColor(1, 1, 1, 1);
 	}
 	
-	public synchronized void interpolate (long timeStamp, WorldSnapshot snapshot1, WorldSnapshot snapshot2, float fraction) {
+	public void interpolate (long timeStamp, WorldSnapshot snapshot1, WorldSnapshot snapshot2, float fraction) {
 		time = StaticTools.singleDimensionLerp(snapshot1.time, snapshot2.time, fraction);
 		
 		if (teleportPacket != null)//Don't bother apply interp if client is teleporting
 			return;
 		
-		for (Entity entity : entities) {
+		for (Entity entity : cloneEntitiesList()) {
 			EntitySnapshot entitySnapshot1 = snapshot1.entitySnapshots.get(entity.getName());
 			EntitySnapshot entitySnapshot2 = snapshot2.entitySnapshots.get(entity.getName());
 			
@@ -147,13 +147,13 @@ public class World implements PacketHandler {
 		}
 	}
 	
-	public synchronized void applyChangesWorldSnapshot (WorldSnapshot snapshot) {
+	public void applyChangesWorldSnapshot (WorldSnapshot snapshot) {
 		if (map == null || teleportPacket != null)
 			return;
 		
 		map.applyChangesSnapshot(snapshot.mapSnapshot);
 		
-		for (Entity entity : entities) {
+		for (Entity entity : cloneEntitiesList()) {
 			EntitySnapshot entitySnapshot = snapshot.entitySnapshots.get(entity.getName());
 			if (entitySnapshot != null)
 				entity.applyChangesSnapshot(entitySnapshot);
@@ -172,7 +172,7 @@ public class World implements PacketHandler {
 			fadeTimer = -FADE_TIME;
 	}
 	
-	private void loadMap () {
+	private synchronized void loadMap () {
 		map = new Map(nextMapSnapshot, this);
 		for (Entity entity : entities)
 			entity.unload();
@@ -256,14 +256,22 @@ public class World implements PacketHandler {
 		entitiesClone.addAll(entities);
 		return entitiesClone;
 	}
+	
+	private synchronized void addEntity(Entity entity) {
+		entities.add(entity);
+	}
+	
+	private synchronized void removeEntity(Entity entity) {
+		entities.remove(entity);
+	}
 
 	@Override
 	public boolean handlePacket (Packet packet) {
 		if (packet.packetType == PacketType.ENTITY_ADD) {
 			EntityAddPacket entityAddPacket = (EntityAddPacket) packet;
 			Entity entity = EntityType.createEntityBySnapshot(new EntitySnapshot(entityAddPacket.name, entityAddPacket.type, entityAddPacket.properties, entityAddPacket.anim, entityAddPacket.animMeta, entityAddPacket.animTime), map);
-			entities.add(entity);
 			entity.load();
+			addEntity(entity);
 			
 			/*This shouldn't be an issue. The current player should never be added into the map using Entity Add packet
 			if (entity.getName().equals(ArchipeloClient.getGame().getPlayerName())) {
@@ -277,12 +285,11 @@ public class World implements PacketHandler {
 		if (packet.packetType == PacketType.ENTITY_REMOVE) {
 			Entity entity = getEntity(((EntityRemovePacket) packet).name);
 			entity.unload();
-			entities.remove(entity);
+			removeEntity(entity);
 			return true;
 		} else
 		if (packet.packetType == PacketType.TELEPORT) {
 			TeleportPacket tpPacket = (TeleportPacket) packet;
-			System.out.println("World.java test!!");
 			Entity entity = getEntity(tpPacket.username);
 			if (entity == player && tpPacket.newMap) {
 				teleportPacket = tpPacket;

@@ -22,10 +22,10 @@ public class DesktopLauncher {
 		//config.fullscreen = true;
 		
 		//TODO: Test with unlimited FPS when optimizing
+		config.foregroundFPS = 0;
+		config.backgroundFPS = 0;
 		//config.foregroundFPS = 60;
 		//config.backgroundFPS = 60;
-		config.foregroundFPS = 0;
-		config.backgroundFPS = 60;
 		
 		new LwjglApplication(new ArchipeloClient(), config);
 	}

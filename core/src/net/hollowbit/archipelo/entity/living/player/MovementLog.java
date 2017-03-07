@@ -31,8 +31,13 @@ public class MovementLog {
 		return currentCommands;
 	}
 	
-	public synchronized int getLatestCommandId () {
-		return commandEntries.get(commandEntries.size() - 1).id;
+	public synchronized ControlsPacket getCommandById (int id) {
+		for (ControlsPacket command : commandEntries) {
+			if (command.id == id)
+				return command;
+		}
+		
+		return null;
 	}
 	
 }

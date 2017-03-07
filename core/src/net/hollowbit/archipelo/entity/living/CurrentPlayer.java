@@ -73,8 +73,8 @@ public class CurrentPlayer extends Player implements PacketHandler {
 	@Override
 	protected void render(SpriteBatch batch) {
 		super.render(batch);
-		if (ArchipeloClient.DEBUGMODE)
-			batch.draw(ArchipeloClient.getGame().getAssetManager().getTexture("invalid"), location.getX(), location.getY(), ArchipeloClient.PLAYER_SIZE, ArchipeloClient.PLAYER_SIZE);
+		//if (ArchipeloClient.DEBUGMODE)
+			//batch.draw(ArchipeloClient.getGame().getAssetManager().getTexture("invalid"), location.getX(), location.getY(), ArchipeloClient.PLAYER_SIZE, ArchipeloClient.PLAYER_SIZE);
 	}
 	
 	public void addCommand (ControlsPacket packet) {
@@ -99,6 +99,8 @@ public class CurrentPlayer extends Player implements PacketHandler {
 		}
 		
 		applyCommand(packet);
+		packet.x = location.getX();
+		packet.y = location.getY();
 	}
 	
 	protected void applyCommand (ControlsPacket packet) {
@@ -307,7 +309,6 @@ public class CurrentPlayer extends Player implements PacketHandler {
 					playUseAnimation(item);
 				}
 			}
-				playUseAnimation(clothesRenderer.getDisplayInventory()[Player.EQUIP_INDEX_USABLE]);
 			break;
 		case Controls.UP:
 		case Controls.LEFT:
@@ -381,19 +382,20 @@ public class CurrentPlayer extends Player implements PacketHandler {
 		if (packet.packetType == PacketType.POSITION_CORRECTION) {
 			PositionCorrectionPacket posPacket = (PositionCorrectionPacket) packet;
 			
-			//Correct player position using interp snapshot and time stamp from server
-			movementLog.removeCommandsOlderThan(posPacket.id);
+			ControlsPacket posMatchingCommand = movementLog.getCommandById(posPacket.id);
 			serverPos = new Vector2(posPacket.x, posPacket.y);
-			System.out.println("CurrentPlayer.java  Server:   " + serverPos + "   " + posPacket.id);
-			System.out.println("CurrentPlayer.java  Client:   " + location.pos);
+			movementLog.removeCommandsOlderThan(posPacket.id);
 			
+			//If the player is close enough to the server pos, don't correct
+			if (serverPos.epsilonEquals(posMatchingCommand.x, posMatchingCommand.y, 0.5f))
+				return true;
+			
+			//Correct player position using interp snapshot and time stamp from server
 			location.pos.set(serverPos);
 			
 			//Redo player prediction movements
-			for (ControlsPacket command : movementLog.getCurrentlyStoredCommands()) {
+			for (ControlsPacket command : movementLog.getCurrentlyStoredCommands())
 				applyCommand(command);
-				System.out.println("CurrentPlayer.java  Pred:   " + location.pos + "   " + command.id);
-			}
 			return true;
 		}
 		return false;

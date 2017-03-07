@@ -35,7 +35,8 @@ public abstract class Entity {
 		
 		//Render components and check if they cancelled further rendering
 		boolean renderCancelled = false;
-		for (EntityComponent component : components) {
+		for (EntityComponent component : components
+				) {
 			if (component.render(batch, renderCancelled))
 				renderCancelled = true;
 		}

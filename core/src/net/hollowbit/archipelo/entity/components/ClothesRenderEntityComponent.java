@@ -24,12 +24,18 @@ public class ClothesRenderEntityComponent extends EntityComponent {
 	}
 	
 	@Override
+	public boolean render(SpriteBatch batch, boolean previouslyCancelled) {
+		return true;
+	}
+	
+	@Override
 	public boolean renderAfter(SpriteBatch batch, boolean previouslyCancelled) {
 		if (previouslyCancelled)
 			return false;
 		
 		float x = entity.getLocation().getX();
 		float y = entity.getLocation().getY();
+		
 		Direction direction = entity.getDirection();
 		String animationId = entity.getAnimationManager().getAnimationId();
 		float stateTime = entity.getAnimationManager().getStateTime();
@@ -37,7 +43,9 @@ public class ClothesRenderEntityComponent extends EntityComponent {
 		
 		if (animationId.equals("roll"))//Rolling animation use meta data for rolling direction
 			direction = Direction.values()[Integer.parseInt(entity.getAnimationManager().getAnimationMeta())];
-
+		
+		batch.draw(entity.getEntityType().getAnimationFrame(animationId, direction, stateTime, entity.getStyle()), x, y);
+		
 		boolean isUseAnimation = entity.getAnimationManager().isUseAnimation();
 		if (isUseAnimation) {
 			if (entity.getAnimationManager().getAnimationMeta().equals("")) {//If there is no meta data

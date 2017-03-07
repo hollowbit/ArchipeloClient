@@ -7,26 +7,33 @@ import com.github.czyzby.websocket.CommonWebSockets;
 import net.hollowbit.archipelo.ArchipeloClient;
 
 public class DesktopLauncher {
-	public static void main (String[] arg) {
-		CommonWebSockets.initiate();
-		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
+	public static void main (String[] args) {
 		
-		config.title = "Archipelo Client " + ArchipeloClient.VERSION;
-		config.width = 1280;
-		config.height = 720;
-		config.vSyncEnabled = true;
+		if (args.length < 4) {
+			System.out.println("Invalid arguments!");
+			return;
+		}
 		
-		//Fullscreen
-		//config.width = 1920;
-		//config.height = 1080;
-		//config.fullscreen = true;
+		try {
+			boolean vsync = Boolean.parseBoolean(args[0]);
+			int width = Integer.parseInt(args[1]);
+			int height = Integer.parseInt(args[2]);
+			int maxFps = Integer.parseInt(args[3]);
+			
+			CommonWebSockets.initiate();
+			LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
+			
+			config.title = "Archipelo Client " + ArchipeloClient.VERSION;
+			config.width = width;
+			config.height = height;
+			config.vSyncEnabled = vsync;
+			config.foregroundFPS = maxFps;
+			config.backgroundFPS = maxFps;
+			
+			new LwjglApplication(new ArchipeloClient(), config);
+		} catch (Exception e) {
+			System.out.println("Invalid arguments!");
+		}
 		
-		//TODO: Test with unlimited FPS when optimizing
-		config.foregroundFPS = 0;
-		config.backgroundFPS = 0;
-		//config.foregroundFPS = 60;
-		//config.backgroundFPS = 60;
-		
-		new LwjglApplication(new ArchipeloClient(), config);
 	}
 }

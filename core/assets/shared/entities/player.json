@@ -9,7 +9,7 @@
 	"viewRectWidth":7,
 	"viewRectHeight":22,
 	"collisionRects":[
-				{"offsetX":11,"offsetY":3,"width":9,"height":9}
+				{"offsetX":11,"offsetY":5,"width":9,"height":9}
 				],
 	"animations":[
 				{"id":"default", "totalRuntime":0, "numberOfDirections":8, "looping":true},

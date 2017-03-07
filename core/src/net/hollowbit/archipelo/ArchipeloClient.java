@@ -61,6 +61,7 @@ public class ArchipeloClient extends ApplicationAdapter {
 	public static boolean INVERT = false;
 	public static boolean PLACEHOLDER_ART_MODE = DEBUGMODE;
 	public static boolean CINEMATIC_MODE = false;
+	public static boolean SHOW_COLLISION_RECTS = false;
 	
 	private static ArchipeloClient game;
 	
@@ -189,6 +190,9 @@ public class ArchipeloClient extends ApplicationAdapter {
 		
 		if (Gdx.input.isKeyJustPressed(Keys.F5))
 			INVERT = !INVERT;
+		
+		if (Gdx.input.isKeyJustPressed(Keys.F8))
+			SHOW_COLLISION_RECTS = !SHOW_COLLISION_RECTS;
 		
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);

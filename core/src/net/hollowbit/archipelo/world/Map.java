@@ -42,14 +42,14 @@ public class Map {
 				Tile tile = ArchipeloClient.getGame().getMapElementManager().getTile(tileData[row][col]);
 				for (int tileRow = 0; tileRow < tile.getCollisionTable().length; tileRow++) {
 					for (int tileCol = 0; tileCol < tile.getCollisionTable()[0].length; tileCol++) {
-						int x = col * TileData.COLLISION_MAP_SCALE + tileCol;
-						int y = collisionMap.length - row * TileData.COLLISION_MAP_SCALE + tileRow;
+						int x = col * TileData.COLLISION_MAP_SCALE + tileCol - 1;
+						int y = row * TileData.COLLISION_MAP_SCALE + tileRow;
 						
 						//if it is out of bounds, don't apply it.
 						if (y < 0 || y >= collisionMap.length || x < 0 || x >= collisionMap[0].length)
 							continue;
 						
-						collisionMap[y][x] = (tile.getCollisionTable()[tile.getCollisionTable().length - tileRow - 1][tileCol] ? true: collisionMap[y][x]);
+						collisionMap[y][x] = (tile.getCollisionTable()[tileRow][tileCol] ? true: collisionMap[y][x]);
 					}
 				}
 				
@@ -59,14 +59,14 @@ public class Map {
 				if (element != null) {
 					for (int elementRow = 0; elementRow < element.getCollisionTable().length; elementRow++) {
 						for (int elementCol = 0; elementCol < element.getCollisionTable()[0].length; elementCol++) {
-							int x = col * TileData.COLLISION_MAP_SCALE + elementCol + element.offsetX;
-							int y = collisionMap.length - row * TileData.COLLISION_MAP_SCALE + elementRow + element.offsetY;
+							int x = col * TileData.COLLISION_MAP_SCALE + elementCol + element.offsetX - 1;
+							int y = row * TileData.COLLISION_MAP_SCALE + elementRow + element.offsetY - (element.getCollisionTable().length - 1) + 1;
 							
 							//If it is out of bounds, don't apply it.
 							if (y < 0 || y >= collisionMap.length || x < 0 || x >= collisionMap[0].length)
 								continue;
 							
-							collisionMap[y][x] = (element.getCollisionTable()[element.getCollisionTable().length - elementRow - 1][elementCol] ? true: collisionMap[y][x]);
+							collisionMap[y][x] = (element.getCollisionTable()[elementRow][elementCol] ? true: collisionMap[y][x]);
 						}
 					}
 				}
@@ -82,22 +82,19 @@ public class Map {
 	 */
 	public boolean collidesWithMap (CollisionRect rect, Entity entity) {
 		//See if collisionrect collides with map
-		if (rect.x < - ArchipeloClient.TILE_SIZE || rect.y < + ArchipeloClient.TILE_SIZE || rect.x + rect.width > getPixelWidth() - ArchipeloClient.TILE_SIZE || rect.y + rect.height > getPixelHeight() + ArchipeloClient.TILE_SIZE - rect.height)
+		if (rect.x < 0 || rect.y < 0 || rect.x + rect.width > getPixelWidth() || rect.y + rect.height > getPixelHeight())
 			return true;
 		
 		//See if it collides with tiles and elements
 		int collisionBoxSize = (int) ArchipeloClient.TILE_SIZE / TileData.COLLISION_MAP_SCALE;
-		CollisionRect tileRect = new CollisionRect(0, 0, 0, 0, collisionBoxSize, collisionBoxSize);
-		for (int row = (int) (rect.y / collisionBoxSize) - 1; row < (int) (rect.height / collisionBoxSize) + (rect.y / collisionBoxSize) + 2; row++) {
-			for (int col = (int) (rect.x / collisionBoxSize) - 1; col < (int) (rect.width / collisionBoxSize) + (rect.x / collisionBoxSize) + 2; col++) {
+		
+		for (int row = (int) (rect.y / collisionBoxSize); row < Math.ceil((rect.height + rect.y) / collisionBoxSize); row++) {
+			for (int col = (int) (rect.x / collisionBoxSize); col < Math.ceil((rect.width + rect.x) / collisionBoxSize); col++) {
 				if (row < 0 || row >= collisionMap.length || col < 0 || col >= collisionMap[0].length)//If out of bounds, continue to next
 					continue;
 				
-				if (collisionMap[row][col]) {
-					tileRect.move(col * tileRect.width, row * tileRect.height);
-					if (tileRect.collidesWith(rect))
-						return true;
-				}
+				if (collisionMap[collisionMap.length - row - 1][col])
+					return true;
 			}
 		}
 		
@@ -120,19 +117,19 @@ public class Map {
 		
 		//Render tiles
 		//Find minimum amount of tiles to draw to save processing power
-		int tileY = tileData.length - (int) ((cameraViewRect.y + cameraViewRect.height) / ArchipeloClient.TILE_SIZE);
+		int tileY = tileData.length - (int) ((cameraViewRect.y + cameraViewRect.height) / ArchipeloClient.TILE_SIZE) - 1;
 		tileY = tileY < 0 ? 0 : tileY;
 		int tileX = (int) (cameraViewRect.x / ArchipeloClient.TILE_SIZE);
 		tileX = tileX < 0 ? 0 : tileX;
 		
-		int tileY2 = tileData.length - (int) ((cameraViewRect.y) / ArchipeloClient.TILE_SIZE) + 1;
+		int tileY2 = tileData.length - (int) ((cameraViewRect.y) / ArchipeloClient.TILE_SIZE);
 		tileY2 = tileY2 > tileData.length ? tileData.length : tileY2;
 		int tileX2 = (int) ((cameraViewRect.x + cameraViewRect.width) / ArchipeloClient.TILE_SIZE) + 1;
 		tileX2 = tileX2 > tileData[0].length ? tileData[0].length : tileX2;
 		
 		for (int r = tileY; r < tileY2; r++) {
 			for (int c = tileX; c < tileX2; c++) {
-				ArchipeloClient.getGame().getMapElementManager().getTile(tileData[r][c]).draw(batch, c * ArchipeloClient.TILE_SIZE, tileData.length * ArchipeloClient.TILE_SIZE - r * ArchipeloClient.TILE_SIZE);
+				ArchipeloClient.getGame().getMapElementManager().getTile(tileData[r][c]).draw(batch, c * ArchipeloClient.TILE_SIZE, (tileData.length - r - 1) * ArchipeloClient.TILE_SIZE);
 			}
 		}
 		
@@ -142,7 +139,7 @@ public class Map {
 				MapElement element = ArchipeloClient.getGame().getMapElementManager().getElement(elementData[r][c]);
 				if (element != null) {
 					float x = c * ArchipeloClient.TILE_SIZE;
-					float y = elementData.length * ArchipeloClient.TILE_SIZE - r * ArchipeloClient.TILE_SIZE;
+					float y = (elementData.length - r - 1) * ArchipeloClient.TILE_SIZE;
 					if (cameraViewRect.collidesWith(element.getViewRect(x, y)))
 						element.draw(batch, x, y);
 				}
@@ -152,7 +149,7 @@ public class Map {
 			ArrayList<Entity> entitiesInThisTileRow = new ArrayList<Entity>();
 			for (Entity entity : entities) {
 				float y = entity.getDrawOrderY();
-				if (y >= elementData.length * ArchipeloClient.TILE_SIZE - r * ArchipeloClient.TILE_SIZE - ArchipeloClient.TILE_SIZE - 1 && y < elementData.length * ArchipeloClient.TILE_SIZE - r * ArchipeloClient.TILE_SIZE + 1) {
+				if (y > (elementData.length - r - 2) * ArchipeloClient.TILE_SIZE && y <= (elementData.length - r - 1) * ArchipeloClient.TILE_SIZE) {
 					entitiesInThisTileRow.add(entity);
 				}
 			}
@@ -166,13 +163,15 @@ public class Map {
 			}
 		}
 		
-		/*for (int r = 0; r < collisionMap.length; r++) {
-			for (int c = 0; c < collisionMap[0].length; c++) {
-				if (collisionMap[r][c]) {
-					batch.draw(ArchipeloClient.getGame().getAssetManager().getTexture("invalid"), c * ArchipeloClient.TILE_SIZE / TileData.COLLISION_MAP_SCALE, r * ArchipeloClient.TILE_SIZE / TileData.COLLISION_MAP_SCALE, ArchipeloClient.TILE_SIZE / TileData.COLLISION_MAP_SCALE, ArchipeloClient.TILE_SIZE / TileData.COLLISION_MAP_SCALE);
+		if (ArchipeloClient.SHOW_COLLISION_RECTS) {
+			for (int r = 0; r < collisionMap.length; r++) {
+				for (int c = 0; c < collisionMap[0].length; c++) {
+					if (collisionMap[r][c]) {
+						batch.draw(ArchipeloClient.getGame().getAssetManager().getTexture("invalid"), (c + 1) * ArchipeloClient.TILE_SIZE / TileData.COLLISION_MAP_SCALE, (collisionMap.length - r - 1) * ArchipeloClient.TILE_SIZE / TileData.COLLISION_MAP_SCALE, ArchipeloClient.TILE_SIZE / TileData.COLLISION_MAP_SCALE, ArchipeloClient.TILE_SIZE / TileData.COLLISION_MAP_SCALE);
+					}
 				}
 			}
-		}*/
+		}
 	}
 	
 	public void applyChangesSnapshot (MapSnapshot snapshot) {

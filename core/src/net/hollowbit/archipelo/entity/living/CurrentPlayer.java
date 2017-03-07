@@ -388,7 +388,7 @@ public class CurrentPlayer extends Player implements PacketHandler {
 			movementLog.removeCommandsOlderThan(posPacket.id);
 			
 			//If the player is close enough to the server pos, don't correct
-			if (serverPos.epsilonEquals(posMatchingCommand.x, posMatchingCommand.y, 0.5f))
+			if (serverPos == null || serverPos.epsilonEquals(posMatchingCommand.x, posMatchingCommand.y, 0.5f))
 				return true;
 			
 			//Correct player position using interp snapshot and time stamp from server

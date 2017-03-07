@@ -20,6 +20,7 @@ public abstract class Entity {
 	protected int style;
 	protected EntityAnimationManager animationManager;
 	protected ArrayList<EntityComponent> components;
+	protected boolean overrideControls = false;
 	
 	public Entity () {
 		components = new ArrayList<EntityComponent>();
@@ -120,7 +121,8 @@ public abstract class Entity {
 	
 	public void applyChangesSnapshot (EntitySnapshot snapshot) {
 		style = snapshot.getInt("style", style);
-		location.direction = Direction.values()[snapshot.getInt("direction", location.direction.ordinal())];
+		if (!overrideControls)
+			location.direction = Direction.values()[snapshot.getInt("direction", location.direction.ordinal())];
 		for (EntityComponent component : components)
 			component.applyChangesSnapshot(snapshot);
 	}

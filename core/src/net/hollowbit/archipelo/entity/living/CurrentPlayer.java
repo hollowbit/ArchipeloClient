@@ -48,6 +48,7 @@ public class CurrentPlayer extends Player implements PacketHandler {
 		this.speed = fullSnapshot.getFloat("speed", entityType.getSpeed());
 		this.serverPos = new Vector2(location.pos);
 		ArchipeloClient.getGame().getNetworkManager().addPacketHandler(this);
+		overrideControls = true;
 	}
 	
 	@Override

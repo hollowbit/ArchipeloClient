@@ -48,17 +48,13 @@ public class WorldSnapshotManager implements PacketHandler {
 			return;
 		
 		ArrayList<WorldSnapshot> oldPackets = getPacketsFromBeforeMillis(timeOfPacket, worldInterpSnapshotPackets);
-
-		if (oldPackets.isEmpty())
-			return;
-		
-		WorldSnapshot packet1 = oldPackets.get(oldPackets.size() - 1);
 		worldInterpSnapshotPackets.removeAll(oldPackets);
 		
-		if (worldInterpSnapshotPackets.isEmpty())
+		if (worldInterpSnapshotPackets.size() < 2)
 			return;
-		
-		WorldSnapshot packet2 = worldInterpSnapshotPackets.get(0);
+
+		WorldSnapshot packet1 = worldInterpSnapshotPackets.get(0);
+		WorldSnapshot packet2 = worldInterpSnapshotPackets.get(1);
 		
 		double delta = packet2.timeCreatedMillis - packet1.timeCreatedMillis;
 		double deltaF = timeOfPacket - packet1.timeCreatedMillis;
@@ -69,7 +65,6 @@ public class WorldSnapshotManager implements PacketHandler {
 		
 		//Find the latest packet
 		world.interpolate((long) timeOfPacket, packet1, packet2, (float) fraction);
-		worldInterpSnapshotPackets.remove(packet2);
 	}
 	
 	private synchronized void updateChange (double timeOfPacket) {
@@ -82,9 +77,23 @@ public class WorldSnapshotManager implements PacketHandler {
 	}
 	
 	private ArrayList<WorldSnapshot> getPacketsFromBeforeMillis (double millis, ArrayList<WorldSnapshot> packetList) {
+		if (packetList.isEmpty())
+			return new ArrayList<WorldSnapshot>();
+		
+		WorldSnapshot max = null;
+		for (WorldSnapshot packet : packetList) {
+			if (packet.timeCreatedMillis <= millis) {
+				if (max == null || packet.timeCreatedMillis > max.timeCreatedMillis)
+					max = packet;
+			}
+		}
+		
+		if (max == null)
+			return new ArrayList<WorldSnapshot>();
+		
 		ArrayList<WorldSnapshot> packets = new ArrayList<WorldSnapshot>();
 		for (WorldSnapshot packet : packetList) {
-			if (packet.timeCreatedMillis <= millis)
+			if (packet.timeCreatedMillis < max.timeCreatedMillis)
 				packets.add(packet);
 		}
 		return packets;

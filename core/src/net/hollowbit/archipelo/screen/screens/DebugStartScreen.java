@@ -26,6 +26,7 @@ public class DebugStartScreen extends Screen {
 	public DebugStartScreen() {
 		super(ScreenType.DEBUG_START_SCREEN);
 		startTime = System.currentTimeMillis();
+		ArchipeloClient.getGame().getPrefs().setLogin(DEBUG_EMAIL, DEBUG_PASS);
 	}
 
 	@Override
@@ -53,7 +54,7 @@ public class DebugStartScreen extends Screen {
 							QuickUi.showErrorWindow(LM.getMsg(Cat.ERROR, "loginHBInvalidTitle"), LM.getMsg(Cat.ERROR, "loginHBInvalid"), stage);
 							break;
 						case LoginPacket.RESULT_LOGIN_SUCCESSFUL:
-							ArchipeloClient.getGame().getScreenManager().setScreen(new CharacterPickerScreen());
+							ArchipeloClient.getGame().getScreenManager().setScreen(new CharacterPickerScreen(DEBUG_EMAIL));
 							break;
 						}
 						ArchipeloClient.getGame().getNetworkManager().removePacketHandler(this);

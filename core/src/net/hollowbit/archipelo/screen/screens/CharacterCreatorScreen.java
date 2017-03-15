@@ -333,7 +333,7 @@ public class CharacterCreatorScreen extends Screen implements PacketHandler {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				super.clicked(event, x, y);
-				ArchipeloClient.getGame().getScreenManager().setScreen(new CharacterPickerScreen());
+				ArchipeloClient.getGame().getScreenManager().setScreen(new CharacterPickerScreen(ArchipeloClient.getGame().getPrefs().getEmail()));
 			}
 		});
 		stage.addActor(backButton);

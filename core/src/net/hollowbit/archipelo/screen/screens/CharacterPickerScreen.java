@@ -29,12 +29,15 @@ public class CharacterPickerScreen extends Screen implements PacketHandler {
 	ScrollingBackground scrollingBackground;
 	ImageButton backButton;
 	
-	public CharacterPickerScreen () {
+	public CharacterPickerScreen (String email) {
 		super(ScreenType.CHARACTER_PICKER);
 		stage = new Stage(ArchipeloClient.getGame().getCameraUi().getScreenViewport(), ArchipeloClient.getGame().getBatch());
 		Gdx.input.setInputProcessor(stage);
 		ArchipeloClient.getGame().getNetworkManager().addPacketHandler(this);
 		scrollingBackground = new ScrollingBackground();
+		
+		//Send character list packet
+		new PlayerListPacket(email).send();
 	}
 
 	@Override
@@ -53,9 +56,6 @@ public class CharacterPickerScreen extends Screen implements PacketHandler {
 		});
 		backButton.setPosition(5, Gdx.graphics.getHeight() - QuickUi.ICON_SIZE - 5);
 		stage.addActor(backButton);
-		
-		//Send character list packet
-		new PlayerListPacket(ArchipeloClient.getGame().getPrefs().getEmail()).send();
 	}
 
 	@Override

@@ -57,7 +57,7 @@ public class ServerListing extends Table implements Comparable<ServerListing>{
 		trafficLabel = new Label(LM.ui("traffic") + ": " + color + "" + LM.ui("traffic" + traffic), skin, "small");
 		add(trafficLabel).width(250);
 		
-		regionLabel = new Label(LM.ui("region") + "Region: " + LM.ui("region" + region), skin, "small");
+		regionLabel = new Label(LM.ui("region") + ": " + LM.ui("region" + region), skin, "small");
 		add(regionLabel);
 	}
 	

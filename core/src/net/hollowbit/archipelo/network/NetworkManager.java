@@ -31,6 +31,8 @@ public class NetworkManager {
 	
 	private WebSocket socket;
 	
+	private volatile boolean isConnected = false;
+	
 	public NetworkManager () {
 		packetHandlers = new ArrayList<PacketHandler>();
 		packets = new ArrayList<PacketWrapper>();
@@ -74,6 +76,7 @@ public class NetworkManager {
 	
 	public void connect (String address, int port) {
 		try {
+			isConnected = false;
 			socket = ExtendedNet.getNet().newSecureWebSocket(address, port, Gdx.files, "keystore", (Gdx.app.getType() == ApplicationType.Android ? "BKS" : "JKS"), "changeit", "changeit");
 			//socket = ExtendedNet.getNet().newWebSocket(address, port);
 			socket.addListener(getWebSocketListener());
@@ -115,7 +118,7 @@ public class NetworkManager {
 	public boolean isConnected () {
 		if (socket == null)
 			return false;
-		return socket.isOpen();
+		return isConnected;
 	}
 	
 	private WebSocketAdapter getWebSocketListener() {
@@ -123,11 +126,13 @@ public class NetworkManager {
             @Override
             public boolean onOpen(final WebSocket webSocket) {
                 Gdx.app.log("WS", "Connected!");
+                isConnected = true;
                 return FULLY_HANDLED;
             }
 
             @Override
             public boolean onClose(final WebSocket webSocket, final WebSocketCloseCode code, final String reason) {
+            	isConnected = false;
                 Gdx.app.log("WS", "Disconnected - status: " + code + ", reason: " + reason);
                 removeAllPacketHandlers();
                 if (ArchipeloClient.getGame().getScreenManager().getScreenType() == ScreenType.GAME)

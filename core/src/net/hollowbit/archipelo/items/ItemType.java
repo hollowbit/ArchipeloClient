@@ -51,7 +51,6 @@ public enum ItemType {
 	public int numOfUseAnimations;
 	public float useAnimationLength;
 	public boolean useThrust;
-	public boolean renderUsingColor;
 	
 	public int minDamage;
 	public int maxDamage;
@@ -100,7 +99,6 @@ public enum ItemType {
 		this.numOfUseAnimations = data.numOfUseAnimations;
 		this.useAnimationLength = data.useAnimationLength;
 		this.useThrust = data.useThrust;
-		this.renderUsingColor = data.renderUsingColor;
 	}
 	
 	private void loadImages (TextureRegion[][] iconMap) {

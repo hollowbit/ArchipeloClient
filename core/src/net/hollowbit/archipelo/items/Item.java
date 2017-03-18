@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 
 public class Item {
 
-public static final int DEFAULT_COLOR = Color.rgba8888(new Color(1, 1, 1, 1));
+	public static final int DEFAULT_COLOR = Color.rgba8888(new Color(1, 1, 1, 1));
 	
 	public String id;
 	public int color = DEFAULT_COLOR;
@@ -74,5 +74,13 @@ public static final int DEFAULT_COLOR = Color.rgba8888(new Color(1, 1, 1, 1));
 			return isSameType(item);
 		else
 			return isSameTypeAndStyle(item);
+	}
+	
+	/**
+	 * Creates a new color object of this items color.
+	 * @return
+	 */
+	public Color getColor () {
+		return new Color(color);
 	}
 }

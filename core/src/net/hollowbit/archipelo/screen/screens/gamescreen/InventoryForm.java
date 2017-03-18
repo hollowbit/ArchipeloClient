@@ -56,7 +56,7 @@ public class InventoryForm extends Form implements InventorySlotActionHandler {
 	public static final int BUFFS_INVENTORY = 7;
 	public static final int AMMO_INVENTORY = 8;
 	
-	private static final int DISPLAY_SIZE = 150;
+	private static final int DISPLAY_SIZE = 256;
 	
 	private Table mainInventoryTable;
 	private Table equippedInventoryTable;
@@ -226,8 +226,11 @@ public class InventoryForm extends Form implements InventorySlotActionHandler {
 	@Override
 	public void draw(Batch batch, float parentAlpha) {
 		super.draw(batch, parentAlpha);
-		if (itemInHand != null)
+		if (itemInHand != null) {
+			batch.setColor(itemInHand.getColor());
 			batch.draw(itemInHand.getType().getIcon(), Gdx.input.getX() - xOffset, Gdx.graphics.getHeight() - Gdx.input.getY() - yOffset, InventorySlot.SIZE * this.getScaleX() - InventorySlot.OFFSET * 2, InventorySlot.SIZE * this.getScaleY() - InventorySlot.OFFSET * 2);
+			batch.setColor(1, 1, 1, 1);
+		}
 	}
 
 	@Override

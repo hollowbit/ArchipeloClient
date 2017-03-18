@@ -105,7 +105,8 @@ public class CurrentPlayer extends Player implements PacketHandler {
 	}
 	
 	protected void applyCommand (ControlsPacket packet) {
-		float deltaTime = ControlsManager.UPDATE_RATE;
+		//OLD CODE
+		/*float deltaTime = ControlsManager.UPDATE_RATE;
 		if (!(ArchipeloClient.getGame().getScreenManager().getScreen() instanceof GameScreen))
 			return;
 		GameScreen gameScreen = (GameScreen) ArchipeloClient.getGame().getScreenManager().getScreen();
@@ -155,6 +156,80 @@ public class CurrentPlayer extends Player implements PacketHandler {
 			}
 			
 			boolean collidesWithMap = false;
+			for (CollisionRect rect : getCollisionRects(pos)) {//Checks to make sure no collision rect is intersecting with map
+				if (location.getMap().collidesWithMap(rect, this)) {
+					collidesWithMap = true;
+					break;
+				}
+			}
+			
+			//If it doesn't collide with map, move
+			if (!collidesWithMap) {
+				location.pos.set(pos);
+				gameScreen.playerMoved();
+			}
+		}*/
+		//NEW CODE
+		float deltaTime = ControlsManager.UPDATE_RATE;
+		if (!(ArchipeloClient.getGame().getScreenManager().getScreen() instanceof GameScreen))
+			return;
+		GameScreen gameScreen = (GameScreen) ArchipeloClient.getGame().getScreenManager().getScreen();
+		
+		this.controls = packet.parse();
+		
+		Direction direction = getMovementDirection();
+		if (!isDirectionLocked() && direction != null)
+			location.direction = direction;
+		
+		if (isMoving()) {
+			Vector2 pos = new Vector2(location.pos);
+			double speedMoved = 0;
+			switch (direction) {
+			case UP:
+			case UP_LEFT:
+			case UP_RIGHT:
+				speedMoved = getSpeed();
+				pos.add(0, (float) (deltaTime * speedMoved));
+				break;
+			case DOWN:
+			case DOWN_LEFT:
+			case DOWN_RIGHT:
+				speedMoved = getSpeed();
+				pos.add(0, (float) (-deltaTime * speedMoved));
+				break;
+			}
+			
+			boolean collidesWithMap = false;
+			for (CollisionRect rect : getCollisionRects(pos)) {//Checks to make sure no collision rect is intersecting with map
+				if (location.getMap().collidesWithMap(rect, this)) {
+					collidesWithMap = true;
+					break;
+				}
+			}
+			
+			//If it doesn't collide with map, move
+			if (!collidesWithMap) {
+				location.pos.set(pos);
+				gameScreen.playerMoved();
+			}
+			pos = new Vector2(location.pos);
+			speedMoved = 0;
+			switch (direction) {
+			case LEFT:
+			case DOWN_LEFT:
+			case UP_LEFT:
+				speedMoved = getSpeed();
+				pos.add((float) (-deltaTime * speedMoved), 0);
+				break;
+			case RIGHT:
+			case DOWN_RIGHT:
+			case UP_RIGHT:
+				speedMoved = getSpeed();
+				pos.add((float) (deltaTime * speedMoved), 0);
+				break;
+			}
+			
+			collidesWithMap = false;
 			for (CollisionRect rect : getCollisionRects(pos)) {//Checks to make sure no collision rect is intersecting with map
 				if (location.getMap().collidesWithMap(rect, this)) {
 					collidesWithMap = true;

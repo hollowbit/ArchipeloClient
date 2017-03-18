@@ -63,8 +63,8 @@ public class GameCamera {
 				if (cam.position.y < cam.viewportHeight / 2 + ArchipeloClient.TILE_SIZE)
 					cam.position.y =  cam.viewportHeight / 2 + ArchipeloClient.TILE_SIZE;
 				
-				if (cam.position.y + cam.viewportHeight > ArchipeloClient.getGame().getWorld().getMap().getHeight() * ArchipeloClient.TILE_SIZE + cam.viewportHeight / 2 + ArchipeloClient.TILE_SIZE)
-					cam.position.y = ArchipeloClient.getGame().getWorld().getMap().getHeight() * ArchipeloClient.TILE_SIZE - cam.viewportHeight + cam.viewportHeight / 2 + ArchipeloClient.TILE_SIZE;
+				if (cam.position.y + cam.viewportHeight > ArchipeloClient.getGame().getWorld().getMap().getHeight() * ArchipeloClient.TILE_SIZE + cam.viewportHeight / 2)
+					cam.position.y = ArchipeloClient.getGame().getWorld().getMap().getHeight() * ArchipeloClient.TILE_SIZE - cam.viewportHeight + cam.viewportHeight / 2;
 			}
 		}
 		

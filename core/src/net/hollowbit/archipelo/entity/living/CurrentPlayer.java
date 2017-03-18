@@ -11,7 +11,6 @@ import net.hollowbit.archipelo.entity.Entity;
 import net.hollowbit.archipelo.entity.EntityAnimationManager.EntityAnimationObject;
 import net.hollowbit.archipelo.entity.EntitySnapshot;
 import net.hollowbit.archipelo.entity.EntityType;
-import net.hollowbit.archipelo.entity.LivingEntity;
 import net.hollowbit.archipelo.entity.living.player.MovementLog;
 import net.hollowbit.archipelo.items.Item;
 import net.hollowbit.archipelo.network.Packet;
@@ -104,6 +103,7 @@ public class CurrentPlayer extends Player implements PacketHandler {
 		packet.y = location.getY();
 	}
 	
+	@SuppressWarnings("incomplete-switch")
 	protected void applyCommand (ControlsPacket packet) {
 		//OLD CODE
 		/*float deltaTime = ControlsManager.UPDATE_RATE;

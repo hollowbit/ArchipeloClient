@@ -133,20 +133,25 @@ public class ControlsManager {
 			
 			@Override
 			public void run() {
-				ControlsPacket packet;
-				if (canPlayerMove)
-					packet = new ControlsPacket(getControlsClone());
-				else
-					packet = new ControlsPacket(getBlankControls());
-				
-				//Get controls sample and apply it
-				if (ArchipeloClient.getGame().getWorld().getPlayer() != null) {
-					ArchipeloClient.getGame().getWorld().getPlayer().addCommand(packet);
-					ArchipeloClient.getGame().getNetworkManager().sendPacket(packet);
-				}
+				forceUpdate();
 			}
+			
 		};
 		Timer.schedule(task, 0, UPDATE_RATE);
+	}
+	
+	public void forceUpdate() {
+		ControlsPacket packet;
+		if (canPlayerMove)
+			packet = new ControlsPacket(getControlsClone());
+		else
+			packet = new ControlsPacket(getBlankControls());
+		
+		//Get controls sample and apply it
+		if (ArchipeloClient.getGame().getWorld().getPlayer() != null) {
+			ArchipeloClient.getGame().getWorld().getPlayer().addCommand(packet);
+			ArchipeloClient.getGame().getNetworkManager().sendPacket(packet);
+		}
 	}
 	
 	public void dispose() {

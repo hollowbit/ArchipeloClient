@@ -249,6 +249,12 @@ public class ArchipeloClient extends ApplicationAdapter {
 		batch.dispose();
 	}
 	
+	@Override
+	public void pause() {
+		screenManager.pause();
+		super.pause();
+	}
+	
 	public SpriteBatch getBatch () {
 		return batch;
 	}

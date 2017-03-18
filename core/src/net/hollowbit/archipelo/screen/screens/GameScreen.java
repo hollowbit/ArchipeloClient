@@ -195,6 +195,13 @@ public class GameScreen extends Screen implements PacketHandler, InputProcessor 
 		ArchipeloClient.getGame().getNetworkManager().removePacketHandler(this);
 	}
 	
+	@Override
+	public void pause() {
+		controlsManager.stopMovement();
+		controlsManager.forceUpdate();
+		super.pause();
+	}
+	
 	public World getWorld () {
 		return world;
 	}

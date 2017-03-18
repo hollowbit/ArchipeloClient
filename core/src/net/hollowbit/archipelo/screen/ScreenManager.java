@@ -41,6 +41,11 @@ public class ScreenManager {
 		currentScreen.update(deltaTime);
 	}
 	
+	public void pause () {
+		if (currentScreen != null)
+			currentScreen.pause();
+	}
+	
 	public void setScreen (Screen screen) {
 		newScreen = screen;
 	}

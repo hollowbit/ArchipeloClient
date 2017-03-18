@@ -16,5 +16,6 @@ public abstract class Screen {
 	public abstract void renderUi (SpriteBatch batch, float width, float height);
 	public abstract void resize (int width, int height);
 	public abstract void dispose ();
+	public void pause () {}
 	
 }

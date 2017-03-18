@@ -16,7 +16,6 @@ public class ItemTypeData {
 	public int numOfUseAnimations = 1;
 	public float useAnimationLength = 0.1f;
 	public boolean useThrust = false;
-	public boolean renderUsingColor = false;
 	
 	//Combat stats
 	public int minDamage = DEFAULT_MIN_DAMAGE;

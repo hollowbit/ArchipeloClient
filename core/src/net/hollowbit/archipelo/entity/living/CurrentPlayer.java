@@ -21,6 +21,7 @@ import net.hollowbit.archipelo.network.packets.PositionCorrectionPacket;
 import net.hollowbit.archipelo.screen.screens.GameScreen;
 import net.hollowbit.archipelo.tools.ControlsManager;
 import net.hollowbit.archipelo.world.Map;
+import net.hollowbit.archipelo.entity.LivingEntity;
 import net.hollowbit.archipeloshared.CollisionRect;
 import net.hollowbit.archipeloshared.Controls;
 import net.hollowbit.archipeloshared.Direction;
@@ -186,15 +187,22 @@ public class CurrentPlayer extends Player implements PacketHandler {
 			double speedMoved = 0;
 			switch (direction) {
 			case UP:
-			case UP_LEFT:
-			case UP_RIGHT:
 				speedMoved = getSpeed();
 				pos.add(0, (float) (deltaTime * speedMoved));
 				break;
+			case UP_LEFT:
+			case UP_RIGHT:
+				speedMoved = getSpeed() / LivingEntity.DIAGONAL_FACTOR;
+				pos.add(0, (float) (deltaTime * speedMoved));
+				break;
+				
 			case DOWN:
+				speedMoved = getSpeed();
+				pos.add(0, (float) (-deltaTime * speedMoved));
+				break;
 			case DOWN_LEFT:
 			case DOWN_RIGHT:
-				speedMoved = getSpeed();
+				speedMoved = getSpeed() / LivingEntity.DIAGONAL_FACTOR;
 				pos.add(0, (float) (-deltaTime * speedMoved));
 				break;
 			}
@@ -216,17 +224,25 @@ public class CurrentPlayer extends Player implements PacketHandler {
 			speedMoved = 0;
 			switch (direction) {
 			case LEFT:
-			case DOWN_LEFT:
-			case UP_LEFT:
 				speedMoved = getSpeed();
 				pos.add((float) (-deltaTime * speedMoved), 0);
 				break;
+			case UP_LEFT:
+			case DOWN_LEFT:
+				speedMoved = getSpeed() / LivingEntity.DIAGONAL_FACTOR;
+				pos.add((float) (-deltaTime * speedMoved), 0);
+				break;
+				
 			case RIGHT:
-			case DOWN_RIGHT:
-			case UP_RIGHT:
 				speedMoved = getSpeed();
 				pos.add((float) (deltaTime * speedMoved), 0);
 				break;
+			case UP_RIGHT:
+			case DOWN_RIGHT:
+				speedMoved = getSpeed() / LivingEntity.DIAGONAL_FACTOR;
+				pos.add((float) (deltaTime * speedMoved), 0);
+				break;
+				
 			}
 			
 			collidesWithMap = false;

@@ -12,10 +12,10 @@
 				{"offsetX":11,"offsetY":5,"width":9,"height":9}
 				],
 	"animations":[
-				{"id":"default", "totalRuntime":0, "numberOfDirections":8, "looping":true},
-				{"id":"walk", "fileName":"default", "totalRuntime":0.8, "numberOfDirections":8, "looping":true},
+				{"id":"default", "fileName":"walk", "totalRuntime":0, "numberOfDirections":8, "looping":true},
+				{"id":"walk", "totalRuntime":0.8, "numberOfDirections":8, "looping":true},
 				{"id":"roll", "totalRuntime":0.64, "numberOfDirections":8, "looping":false, "finiteLength": true},
-				{"id":"sprint", "fileName":"default", "totalRuntime":0.64, "numberOfDirections":8, "looping":true},
+				{"id":"sprint", "fileName":"walk", "totalRuntime":0.64, "numberOfDirections":8, "looping":true},
 				{"id":"use", "totalRuntime":0, "numberOfDirections":8, "looping":false, "finiteLength":true},
 				{"id":"usewalk", "fileName":"use", "totalRuntime":0.08, "numberOfDirections":8, "looping":true, "finiteLength":true},
 				{"id":"thrust", "totalRuntime":0, "numberOfDirections":8, "looping":false, "finiteLength":true},

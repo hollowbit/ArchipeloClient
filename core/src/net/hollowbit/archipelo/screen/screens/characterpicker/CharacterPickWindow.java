@@ -28,7 +28,7 @@ public class CharacterPickWindow extends MobileCompatibleWindow {
 		characterTable = new Table();
 		characterScrollPane = new ScrollPane(characterTable, getSkin());
 		characterScrollPane.setFadeScrollBars(false);
-		add(characterScrollPane).width(600).height(400);
+		add(characterScrollPane).width(600).height(480);
 		pack();
 	}
 	

@@ -20,7 +20,7 @@ import net.hollowbit.archipelo.tools.QuickUi;
 
 public class CharacterProfile extends Table {
 	
-	private static final int DISPLAY_SIZE = 200;
+	private static final int DISPLAY_SIZE = 256;
 	
 	//Ui elements
 	String name;

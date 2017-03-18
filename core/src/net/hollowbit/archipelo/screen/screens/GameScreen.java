@@ -214,9 +214,12 @@ public class GameScreen extends Screen implements PacketHandler, InputProcessor 
 			GlyphLayout layoutFPS = new GlyphLayout(font, "FPS: " + Gdx.graphics.getFramesPerSecond());
 			font.draw(batch, layoutFPS, width / 2 - layoutFPS.width / 2, height - layoutFPS.height);
 			
+			GlyphLayout layoutPing = new GlyphLayout(font, "Ping: " + ArchipeloClient.getGame().getNetworkManager().getPing());
+			font.draw(batch, layoutPing, width / 2 - layoutPing.width / 2, height - layoutPing.height - layoutFPS.height - 3);
+			
 			if (world.getPlayer() != null) {
 				GlyphLayout layoutCoords = new GlyphLayout(font, "X: " + (int) world.getPlayer().getLocation().getX() + " Y: " + (int) world.getPlayer().getLocation().getY());
-				font.draw(batch, layoutCoords, width / 2 - layoutCoords.width / 2, height - layoutFPS.height - 3 - layoutCoords.height);
+				font.draw(batch, layoutCoords, width / 2 - layoutCoords.width / 2, height - layoutFPS.height - 3 - layoutPing.height - 3 - layoutCoords.height);
 			}
 		}
 		
@@ -310,19 +313,8 @@ public class GameScreen extends Screen implements PacketHandler, InputProcessor 
 			if (keycode == Keys.ENTER || keycode == Keys.T) {
 				stage.setKeyboardFocus(chatTextField);
 				return true;
-			} else if (keycode == Keys.SLASH) {
+			} else if (chatTextField.getText().equals("") && (keycode == Keys.SLASH || (keycode == Keys.NUM_1 && (Gdx.input.isKeyPressed(Keys.SHIFT_LEFT) || Gdx.input.isKeyPressed(Keys.SHIFT_RIGHT))) || keycode == Keys.PERIOD)) {
 				stage.setKeyboardFocus(chatTextField);
-				chatTextField.setText("/");
-				chatTextField.setCursorPosition(1);
-				return true;
-			} else if (keycode == Keys.NUM_1 && (Gdx.input.isKeyPressed(Keys.SHIFT_LEFT) || Gdx.input.isKeyPressed(Keys.SHIFT_RIGHT))) {
-				stage.setKeyboardFocus(chatTextField);
-				chatTextField.setText("!");
-				chatTextField.setCursorPosition(1);
-				return true;
-			} else if (keycode == Keys.PERIOD) {
-				stage.setKeyboardFocus(chatTextField);
-				chatTextField.setText(".");
 				chatTextField.setCursorPosition(1);
 				return true;
 			}

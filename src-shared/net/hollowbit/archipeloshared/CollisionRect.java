@@ -31,6 +31,19 @@ public class CollisionRect {
 		this.hard = hard;
 	}
 	
+	/**
+	 * Duplictes a collision rect
+	 * @param rect
+	 */
+	public CollisionRect (CollisionRect rect) {
+		this.name = rect.name;
+		this.offsetX = rect.offsetX;
+		this.offsetY = rect.offsetY;
+		this.width = rect.width;
+		this.height = rect.height;
+		this.hard = rect.hard;
+	}
+	
 	public CollisionRect move (float x, float y) {
 		this.x = x;
 		this.y = y;

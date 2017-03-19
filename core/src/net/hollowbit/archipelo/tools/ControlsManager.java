@@ -64,8 +64,6 @@ public class ControlsManager {
 	private ArrayList<Integer> pointersDown;
 	private Task task;
 	
-	private boolean canPlayerMove = true;
-	
 	public ControlsManager (GameScreen game) {
 		this.game = game;
 		this.keysDown = new ArrayList<Integer>();
@@ -141,11 +139,7 @@ public class ControlsManager {
 	}
 	
 	public void forceUpdate() {
-		ControlsPacket packet;
-		if (canPlayerMove)
-			packet = new ControlsPacket(getControlsClone());
-		else
-			packet = new ControlsPacket(getBlankControls());
+		ControlsPacket packet = new ControlsPacket(getControlsClone());
 		
 		//Get controls sample and apply it
 		if (ArchipeloClient.getGame().getWorld().getPlayer() != null) {
@@ -158,10 +152,6 @@ public class ControlsManager {
 		task.cancel();
 	}
 	
-	public synchronized boolean[] getControls () {
-		return controls;
-	}
-	
 	public synchronized void updateControls(int index, boolean value) {
 		controls[index] = value;
 	}
@@ -170,19 +160,20 @@ public class ControlsManager {
 		return controls[index];
 	}
 	
+	public synchronized boolean[] getBlankControls () {
+		boolean[] controlsClone = new boolean[controls.length];
+		for (int i = 0; i < controls.length; i++) {
+			controlsClone[i] = false;
+		}
+		return controlsClone;
+	}
+	
 	public synchronized boolean[] getControlsClone () {
 		boolean[] controlsClone = new boolean[controls.length];
 		for (int i = 0; i < controls.length; i++) {
 			controlsClone[i] = controls[i];
 		}
 		return controlsClone;
-	}
-	
-	public boolean[] getBlankControls () {
-		boolean[] controls = new boolean[this.controls.length];
-		for (int i = 0; i < controls.length; i++)
-			controls[i] = false;
-		return controls;
 	}
 	
 	public void stopMovement () {
@@ -197,11 +188,14 @@ public class ControlsManager {
 	 * @param ignoreActionButtons Whether x and z actions should be ignored
 	 */
 	public void update (boolean ignoreActionButtons, float deltaTime, boolean canPlayerMove) {
-		this.canPlayerMove = canPlayerMove || (ArchipeloClient.IS_MOBILE && ArchipeloClient.getGame().isWindowOpen());
+		canPlayerMove = canPlayerMove || (ArchipeloClient.IS_MOBILE && ArchipeloClient.getGame().isWindowOpen());
 		
 		//Look for keys to add
 		for (int key : KEYS_TO_CHECK) {
 			if (ignoreActionButtons && (key == Keys.Z || key == Keys.X))
+				continue;
+			
+			if (!canPlayerMove && (key == Keys.UP || key == Keys.LEFT || key == Keys.DOWN || key == Keys.RIGHT))
 				continue;
 			
 			if (Gdx.input.isKeyJustPressed(key)) {
@@ -214,6 +208,9 @@ public class ControlsManager {
 		ArrayList<Integer> keysToRemove = new ArrayList<Integer>();
 		for (int key : keysDown) {
 			if (ignoreActionButtons && (key == Keys.Z || key == Keys.X))
+				continue;
+			
+			if (!canPlayerMove && (key == Keys.UP || key == Keys.LEFT || key == Keys.DOWN || key == Keys.RIGHT))
 				continue;
 			
 			if (!Gdx.input.isKeyPressed(key)) {

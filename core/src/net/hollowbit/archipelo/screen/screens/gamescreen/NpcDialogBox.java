@@ -130,10 +130,8 @@ public class NpcDialogBox extends MobileCompatibleWindow {
 			}
 		}
 		
-		if (Gdx.input.isKeyJustPressed(Keys.Z) || Gdx.input.isKeyJustPressed(Keys.X)) {
-			System.out.println("NpcDialogBox  TEST!");
+		if (Gdx.input.isKeyJustPressed(Keys.Z) || Gdx.input.isKeyJustPressed(Keys.X))
 			interactedWith();
-		}
 		
 		super.act(delta);
 	}

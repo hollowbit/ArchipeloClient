@@ -160,7 +160,6 @@ public class GameScreen extends Screen implements PacketHandler, InputProcessor 
 			controlsManager.setFocused(false);
 		}
 		
-		System.out.println("GameScreen  TEST!   " + isNpcDialogBoxOpen());
 		controlsManager.update(isNpcDialogBoxOpen(), deltaTime, canPlayerMove());
 		
 		worldSnapshotManager.update(deltaTime);

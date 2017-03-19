@@ -188,7 +188,10 @@ public class ControlsManager {
 	 * @param ignoreActionButtons Whether x and z actions should be ignored
 	 */
 	public void update (boolean ignoreActionButtons, float deltaTime, boolean canPlayerMove) {
-		canPlayerMove = canPlayerMove || (ArchipeloClient.IS_MOBILE && ArchipeloClient.getGame().isWindowOpen());
+		if (ArchipeloClient.IS_MOBILE && ArchipeloClient.getGame().isWindowOpen()) {
+			canPlayerMove = false;
+			ignoreActionButtons = true;
+		}
 		
 		//Look for keys to add
 		for (int key : KEYS_TO_CHECK) {
@@ -224,7 +227,7 @@ public class ControlsManager {
 		for (int pointer = 0; pointer < POINTERS_TO_CHECK; pointer++) {
 			if (Gdx.input.isTouched(pointer) && !pointersDown.contains(pointer)) {
 				pointersDown.add(pointer);
-				touchDown(Gdx.input.getX(pointer), Gdx.input.getY(pointer), pointer);
+				touchDown(ignoreActionButtons, canPlayerMove, Gdx.input.getX(pointer), Gdx.input.getY(pointer), pointer);
 			}
 		}
 		
@@ -233,14 +236,14 @@ public class ControlsManager {
 		for (int pointer : pointersDown) {
 			if (!Gdx.input.isTouched(pointer)) {
 				pointersToRemove.add(pointer);
-				touchUp(Gdx.input.getX(pointer), Gdx.input.getY(pointer), pointer);
+				touchUp(ignoreActionButtons, canPlayerMove, Gdx.input.getX(pointer), Gdx.input.getY(pointer), pointer);
 			}
 		}
 		pointersDown.removeAll(pointersToRemove);
 		
 		//Update pointer moving
 		for (int pointer : pointersDown)
-			pointerMoved(Gdx.input.getX(pointer), Gdx.input.getY(pointer), pointer);
+			pointerMoved(ignoreActionButtons, canPlayerMove, Gdx.input.getX(pointer), Gdx.input.getY(pointer), pointer);
 	}
 	
 	public void render (SpriteBatch batch) {
@@ -364,62 +367,68 @@ public class ControlsManager {
 		}
 	}
 
-	public boolean touchDown(int screenX, int screenY, int pointer) {
+	public boolean touchDown(boolean ignoreAction, boolean canPlayerMove, int screenX, int screenY, int pointer) {
 		if (ArchipeloClient.IS_MOBILE) {
 			Vector2 input = new Vector2(screenX, Gdx.graphics.getHeight() - screenY);
 			if (dpadRects[Direction.TOTAL].contains(input.x, input.y) && !lockRect.contains(input.x, input.y)) {//If is touching dpad
-				dpadPointer = pointer;//Set dpad pointer
-				
-				//Update controls based on where dpad is pressed
-				if (dpadRects[Direction.UP.ordinal()].contains(input.x, input.y)) {
-					updateControls(Controls.UP, true);
-					dpadDirectionSelected = Direction.UP;
-				} else if (dpadRects[Direction.UP_RIGHT.ordinal()].contains(input.x, input.y)) {
-					updateControls(Controls.UP, true);
-					updateControls(Controls.RIGHT, true);
-					dpadDirectionSelected = Direction.UP_RIGHT;
-				} else if (dpadRects[Direction.RIGHT.ordinal()].contains(input.x, input.y)) {
-					updateControls(Controls.RIGHT, true);
-					dpadDirectionSelected = Direction.RIGHT;
-				} else if (dpadRects[Direction.DOWN_RIGHT.ordinal()].contains(input.x, input.y)) {
-					updateControls(Controls.DOWN, true);
-					updateControls(Controls.RIGHT, true);
-					dpadDirectionSelected = Direction.DOWN_RIGHT;
-				} else if (dpadRects[Direction.DOWN.ordinal()].contains(input.x, input.y)) {
-					updateControls(Controls.DOWN, true);
-					dpadDirectionSelected = Direction.DOWN;
-				} else if (dpadRects[Direction.DOWN_LEFT.ordinal()].contains(input.x, input.y)) {
-					updateControls(Controls.DOWN, true);
-					updateControls(Controls.LEFT, true);
-					dpadDirectionSelected = Direction.DOWN_LEFT;
-				} else if (dpadRects[Direction.LEFT.ordinal()].contains(input.x, input.y)) {
-					updateControls(Controls.LEFT, true);
-					dpadDirectionSelected = Direction.LEFT;
-				} else if (dpadRects[Direction.UP_LEFT.ordinal()].contains(input.x, input.y)) {
-					updateControls(Controls.UP, true);
-					updateControls(Controls.LEFT, true);
-					dpadDirectionSelected = Direction.UP_LEFT;
+				if (canPlayerMove) {
+					dpadPointer = pointer;//Set dpad pointer
+					
+					//Update controls based on where dpad is pressed
+					if (dpadRects[Direction.UP.ordinal()].contains(input.x, input.y)) {
+						updateControls(Controls.UP, true);
+						dpadDirectionSelected = Direction.UP;
+					} else if (dpadRects[Direction.UP_RIGHT.ordinal()].contains(input.x, input.y)) {
+						updateControls(Controls.UP, true);
+						updateControls(Controls.RIGHT, true);
+						dpadDirectionSelected = Direction.UP_RIGHT;
+					} else if (dpadRects[Direction.RIGHT.ordinal()].contains(input.x, input.y)) {
+						updateControls(Controls.RIGHT, true);
+						dpadDirectionSelected = Direction.RIGHT;
+					} else if (dpadRects[Direction.DOWN_RIGHT.ordinal()].contains(input.x, input.y)) {
+						updateControls(Controls.DOWN, true);
+						updateControls(Controls.RIGHT, true);
+						dpadDirectionSelected = Direction.DOWN_RIGHT;
+					} else if (dpadRects[Direction.DOWN.ordinal()].contains(input.x, input.y)) {
+						updateControls(Controls.DOWN, true);
+						dpadDirectionSelected = Direction.DOWN;
+					} else if (dpadRects[Direction.DOWN_LEFT.ordinal()].contains(input.x, input.y)) {
+						updateControls(Controls.DOWN, true);
+						updateControls(Controls.LEFT, true);
+						dpadDirectionSelected = Direction.DOWN_LEFT;
+					} else if (dpadRects[Direction.LEFT.ordinal()].contains(input.x, input.y)) {
+						updateControls(Controls.LEFT, true);
+						dpadDirectionSelected = Direction.LEFT;
+					} else if (dpadRects[Direction.UP_LEFT.ordinal()].contains(input.x, input.y)) {
+						updateControls(Controls.UP, true);
+						updateControls(Controls.LEFT, true);
+						dpadDirectionSelected = Direction.UP_LEFT;
+					}
+					return true;
 				}
-				return true;
 			} else if (zCircle.contains(input.x, input.y)) {
-				buttonPointer = pointer;
-				updateControls(Controls.ROLL, true);
-				buttonSelected = 0;
-				return true;
+				if (!ignoreAction) {
+					buttonPointer = pointer;
+					updateControls(Controls.ROLL, true);
+					buttonSelected = 0;
+					return true;
+				}
 			} else if (xCircle.contains(input.x, input.y)) {
-				buttonPointer = pointer;
-				updateControls(Controls.ATTACK, true);
-				buttonSelected = 1;
-				return true;
+				if (!ignoreAction) {
+					buttonPointer = pointer;
+					updateControls(Controls.ATTACK, true);
+					buttonSelected = 1;
+					return true;
+				}
 			}
 		}
 		return false;
 	}
 	
-	private boolean pointerMoved (int screenX, int screenY, int pointer) {
+	private boolean pointerMoved (boolean ignoreAction, boolean canPlayerMove, int screenX, int screenY, int pointer) {
 		if (ArchipeloClient.IS_MOBILE) {
 			Vector2 input = new Vector2(screenX, Gdx.graphics.getHeight() - screenY);
-			if (pointer == dpadPointer) {//If player is using the same point as when they were touching the dpad before
+			if (pointer == dpadPointer && canPlayerMove) {//If player is using the same point as when they were touching the dpad before
 				if (dpadRects[Direction.TOTAL].contains(input.x, input.y)) {//If is touching dpad
 					//Update controls based on where dpad is pressed
 					if (dpadRects[Direction.UP.ordinal()].contains(input.x, input.y) && dpadDirectionSelected != Direction.UP) {
@@ -462,7 +471,7 @@ public class ControlsManager {
 					}
 					return true;
 				}
-			} else if (pointer == buttonPointer) {
+			} else if (pointer == buttonPointer && !ignoreAction) {
 				if (zCircle.contains(input.x, input.y) && buttonSelected != 0) {
 					updateControls(Controls.ROLL, true);
 					updateControls(Controls.ATTACK, false);
@@ -479,15 +488,15 @@ public class ControlsManager {
 		return false;
 	}
 
-	public boolean touchUp(int screenX, int screenY, int pointer) {
+	public boolean touchUp(boolean ignoreAction, boolean canPlayerMove, int screenX, int screenY, int pointer) {
 		if (ArchipeloClient.IS_MOBILE) {
 			Vector2 input = new Vector2(screenX, Gdx.graphics.getHeight() - screenY);
-			if (pointer == dpadPointer) {//If player is using the same point as when they were touching the dpad before
+			if (pointer == dpadPointer && canPlayerMove) {//If player is using the same point as when they were touching the dpad before
 				clearDPadForUpdate();
 				dpadPointer = -1;
 				dpadDirectionSelected = null;
 				return true;
-			} else if (pointer == buttonPointer) {
+			} else if (pointer == buttonPointer && !ignoreAction) {
 				updateControls(Controls.ATTACK, false);
 				updateControls(Controls.ROLL, false);
 				buttonPointer = -1;

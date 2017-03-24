@@ -2,14 +2,14 @@
 	"id":"player",
 	"hittable":false,
 	"speed":60,
-	"imgWidth":32,
-	"imgHeight":32,
-	"viewRectOffsetX":11,
-	"viewRectOffsetY":3,
+	"imgWidth":90,
+	"imgHeight":90,
+	"viewRectOffsetX":40,
+	"viewRectOffsetY":34,
 	"viewRectWidth":7,
 	"viewRectHeight":22,
 	"collisionRects":[
-				{"offsetX":11,"offsetY":5,"width":9,"height":9}
+				{"offsetX":40,"offsetY":34,"width":9,"height":9}
 				],
 	"animations":[
 				{"id":"default", "fileName":"walk", "totalRuntime":0, "numberOfDirections":8, "looping":true},

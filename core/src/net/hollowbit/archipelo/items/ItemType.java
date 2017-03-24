@@ -36,7 +36,6 @@ public enum ItemType {
 	public static final float WALK_ANIMATION_LENGTH = 0.2f;
 	public static final float ROLL_ANIMATION_LENGTH = 0.08f;
 	public static final float SPRINT_ANIMATION_LENGTH = 0.16f;
-	public static final int WEARABLE_SIZE = 32;
 	
 	public String id;
 	public int iconX, iconY;
@@ -111,13 +110,13 @@ public enum ItemType {
 				sprintAnimation = new Animation[Direction.TOTAL][numOfStyles];
 				rollAnimation = new Animation[Direction.TOTAL][numOfStyles];
 				for (int style = 0; style < numOfStyles; style++) {
-					TextureRegion[][] walkSheet = AssetManager.fixBleedingSpriteSheet(TextureRegion.split(new Texture("items/" + id + "/walk_" + style + ".png"), WEARABLE_SIZE, WEARABLE_SIZE));
+					TextureRegion[][] walkSheet = AssetManager.fixBleedingSpriteSheet(TextureRegion.split(new Texture("items/" + id + "/walk_" + style + ".png"), ArchipeloClient.PLAYER_SIZE, ArchipeloClient.PLAYER_SIZE));
 					for (int direction = 0; direction < Direction.TOTAL; direction++) {
 						walkAnimation[direction][style] = new Animation(WALK_ANIMATION_LENGTH, walkSheet[direction]);
 						sprintAnimation[direction][style] = new Animation(SPRINT_ANIMATION_LENGTH, walkSheet[direction]);//Load sprint now since it is the same image as walk, just faster
 					}
 					
-					TextureRegion[][] rollSheet = AssetManager.fixBleedingSpriteSheet(TextureRegion.split(new Texture("items/" + id + "/roll_" + style + ".png"), WEARABLE_SIZE, WEARABLE_SIZE));
+					TextureRegion[][] rollSheet = AssetManager.fixBleedingSpriteSheet(TextureRegion.split(new Texture("items/" + id + "/roll_" + style + ".png"), ArchipeloClient.PLAYER_SIZE, ArchipeloClient.PLAYER_SIZE));
 					for (int direction = 0; direction < Direction.TOTAL; direction++) {
 						rollAnimation[direction][style] = new Animation(ROLL_ANIMATION_LENGTH, rollSheet[direction]);
 					}
@@ -127,12 +126,12 @@ public enum ItemType {
 			useAnimation = new Animation[Direction.TOTAL][numOfStyles][numOfUseAnimations];
 			thrustAnimation = new Animation[Direction.TOTAL][numOfStyles][numOfUseAnimations];
 			for (int style = 0; style < numOfStyles; style++) {
-				TextureRegion[][] useSheet = AssetManager.fixBleedingSpriteSheet(TextureRegion.split(new Texture("items/" + id + "/use_" + style + ".png"), WEARABLE_SIZE, WEARABLE_SIZE));
+				TextureRegion[][] useSheet = AssetManager.fixBleedingSpriteSheet(TextureRegion.split(new Texture("items/" + id + "/use_" + style + ".png"), ArchipeloClient.PLAYER_SIZE, ArchipeloClient.PLAYER_SIZE));
 				for (int direction = 0; direction < Direction.TOTAL; direction++) {
 					useAnimation[direction][style][0] = new Animation(useAnimationLength, useSheet[direction]);
 				}
 				
-				TextureRegion[][] thrustSheet = AssetManager.fixBleedingSpriteSheet(TextureRegion.split(new Texture("items/" + id + "/thrust_" + style + ".png"), WEARABLE_SIZE, WEARABLE_SIZE));
+				TextureRegion[][] thrustSheet = AssetManager.fixBleedingSpriteSheet(TextureRegion.split(new Texture("items/" + id + "/thrust_" + style + ".png"), ArchipeloClient.PLAYER_SIZE, ArchipeloClient.PLAYER_SIZE));
 				for (int direction = 0; direction < Direction.TOTAL; direction++) {
 					thrustAnimation[direction][style][0] = new Animation(useAnimationLength, thrustSheet[direction]);
 				}
@@ -143,12 +142,12 @@ public enum ItemType {
 			for (int style = 0; style < numOfStyles; style++) {
 				for (int useAnim = 0; useAnim < numOfUseAnimations; useAnim++) {
 					if (!useThrust) {//If it doesn't use thrust, don't load thrust animation
-						TextureRegion[][] useSheet = AssetManager.fixBleedingSpriteSheet(TextureRegion.split(new Texture("items/" + id + "/use_" + style + "_" + useAnim + ".png"), WEARABLE_SIZE, WEARABLE_SIZE));
+						TextureRegion[][] useSheet = AssetManager.fixBleedingSpriteSheet(TextureRegion.split(new Texture("items/" + id + "/use_" + style + "_" + useAnim + ".png"), ArchipeloClient.PLAYER_SIZE, ArchipeloClient.PLAYER_SIZE));
 						for (int direction = 0; direction < Direction.TOTAL; direction++) {
 							useAnimation[direction][style][useAnim] = new Animation(useAnimationLength, useSheet[direction]);
 						}
 					} else {//If it doesn't use "use", then oly load thrust animation
-						TextureRegion[][] thrustSheet = AssetManager.fixBleedingSpriteSheet(TextureRegion.split(new Texture("items/" + id + "/thrust_" + style + "_" + useAnim + ".png"), WEARABLE_SIZE, WEARABLE_SIZE));
+						TextureRegion[][] thrustSheet = AssetManager.fixBleedingSpriteSheet(TextureRegion.split(new Texture("items/" + id + "/thrust_" + style + "_" + useAnim + ".png"), ArchipeloClient.PLAYER_SIZE, ArchipeloClient.PLAYER_SIZE));
 						for (int direction = 0; direction < Direction.TOTAL; direction++) {
 							thrustAnimation[direction][style][useAnim] = new Animation(useAnimationLength, thrustSheet[direction]);
 						}

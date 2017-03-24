@@ -113,10 +113,13 @@ public enum EntityType {
 	}
 	
 	public CollisionRect[] getCollisionRects (float x, float y) {
-		for (CollisionRect rect : collRects) {
+		CollisionRect[] rects = new CollisionRect[collRects.length];
+		for (int i = 0; i < rects.length; i++) {
+			CollisionRect rect = new CollisionRect(collRects[i]);
 			rect.move(x, y);
+			rects[i] = rect;
 		}
-		return collRects;
+		return rects;
 	}
 	
 	public int getNumberOfStyles () {
@@ -132,7 +135,7 @@ public enum EntityType {
 	}
 	
 	public float getDrawOrderY (float y) {
-		return y + drawOrderOffsetY;
+		return y + drawOrderOffsetY + viewRect.offsetY;
 	}
 	
 	public float getDrawOrderOffsetY() {

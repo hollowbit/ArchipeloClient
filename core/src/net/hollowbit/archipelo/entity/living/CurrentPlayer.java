@@ -209,6 +209,7 @@ public class CurrentPlayer extends Player implements PacketHandler {
 			
 			boolean collidesWithMap = false;
 			for (CollisionRect rect : getCollisionRects(pos)) {//Checks to make sure no collision rect is intersecting with map
+				System.out.println("CurrentPlayer.java   " + rect.x + "  " + rect.y);
 				if (location.getMap().collidesWithMap(rect, this)) {
 					collidesWithMap = true;
 					break;

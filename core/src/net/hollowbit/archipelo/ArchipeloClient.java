@@ -49,7 +49,7 @@ public class ArchipeloClient extends ApplicationAdapter {
 	
 	public static final String VERSION = "0.1a";
 	public static final int TILE_SIZE = 16;
-	public static final int PLAYER_SIZE = 32;
+	public static final int PLAYER_SIZE = 90;
 	public static final float UNITS_PER_PIXEL = 1 / 3f;//World pixels per screen pixel.
 	public static final int MAX_CHARACTERS_PER_PLAYER = 4;
 	public static boolean IS_MOBILE = false;

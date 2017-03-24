@@ -42,7 +42,7 @@ public class Map {
 				Tile tile = ArchipeloClient.getGame().getMapElementManager().getTile(tileData[row][col]);
 				for (int tileRow = 0; tileRow < tile.getCollisionTable().length; tileRow++) {
 					for (int tileCol = 0; tileCol < tile.getCollisionTable()[0].length; tileCol++) {
-						int x = col * TileData.COLLISION_MAP_SCALE + tileCol - 1;
+						int x = col * TileData.COLLISION_MAP_SCALE + tileCol;
 						int y = row * TileData.COLLISION_MAP_SCALE + tileRow;
 						
 						//if it is out of bounds, don't apply it.
@@ -59,7 +59,7 @@ public class Map {
 				if (element != null) {
 					for (int elementRow = 0; elementRow < element.getCollisionTable().length; elementRow++) {
 						for (int elementCol = 0; elementCol < element.getCollisionTable()[0].length; elementCol++) {
-							int x = col * TileData.COLLISION_MAP_SCALE + elementCol + element.offsetX - 1;
+							int x = col * TileData.COLLISION_MAP_SCALE + elementCol + element.offsetX;
 							int y = row * TileData.COLLISION_MAP_SCALE + elementRow + element.offsetY - (element.getCollisionTable().length - 1) + 1;
 							
 							//If it is out of bounds, don't apply it.
@@ -84,12 +84,12 @@ public class Map {
 		int collisionBoxSize = (int) ArchipeloClient.TILE_SIZE / TileData.COLLISION_MAP_SCALE;
 		
 		//See if collisionrect collides with map
-		if (rect.x < -collisionBoxSize || rect.y < 0 || rect.x + rect.width > getPixelWidth() - collisionBoxSize || rect.y + rect.height > getPixelHeight() - collisionBoxSize)
+		if (rect.xWithOffset() < 0 || rect.yWithOffset() < 0 || rect.xWithOffset() + rect.width > getPixelWidth() || rect.yWithOffset() + rect.height > getPixelHeight())
 			return true;
 		
 		//See if it collides with tiles and elements
-		for (int row = (int) (rect.y / collisionBoxSize); row < Math.ceil((rect.height + rect.y) / collisionBoxSize); row++) {
-			for (int col = (int) (rect.x / collisionBoxSize); col < Math.ceil((rect.width + rect.x) / collisionBoxSize); col++) {
+		for (int row = (int) (rect.yWithOffset() / collisionBoxSize); row < Math.ceil((rect.height + rect.yWithOffset()) / collisionBoxSize); row++) {
+			for (int col = (int) (rect.xWithOffset() / collisionBoxSize); col < Math.ceil((rect.width + rect.xWithOffset()) / collisionBoxSize); col++) {
 				if (row < 0 || row >= collisionMap.length || col < 0 || col >= collisionMap[0].length)//If out of bounds, continue to next
 					continue;
 				

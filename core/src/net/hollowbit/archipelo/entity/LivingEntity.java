@@ -27,6 +27,8 @@ public abstract class LivingEntity extends Entity {
 		location.pos.set(packet1Pos.lerp(packet2Pos, fraction));
 		
 		isMoving = !location.pos.epsilonEquals(oldPos, 1);
+		if (isMoving)
+			moved();
 	}
 	
 	public boolean isMoving() {

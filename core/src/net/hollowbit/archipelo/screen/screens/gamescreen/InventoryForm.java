@@ -56,7 +56,7 @@ public class InventoryForm extends Form implements InventorySlotActionHandler {
 	public static final int BUFFS_INVENTORY = 7;
 	public static final int AMMO_INVENTORY = 8;
 	
-	private static final int DISPLAY_SIZE = 256;
+	private static final int DISPLAY_SIZE = 180;
 	
 	private Table mainInventoryTable;
 	private Table equippedInventoryTable;

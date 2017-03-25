@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 
+import net.hollowbit.archipelo.ArchipeloClient;
 import net.hollowbit.archipelo.entity.EntityAnimationManager.EntityAnimationObject;
 import net.hollowbit.archipelo.entity.living.Player;
 import net.hollowbit.archipelo.tools.Location;
@@ -21,9 +22,19 @@ public abstract class Entity {
 	protected EntityAnimationManager animationManager;
 	protected ArrayList<EntityComponent> components;
 	protected boolean overrideControls = false;
+	protected EntityAudioManager audioManager;
 	
 	public Entity () {
 		components = new ArrayList<EntityComponent>();
+	}
+	
+	public void create (EntitySnapshot fullSnapshot, Map map, EntityType entityType) {
+		this.name = fullSnapshot.name;
+		this.entityType = entityType;
+		this.style = fullSnapshot.getInt("style", 0);
+		this.location = new Location(map, new Vector2(fullSnapshot.getFloat("x", 0), fullSnapshot.getFloat("y", 0)), Direction.values()[fullSnapshot.getInt("direction", 0)]);
+		animationManager = new EntityAnimationManager(this, fullSnapshot.anim, fullSnapshot.animTime, fullSnapshot.animMeta);
+		audioManager = new EntityAudioManager(this, fullSnapshot.sound);
 	}
 	
 	/**
@@ -56,14 +67,6 @@ public abstract class Entity {
 	
 	protected void render (SpriteBatch batch) {}
 	
-	public void create (EntitySnapshot fullSnapshot, Map map, EntityType entityType) {
-		this.name = fullSnapshot.name;
-		this.entityType = entityType;
-		this.style = fullSnapshot.getInt("style", 0);
-		this.location = new Location(map, new Vector2(fullSnapshot.getFloat("x", 0), fullSnapshot.getFloat("y", 0)), Direction.values()[fullSnapshot.getInt("direction", 0)]);
-		animationManager = new EntityAnimationManager(this, fullSnapshot.anim, fullSnapshot.animTime, fullSnapshot.animMeta);
-	}
-	
 	/**
 	 * Tick the entity forward in time
 	 * @param deltaTime
@@ -82,6 +85,7 @@ public abstract class Entity {
 	 */
 	public void interpolate (long timeStamp, EntitySnapshot snapshotFrom, EntitySnapshot snapshotTo, float fraction) {
 		animationManager.change(timeStamp, snapshotFrom, snapshotTo, fraction);
+		audioManager.change(snapshotTo);
 		
 		for (EntityComponent component : components)
 			component.interpolate(timeStamp, snapshotFrom, snapshotTo, fraction);
@@ -115,12 +119,28 @@ public abstract class Entity {
 	 * Called when the entity is unloaded
 	 */
 	public void unload () {
+		audioManager.dispose();
 		for (EntityComponent component : components)
 			component.unload();
 	}
 	
+	/**
+	 * Called whenever this entity has moved
+	 */
+	public void moved() {
+		audioManager.moved();
+	}
+	
+	public void teleport(float x, float y, Direction direction) {
+		this.location.set(x, y, direction);
+		this.moved();
+	}
+	
 	public void applyChangesSnapshot (EntitySnapshot snapshot) {
 		style = snapshot.getInt("style", style);
+		if (!overrideControls)
+			audioManager.handleChanges(snapshot);
+		
 		if (!overrideControls)
 			location.direction = Direction.values()[snapshot.getInt("direction", location.direction.ordinal())];
 		for (EntityComponent component : components)
@@ -203,6 +223,13 @@ public abstract class Entity {
 	public Vector2 getCenterPoint () {
 		CollisionRect viewRect = entityType.getViewRect(location.getX(), location.getY());
 		return new Vector2(location.getX() + viewRect.width / 2, location.getY() + viewRect.height / 2);
+	}
+	
+	public Vector2 getCenterPointTile () {
+		Vector2 centerPoint = getCenterPoint();
+		centerPoint.x /= ArchipeloClient.TILE_SIZE;
+		centerPoint.y /= ArchipeloClient.TILE_SIZE;
+		return centerPoint;
 	}
 	
 }

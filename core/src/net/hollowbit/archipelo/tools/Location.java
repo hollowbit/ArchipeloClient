@@ -2,6 +2,7 @@ package net.hollowbit.archipelo.tools;
 
 import com.badlogic.gdx.math.Vector2;
 
+import net.hollowbit.archipelo.ArchipeloClient;
 import net.hollowbit.archipelo.world.Map;
 import net.hollowbit.archipelo.world.World;
 import net.hollowbit.archipeloshared.Direction;
@@ -33,6 +34,14 @@ public class Location {
 	
 	public float getY () {
 		return pos.y;
+	}
+	
+	public int getTileX () {
+		return (int) (pos.x / ArchipeloClient.TILE_SIZE);
+	}
+	
+	public int getTileY () {
+		return (int) (pos.y / ArchipeloClient.TILE_SIZE);
 	}
 	
 	public void setX (float x) {

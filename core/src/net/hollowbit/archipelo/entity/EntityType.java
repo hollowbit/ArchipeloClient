@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -11,6 +12,7 @@ import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.reflect.ClassReflection;
 import com.badlogic.gdx.utils.reflect.ReflectionException;
 
+import net.hollowbit.archipelo.ArchipeloClient;
 import net.hollowbit.archipelo.entity.lifeless.BlobbyGrave;
 import net.hollowbit.archipelo.entity.lifeless.Computer;
 import net.hollowbit.archipelo.entity.lifeless.Door;
@@ -23,6 +25,7 @@ import net.hollowbit.archipelo.world.Map;
 import net.hollowbit.archipeloshared.CollisionRect;
 import net.hollowbit.archipeloshared.Direction;
 import net.hollowbit.archipeloshared.EntityAnimationData;
+import net.hollowbit.archipeloshared.EntitySoundData;
 import net.hollowbit.archipeloshared.EntityTypeData;
 
 @SuppressWarnings("rawtypes")
@@ -49,6 +52,8 @@ public enum EntityType {
 	private int imgHeight;
 	
 	private String defaultAnimationId;
+	
+	private HashMap<String, String> sounds;
 	
 	//Rects
 	private CollisionRect viewRect;
@@ -87,6 +92,14 @@ public enum EntityType {
 			if (first) {
 				defaultAnimationId = animationData.id;
 				first = false;
+			}
+		}
+		
+		//Load sounds
+		sounds = new HashMap<String, String>();
+		if (data.sounds != null) {
+			for (EntitySoundData sound : data.sounds) {
+				sounds.put(sound.id, sound.path);
 			}
 		}
 	}
@@ -170,6 +183,14 @@ public enum EntityType {
 	
 	public boolean hasAnimation(String animationId) {
 		return animations.containsKey(animationId);
+	}
+	
+	public boolean hasSound (String name) {
+		return sounds.containsKey(name);
+	}
+	
+	public Sound getSound (String name) {
+		return ArchipeloClient.getGame().getSoundManager().getSound(sounds.get(name));
 	}
 	
 	//Static

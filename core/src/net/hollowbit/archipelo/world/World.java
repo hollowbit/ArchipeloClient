@@ -78,7 +78,7 @@ public class World implements PacketHandler {
 				loadMap();
 				fadeTimer = FADE_TIME * (firstTimeLoading ? 3 : 1);
 				if (teleportPacket != null) {
-					player.getLocation().set(teleportPacket.x, teleportPacket.y, Direction.values()[teleportPacket.direction]);
+					player.teleport(teleportPacket.x, teleportPacket.y, Direction.values()[teleportPacket.direction]);
 					teleportPacket = null;
 				}
 			}
@@ -295,7 +295,7 @@ public class World implements PacketHandler {
 				teleportPacket = tpPacket;
 			} else {
 				if (entity != null)
-					entity.getLocation().set(tpPacket.x, tpPacket.y, Direction.values()[tpPacket.direction]);
+					entity.teleport(tpPacket.x, tpPacket.y, Direction.values()[tpPacket.direction]);
 			}
 			return true;
 		}

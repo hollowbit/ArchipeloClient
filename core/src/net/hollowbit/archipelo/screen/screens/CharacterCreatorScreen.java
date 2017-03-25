@@ -43,7 +43,7 @@ public class CharacterCreatorScreen extends Screen implements PacketHandler {
 	private static final int PADDING = 4;
 	private static final int PADDING_FROM_EACH_OTHER = 15;
 	private static final int PADDING_FROM_TOP = 150;
-	private static final int DISPLAY_SIZE = 320;
+	private static final int DISPLAY_SIZE = 290;
 	
 	private static final Item[] HAIR_STYLES = {new Item(ItemType.HAIR1)};
 	private static final Item[] FACE_STYLES = {new Item(ItemType.FACE1)};

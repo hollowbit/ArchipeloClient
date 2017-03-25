@@ -9,6 +9,7 @@ import com.badlogic.gdx.math.Vector2;
 import net.hollowbit.archipelo.ArchipeloClient;
 import net.hollowbit.archipelo.entity.Entity;
 import net.hollowbit.archipelo.entity.EntityAnimationManager.EntityAnimationObject;
+import net.hollowbit.archipelo.entity.EntityAudioManager;
 import net.hollowbit.archipelo.entity.EntitySnapshot;
 import net.hollowbit.archipelo.entity.EntityType;
 import net.hollowbit.archipelo.entity.living.player.MovementLog;
@@ -106,71 +107,6 @@ public class CurrentPlayer extends Player implements PacketHandler {
 	
 	@SuppressWarnings("incomplete-switch")
 	protected void applyCommand (ControlsPacket packet) {
-		//OLD CODE
-		/*float deltaTime = ControlsManager.UPDATE_RATE;
-		if (!(ArchipeloClient.getGame().getScreenManager().getScreen() instanceof GameScreen))
-			return;
-		GameScreen gameScreen = (GameScreen) ArchipeloClient.getGame().getScreenManager().getScreen();
-		
-		this.controls = packet.parse();
-		
-		Direction direction = getMovementDirection();
-		if (!isDirectionLocked() && direction != null)
-			location.direction = direction;
-		
-		if (isMoving()) {
-			Vector2 pos = new Vector2(location.pos);
-			double speedMoved = 0;
-			switch (direction) {
-			case UP:
-				speedMoved = getSpeed();
-				pos.add(0, (float) (deltaTime * speedMoved));
-				break;
-			case DOWN:
-				speedMoved = getSpeed();
-				pos.add(0, (float) (-deltaTime * speedMoved));
-				break;
-			case LEFT:
-				speedMoved = getSpeed();
-				pos.add((float) (-deltaTime * speedMoved), 0);
-				break;
-			case RIGHT:
-				speedMoved = getSpeed();
-				pos.add((float) (deltaTime * speedMoved), 0);
-				break;
-			case UP_LEFT:
-				speedMoved = getSpeed() / LivingEntity.DIAGONAL_FACTOR;
-				pos.add((float) (-deltaTime * speedMoved), (float) (deltaTime * speedMoved));
-				break;
-			case UP_RIGHT:
-				speedMoved = getSpeed() / LivingEntity.DIAGONAL_FACTOR;
-				pos.add((float) (deltaTime * speedMoved), (float) (deltaTime * speedMoved));
-				break;
-			case DOWN_LEFT:
-				speedMoved = getSpeed() / LivingEntity.DIAGONAL_FACTOR;
-				pos.add((float) (-deltaTime * speedMoved), (float) (-deltaTime * speedMoved));
-				break;
-			case DOWN_RIGHT:
-				speedMoved = getSpeed() / LivingEntity.DIAGONAL_FACTOR;
-				pos.add((float) (deltaTime * speedMoved), (float) (-deltaTime * speedMoved));
-				break;	
-			}
-			
-			boolean collidesWithMap = false;
-			for (CollisionRect rect : getCollisionRects(pos)) {//Checks to make sure no collision rect is intersecting with map
-				if (location.getMap().collidesWithMap(rect, this)) {
-					collidesWithMap = true;
-					break;
-				}
-			}
-			
-			//If it doesn't collide with map, move
-			if (!collidesWithMap) {
-				location.pos.set(pos);
-				gameScreen.playerMoved();
-			}
-		}*/
-		//NEW CODE
 		float deltaTime = ControlsManager.UPDATE_RATE;
 		if (!(ArchipeloClient.getGame().getScreenManager().getScreen() instanceof GameScreen))
 			return;
@@ -209,7 +145,6 @@ public class CurrentPlayer extends Player implements PacketHandler {
 			
 			boolean collidesWithMap = false;
 			for (CollisionRect rect : getCollisionRects(pos)) {//Checks to make sure no collision rect is intersecting with map
-				System.out.println("CurrentPlayer.java   " + rect.x + "  " + rect.y);
 				if (location.getMap().collidesWithMap(rect, this)) {
 					collidesWithMap = true;
 					break;
@@ -219,6 +154,7 @@ public class CurrentPlayer extends Player implements PacketHandler {
 			//If it doesn't collide with map, move
 			if (!collidesWithMap) {
 				location.pos.set(pos);
+				this.moved();
 				gameScreen.playerMoved();
 			}
 			pos = new Vector2(location.pos);
@@ -257,8 +193,13 @@ public class CurrentPlayer extends Player implements PacketHandler {
 			//If it doesn't collide with map, move
 			if (!collidesWithMap) {
 				location.pos.set(pos);
+				this.moved();
 				gameScreen.playerMoved();
 			}
+			
+			audioManager.setContinuousSound("walk-grass");
+		} else {
+			audioManager.setContinuousSound("");
 		}
 	}
 	
@@ -280,6 +221,11 @@ public class CurrentPlayer extends Player implements PacketHandler {
 			}
 		}
 		return false;
+	}
+	
+	@Override
+	public void moved() {
+		EntityAudioManager.moveAll();//If the player moved, then update all sound locations
 	}
 	
 	@Override
@@ -401,6 +347,8 @@ public class CurrentPlayer extends Player implements PacketHandler {
 					Item item = clothesRenderer.getDisplayInventory()[Player.EQUIP_INDEX_USABLE];
 					playUseAnimation(item);
 				}
+				
+				audioManager.playSound("hit");
 			}
 			break;
 		case Controls.UP:

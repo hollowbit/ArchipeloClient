@@ -24,4 +24,7 @@ public class EntityTypeData {
 	//Collision rect
 	public CollisionRectData[] collisionRects;
 	
+	//Sounds
+	public EntitySoundData[] sounds;
+	
 }

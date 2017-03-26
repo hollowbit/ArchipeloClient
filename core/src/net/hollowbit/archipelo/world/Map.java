@@ -120,14 +120,14 @@ public class Map {
 		
 		//Render tiles
 		//Find minimum amount of tiles to draw to save processing power
-		int tileY = tileData.length - (int) ((cameraViewRect.y + cameraViewRect.height) / ArchipeloClient.TILE_SIZE) - 1;
+		int tileY = tileData.length - (int) ((cameraViewRect.yWithOffset() + cameraViewRect.height) / ArchipeloClient.TILE_SIZE) - 1;
 		tileY = tileY < 0 ? 0 : tileY;
-		int tileX = (int) (cameraViewRect.x / ArchipeloClient.TILE_SIZE);
+		int tileX = (int) (cameraViewRect.xWithOffset() / ArchipeloClient.TILE_SIZE);
 		tileX = tileX < 0 ? 0 : tileX;
 		
-		int tileY2 = tileData.length - (int) ((cameraViewRect.y) / ArchipeloClient.TILE_SIZE);
+		int tileY2 = tileData.length - (int) ((cameraViewRect.yWithOffset()) / ArchipeloClient.TILE_SIZE);
 		tileY2 = tileY2 > tileData.length ? tileData.length : tileY2;
-		int tileX2 = (int) ((cameraViewRect.x + cameraViewRect.width) / ArchipeloClient.TILE_SIZE) + 1;
+		int tileX2 = (int) ((cameraViewRect.xWithOffset() + cameraViewRect.width) / ArchipeloClient.TILE_SIZE) + 1;
 		tileX2 = tileX2 > tileData[0].length ? tileData[0].length : tileX2;
 		
 		for (int r = tileY; r < tileY2; r++) {

@@ -3,7 +3,7 @@ package net.hollowbit.archipeloshared;
 public class CollisionRect {
 	
 	public String name;
-	public float x, y;
+	private float x, y;
 	public float offsetX, offsetY;
 	public float width, height;
 	public boolean hard = false;

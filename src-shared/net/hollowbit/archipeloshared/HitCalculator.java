@@ -17,41 +17,41 @@ public class HitCalculator {
 		//Calculates if hitted entity is even within the scope of the hitter entity
 		switch (directionOfHitter) {
 		case UP:
-			if (hittedColRect.y + hittedColRect.height < hitterCenterY)
+			if (hittedColRect.yWithOffset() + hittedColRect.height < hitterCenterY)
 				return false;
 			break;
 		case DOWN:
-			if (hittedColRect.y > hitterCenterY)
+			if (hittedColRect.yWithOffset() > hitterCenterY)
 				return false;
 			break;
 		case LEFT:
-			if (hittedColRect.x > hitterCenterX)
+			if (hittedColRect.xWithOffset() > hitterCenterX)
 				return false;
 			break;
 		case RIGHT:
-			if (hittedColRect.x + hittedColRect.width < hitterCenterX)
+			if (hittedColRect.xWithOffset() + hittedColRect.width < hitterCenterX)
 				return false;
 			break;
 		case UP_RIGHT:
-			if (hittedColRect.x + hittedColRect.width < hitterCenterX || hittedColRect.y + hittedColRect.height < hitterCenterY)
+			if (hittedColRect.xWithOffset() + hittedColRect.width < hitterCenterX || hittedColRect.yWithOffset() + hittedColRect.height < hitterCenterY)
 				return false;
 			break;
 		case UP_LEFT:
-			if (hittedColRect.x > hitterCenterX || hittedColRect.y + hittedColRect.height < hitterCenterY)
+			if (hittedColRect.xWithOffset() > hitterCenterX || hittedColRect.yWithOffset() + hittedColRect.height < hitterCenterY)
 				return false;
 			break;
 		case DOWN_RIGHT:
-			if (hittedColRect.x + hittedColRect.width < hitterCenterX || hittedColRect.y > hitterCenterY)
+			if (hittedColRect.xWithOffset() + hittedColRect.width < hitterCenterX || hittedColRect.yWithOffset() > hitterCenterY)
 				return false;
 			break;
 		case DOWN_LEFT:
-			if (hittedColRect.x > hitterCenterX || hittedColRect.y > hitterCenterY)
+			if (hittedColRect.xWithOffset() > hitterCenterX || hittedColRect.yWithOffset() > hitterCenterY)
 				return false;
 			break;
 		}
 		
-		float circleDistanceX = Math.abs(hitterCenterX - hittedColRect.x);
-	    float circleDistanceY = Math.abs(hitterCenterY - hittedColRect.y);
+		float circleDistanceX = Math.abs(hitterCenterX - hittedColRect.xWithOffset());
+	    float circleDistanceY = Math.abs(hitterCenterY - hittedColRect.yWithOffset());
 
 	    if (circleDistanceX > (hittedColRect.width / 2 + range)) { return false; }
 	    if (circleDistanceY > (hittedColRect.height / 2 + range)) { return false; }

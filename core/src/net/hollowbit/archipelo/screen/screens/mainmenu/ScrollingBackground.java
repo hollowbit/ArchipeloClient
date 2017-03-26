@@ -40,8 +40,8 @@ public class ScrollingBackground {
 	public void update (float deltaTime) {
 		//Update game camera to move around map
 		CollisionRect rect = cam.getViewRect();
-		float camX = rect.x + camVelocityX * deltaTime;
-		float camY = rect.y + camVelocityY * deltaTime;
+		float camX = rect.xWithOffset() + camVelocityX * deltaTime;
+		float camY = rect.yWithOffset() + camVelocityY * deltaTime;
 		
 		if (camX < 0) {
 			camX = 0;

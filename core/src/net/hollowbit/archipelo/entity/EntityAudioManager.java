@@ -99,6 +99,7 @@ public class EntityAudioManager {
 	}
 	
 	public void dispose () {
+		footstepSound.stop();
 		audioManagers.remove(this);
 	}
 	

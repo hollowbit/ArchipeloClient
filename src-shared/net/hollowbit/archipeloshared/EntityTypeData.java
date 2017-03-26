@@ -13,6 +13,9 @@ public class EntityTypeData {
 	public int imgWidth = 16;
 	public int imgHeight = 16;
 	
+	public int footstepOffsetX = imgWidth / 2;
+	public int footstepOffsetY = 0;
+	
 	public String footstepSound = "";
 	
 	public float drawOrderOffsetY = 0;//Used to offset render order of an entity

@@ -6,6 +6,7 @@ import java.util.Collections;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import net.hollowbit.archipelo.ArchipeloClient;
+import net.hollowbit.archipelo.audio.MapAudioManager;
 import net.hollowbit.archipelo.entity.Entity;
 import net.hollowbit.archipelo.entity.EntityHeightComparator;
 import net.hollowbit.archipeloshared.CollisionRect;
@@ -19,6 +20,7 @@ public class Map {
 	private String[][] tileData;
 	private String[][] elementData;
 	private String music;
+	private MapAudioManager audioManager;
 	
 	boolean[][] collisionMap;
 	World world;
@@ -31,6 +33,7 @@ public class Map {
 		this.islandName = fullSnapshot.getString("island-name", "Archipelo");
 		tileData = fullSnapshot.tileData;
 		elementData = fullSnapshot.elementData;
+		audioManager = new MapAudioManager(this);
 		generateCollisionMap();
 	}
 	
@@ -176,6 +179,7 @@ public class Map {
 	
 	public void applyChangesSnapshot (MapSnapshot snapshot) {
 		displayName = snapshot.getString("display-name", displayName);
+		audioManager.applyChangesSnapshot(snapshot);
 		if (snapshot.tileData != null)
 			tileData = snapshot.tileData;
 		

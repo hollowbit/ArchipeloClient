@@ -5,10 +5,11 @@
 	"footstepSound": "player",
 	"imgWidth":90,
 	"imgHeight":90,
-	"viewRectOffsetX":40,
-	"viewRectOffsetY":34,
-	"viewRectWidth":7,
-	"viewRectHeight":22,
+	"viewRectWidth":90,
+	"viewRectHeight":90,
+	"footstepOffsetX":45,
+	"footstepOffsetY":34,
+	"drawOrderOffsetY":34,
 	"collisionRects":[
 				{"offsetX":40,"offsetY":34,"width":9,"height":9}
 				],

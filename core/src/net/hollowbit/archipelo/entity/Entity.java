@@ -191,6 +191,22 @@ public abstract class Entity {
 		return entityType.getDrawOrderY(location.getY());
 	}
 	
+	public float getFootX () {
+		return location.getX() + entityType.getFootstepOffsetX();
+	}
+	
+	public float getFootY () {
+		return location.getY() + entityType.getFootstepOffsetY();
+	}
+	
+	/**
+	 * Returns the tile which this entities feet is stepping on
+	 * @return
+	 */
+	public Vector2 getFeetTile () {
+		return new Vector2(getFootX() / ArchipeloClient.TILE_SIZE, getFootY() / ArchipeloClient.TILE_SIZE);
+	}
+	
 	/**
 	 * Called when the current animation is complete. Only used by entities where animations are overridden.
 	 * @param animationId

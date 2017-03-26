@@ -1,6 +1,9 @@
 package net.hollowbit.archipelo.world;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+
+import net.hollowbit.archipeloshared.SoundPlayData;
 
 public class MapSnapshot {
 	
@@ -8,6 +11,7 @@ public class MapSnapshot {
 	public String displayName;
 	public String[][] tileData;
 	public String[][] elementData;
+	public LinkedList<SoundPlayData> sounds = new LinkedList<SoundPlayData>();
 	public HashMap<String, String> properties;
 	
 	public float getFloat (String key, float currentValue) {

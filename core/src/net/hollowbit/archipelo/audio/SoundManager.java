@@ -15,7 +15,7 @@ public class SoundManager {
 		sounds = new HashMap<String, Sound>();
 		
 		//Load all sounds form the sound list file
-		String[] soundPaths = StaticTools.getJson().fromJson(String[].class, Gdx.files.internal("sounds/sounds.json"));
+		String[] soundPaths = StaticTools.getJson().fromJson(String[].class, Gdx.files.internal("shared/sounds.json"));
 		for (String path : soundPaths) {
 			sounds.put(path, Gdx.audio.newSound(Gdx.files.internal("sounds/" + path + ".ogg")));
 		}

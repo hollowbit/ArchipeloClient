@@ -49,7 +49,7 @@ public class EntityAudioManager {
 		if (snapshot.sounds != null && !snapshot.sounds.isEmpty()) {
 			Vector2 entityPos = entity.getCenterPointTile();
 			float volume = SoundCalculator.calculateVolume((int) entityPos.x, (int) entityPos.y);
-			float pan = SoundCalculator.calculatePan((int) entityPos.x);
+			float pan = SoundCalculator.calculatePan((int) entityPos.x, (int) entityPos.y);
 			
 			//Loop through sounds to play and play them all
 			for (String soundName : snapshot.sounds) {
@@ -62,7 +62,7 @@ public class EntityAudioManager {
 	public void playSound (String sound) {
 		Vector2 entityPos = entity.getCenterPointTile();
 		float volume = SoundCalculator.calculateVolume((int) entityPos.x, (int) entityPos.y);
-		float pan = SoundCalculator.calculatePan((int) entityPos.x);
+		float pan = SoundCalculator.calculatePan((int) entityPos.x, (int) entityPos.y);
 		
 		if (entity.getEntityType().hasSound(sound))
 			entity.getEntityType().getSound(sound).play(volume, 1, pan);
@@ -77,9 +77,9 @@ public class EntityAudioManager {
 				if (entity.getEntityType().hasFootstepSound()) {
 					footstepSound.redefine(entity.getEntityType().getFootstepSound(sound));
 					
-					Vector2 entityPos = entity.getCenterPointTile();
+					Vector2 entityPos = entity.getFeetTile();
 					float volume = SoundCalculator.calculateVolume((int) entityPos.x, (int) entityPos.y);
-					float pan = SoundCalculator.calculatePan((int) entityPos.x);
+					float pan = SoundCalculator.calculatePan((int) entityPos.x, (int) entityPos.y);
 					footstepSound.loop(volume, 1, pan);
 					footstepName = sound;
 				}
@@ -92,9 +92,9 @@ public class EntityAudioManager {
 	 * Use this sparingly since its calculations are costly.
 	 */
 	public void moved () {
-		Vector2 entityPos = entity.getCenterPointTile();
+		Vector2 entityPos = entity.getFeetTile();
 		float volume = SoundCalculator.calculateVolume((int) entityPos.x, (int) entityPos.y);
-		float pan = SoundCalculator.calculatePan((int) entityPos.x);
+		float pan = SoundCalculator.calculatePan((int) entityPos.x, (int) entityPos.y);
 		footstepSound.setPan(pan, volume);
 	}
 	

@@ -33,9 +33,10 @@ public class SoundCalculator {
 	/**
 	 * Calculate the pan to play a sound given a relative location to the player.
 	 * @param tileX
+	 * @param tileY
 	 * @return
 	 */
-	public static float calculatePan(int tileX) {
+	public static float calculatePan(int tileX, int tileY) {
 		int xDif = (int) (tileX - ArchipeloClient.getGame().getWorld().getPlayer().getCenterPointTile().x);
 		
 		if (xDif < -HEARING_DISTANCE)

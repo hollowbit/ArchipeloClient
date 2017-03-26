@@ -27,7 +27,10 @@ public class SoundCalculator {
 		if (distance > HEARING_DISTANCE)
 			return 0;
 		
-		return 1 - (distance / HEARING_DISTANCE);
+		if (distance < 2)
+			return 1;
+		
+		return 1 / (distance / 2);
 	}
 	
 	/**

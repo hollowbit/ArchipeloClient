@@ -66,6 +66,7 @@ public class Player extends LivingEntity {
 	 * @param height
 	 */
 	public static void drawPlayer (Batch batch, Direction direction, boolean isMoving, boolean isRolling, float xFloat, float yFloat, float movingStateTime, float rollingStateTime, Item[] equippedInventory, boolean isSprinting, float width, float height) {
+		System.out.println("Player.java   " + width + "  " + height);
 		int x = (int) xFloat;
 		int y = (int) yFloat;
 		
@@ -83,7 +84,6 @@ public class Player extends LivingEntity {
 			batch.draw(EntityType.PLAYER.getAnimationFrame("default", direction, 0, 0), x, y);
 		}
 		
-		//Placeholder art:
 		if (isMoving) {
 			if (isRolling) {
 				float animationRuntime = EntityType.PLAYER.getEntityAnimation("roll").getTotalRuntime();

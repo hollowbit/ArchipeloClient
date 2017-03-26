@@ -12,6 +12,8 @@ import net.hollowbit.archipeloshared.Direction;
 
 public class CharacterDisplay extends Actor {
 	
+	private static final float SCALE_FACTOR = 3;
+	
 	int direction = 0;
 	Item[] equippedInventory;
 	
@@ -42,8 +44,16 @@ public class CharacterDisplay extends Actor {
 	
 	@Override
 	public void draw (Batch batch, float parentAlpha) {
-		Player.drawPlayer(batch, Direction.IN_A_ROW[direction], true, false, this.getX(), this.getY(), ArchipeloClient.STATE_TIME, 0, equippedInventory, false, this.getWidth(), this.getHeight());
+		Player.drawPlayer(batch, Direction.IN_A_ROW[direction], true, false, this.getX() + (this.getWidth() / 2 - this.getDisplayWidth() / 2), this.getY() + (this.getHeight() / 2 - this.getDisplayHeight() / 2), ArchipeloClient.STATE_TIME, 0, equippedInventory, false, this.getDisplayWidth(), this.getDisplayHeight());
 		super.draw(batch, parentAlpha);
+	}
+	
+	private float getDisplayWidth () {
+		return this.getWidth() * SCALE_FACTOR;
+	}
+	
+	private float getDisplayHeight () {
+		return this.getHeight() * SCALE_FACTOR;
 	}
 	
 }

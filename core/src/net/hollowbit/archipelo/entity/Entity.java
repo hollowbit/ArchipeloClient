@@ -34,7 +34,7 @@ public abstract class Entity {
 		this.style = fullSnapshot.getInt("style", 0);
 		this.location = new Location(map, new Vector2(fullSnapshot.getFloat("x", 0), fullSnapshot.getFloat("y", 0)), Direction.values()[fullSnapshot.getInt("direction", 0)]);
 		animationManager = new EntityAnimationManager(this, fullSnapshot.anim, fullSnapshot.animTime, fullSnapshot.animMeta);
-		audioManager = new EntityAudioManager(this, fullSnapshot.sound);
+		audioManager = new EntityAudioManager(this, fullSnapshot.footSound);
 	}
 	
 	/**

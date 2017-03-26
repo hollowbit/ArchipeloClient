@@ -197,9 +197,9 @@ public class CurrentPlayer extends Player implements PacketHandler {
 				gameScreen.playerMoved();
 			}
 			
-			audioManager.setContinuousSound("walk-grass");
+			audioManager.setFootstepSound("grass-walk");
 		} else {
-			audioManager.setContinuousSound("");
+			audioManager.setFootstepSound("");
 		}
 	}
 	

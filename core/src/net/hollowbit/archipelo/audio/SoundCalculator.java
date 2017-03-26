@@ -7,7 +7,7 @@ import net.hollowbit.archipelo.tools.StaticTools;
 
 public class SoundCalculator {
 	
-	public static final int HEARING_DISTANCE = 200;//tiles
+	public static final int HEARING_DISTANCE = 50;//tiles
 	
 	public static float calculateDistanceBetweenEntity(int x, int y) {
 		Vector2 playerPos = ArchipeloClient.getGame().getWorld().getPlayer().getCenterPointTile();

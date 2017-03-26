@@ -22,14 +22,14 @@ public class EntityAudioManager {
 	}
 	/////////////////////
 	
-	private String continuousName;
-	private Soundlet continuousSound;
+	private String footstepName;
+	private Soundlet footstepSound;
 	private Entity entity;
 	
 	public EntityAudioManager (Entity entity, String sound) {
 		this.entity = entity;
-		this.continuousSound = new Soundlet(entity.getEntityType().getSound(sound));
-		this.continuousName = sound;
+		this.footstepSound = new Soundlet(entity.getEntityType().getSound(sound));
+		this.footstepName = sound;
 		audioManagers.add(this);
 	}
 	
@@ -38,7 +38,7 @@ public class EntityAudioManager {
 	 * @param snapshotTo
 	 */
 	public void change (EntitySnapshot snapshotTo) {
-		setContinuousSound(snapshotTo.sound);
+		setFootstepSound(snapshotTo.footSound);
 	}
 	
 	/**
@@ -68,20 +68,20 @@ public class EntityAudioManager {
 			entity.getEntityType().getSound(sound).play(volume, 1, pan);
 	}
 	
-	public void setContinuousSound (String sound) {
-		if (!sound.equals(continuousName)) {//Sound changed
+	public void setFootstepSound (String sound) {
+		if (!sound.equals(footstepName)) {//Sound changed
 			if (sound.equals("")) {
-				continuousSound.redefine(null);
-				continuousName = "";
+				footstepSound.redefine(null);
+				footstepName = "";
 			} else {
-				if (entity.getEntityType().hasSound(sound)) {
-					continuousSound.redefine(entity.getEntityType().getSound(sound));
+				if (entity.getEntityType().hasFootstepSound()) {
+					footstepSound.redefine(entity.getEntityType().getFootstepSound(sound));
 					
 					Vector2 entityPos = entity.getCenterPointTile();
 					float volume = SoundCalculator.calculateVolume((int) entityPos.x, (int) entityPos.y);
 					float pan = SoundCalculator.calculatePan((int) entityPos.x);
-					continuousSound.loop(volume, 1, pan);
-					continuousName = sound;
+					footstepSound.loop(volume, 1, pan);
+					footstepName = sound;
 				}
 			}
 		}
@@ -95,7 +95,7 @@ public class EntityAudioManager {
 		Vector2 entityPos = entity.getCenterPointTile();
 		float volume = SoundCalculator.calculateVolume((int) entityPos.x, (int) entityPos.y);
 		float pan = SoundCalculator.calculatePan((int) entityPos.x);
-		continuousSound.setPan(pan, volume);
+		footstepSound.setPan(pan, volume);
 	}
 	
 	public void dispose () {

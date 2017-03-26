@@ -45,6 +45,7 @@ public enum EntityType {
 	private int numberOfStyles;
 	private boolean hittable;
 	private float speed;
+	private String footstepSound;
 	
 	private float drawOrderOffsetY;
 	
@@ -70,6 +71,7 @@ public enum EntityType {
 		this.numberOfStyles = data.numberOfStyles;
 		this.hittable = data.hittable;
 		this.speed = data.speed;
+		this.footstepSound = data.footstepSound;
 		
 		this.drawOrderOffsetY = data.drawOrderOffsetY;
 		
@@ -191,6 +193,14 @@ public enum EntityType {
 	
 	public Sound getSound (String name) {
 		return ArchipeloClient.getGame().getSoundManager().getSound(sounds.get(name));
+	}
+	
+	public boolean hasFootstepSound() {
+		return !footstepSound.equals("");
+	}
+	
+	public Sound getFootstepSound(String name) {
+		return ArchipeloClient.getGame().getSoundManager().getSound("footsteps/" + name + "/" + this.footstepSound);
 	}
 	
 	//Static

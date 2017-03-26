@@ -10,7 +10,7 @@ public class EntitySnapshot {
 	public String anim = "";
 	public float animTime = 0;
 	public String animMeta = "";
-	public String sound = "";
+	public String footSound = "";
 	public ArrayList<String> sounds = new ArrayList<String>();
 	public HashMap<String, String> properties = new HashMap<String, String>();
 	

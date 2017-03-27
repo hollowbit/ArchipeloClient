@@ -4,6 +4,7 @@ import java.util.HashSet;
 
 import com.badlogic.gdx.math.Vector2;
 
+import net.hollowbit.archipelo.audio.SoundCalculator;
 import net.hollowbit.archipelo.entity.EntityComponent;
 import net.hollowbit.archipelo.entity.LivingEntity;
 import net.hollowbit.archipeloshared.RollableEntity;
@@ -43,7 +44,7 @@ public class FootstepPlayerComponent extends EntityComponent {
 			if (canRoll && rollableEntity.isRolling())
 				entity.getAudioManager().setFootstepSound(entity.getEntityType().getFootstepSound() + "/" + tileSound + "-roll", 1);
 			else
-				entity.getAudioManager().setFootstepSound(entity.getEntityType().getFootstepSound() + "/" + tileSound + "-walk", livingEntity.getSpeed() / entity.getEntityType().getSpeed());
+				entity.getAudioManager().setFootstepSound(entity.getEntityType().getFootstepSound() + "/" + tileSound + "-walk", SoundCalculator.calculatePitch(entity.getEntityType().getSpeed(), livingEntity.getSpeed()));
 		} else
 			entity.getAudioManager().stopFootstepSound();
 	}

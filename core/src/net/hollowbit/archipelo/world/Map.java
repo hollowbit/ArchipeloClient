@@ -191,7 +191,7 @@ public class Map {
 		if (x < 0 || x >= tileData[0].length || y < 0 || y >= tileData.length)
 			return null;
 		
-		return ArchipeloClient.getGame().getMapElementManager().getTile(tileData[y][x]);
+		return ArchipeloClient.getGame().getMapElementManager().getTile(tileData[tileData.length - y - 1][x]);
 	}
 	
 	public String getDisplayName () {

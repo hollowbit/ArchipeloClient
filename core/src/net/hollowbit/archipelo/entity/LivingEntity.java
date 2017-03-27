@@ -15,7 +15,7 @@ public abstract class LivingEntity extends Entity {
 	public void create(EntitySnapshot fullSnapshot, Map map, EntityType entityType) {
 		super.create(fullSnapshot, map, entityType);
 		isMoving = false;
-		this.speed = entityType.getSpeed();
+		this.speed = fullSnapshot.getFloat("speed", entityType.getSpeed());
 	}
 	
 	@Override

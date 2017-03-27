@@ -40,6 +40,7 @@ public class CurrentPlayer extends Player implements PacketHandler, RollableEnti
 	
 	MovementLog movementLog;
 	boolean[] controls;
+	float playerSpeed;
 	
 	Vector2 serverPos;
 	
@@ -48,7 +49,7 @@ public class CurrentPlayer extends Player implements PacketHandler, RollableEnti
 		movementLog = new MovementLog();
 		this.controls = new boolean[Controls.TOTAL];
 		animationManager.change("default");
-		this.speed = fullSnapshot.getFloat("speed", entityType.getSpeed());
+		this.playerSpeed = fullSnapshot.getFloat("playerSpeed", entityType.getSpeed());
 		this.serverPos = new Vector2(location.pos);
 		this.components.add(new FootstepPlayerComponent(this, true, TileSoundType.GRASS));
 		
@@ -398,7 +399,7 @@ public class CurrentPlayer extends Player implements PacketHandler, RollableEnti
 	}
 	
 	public float getSpeed () {
-		return isRolling() ? (entityType.getSpeed() * ROLLING_SPEED_SCALE) : (speed * (isSprinting() ? SPRINTING_SPEED_SCALE : 1));
+		return isRolling() ? (entityType.getSpeed() * ROLLING_SPEED_SCALE) : (playerSpeed * (isSprinting() ? SPRINTING_SPEED_SCALE : 1));
 	}
 	
 	@Override
@@ -416,7 +417,7 @@ public class CurrentPlayer extends Player implements PacketHandler, RollableEnti
 	@Override
 	public void applyChangesSnapshot(EntitySnapshot snapshot) {
 		super.applyChangesSnapshot(snapshot);
-		this.speed = snapshot.getFloat("speed", speed);
+		this.playerSpeed = snapshot.getFloat("playerSpeed", this.playerSpeed);
 	}
 
 	@Override

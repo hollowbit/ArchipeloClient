@@ -23,12 +23,15 @@ import net.hollowbit.archipelo.screen.screens.GameScreen;
 import net.hollowbit.archipelo.tools.ControlsManager;
 import net.hollowbit.archipelo.world.Map;
 import net.hollowbit.archipelo.entity.LivingEntity;
+import net.hollowbit.archipelo.entity.components.FootstepPlayerComponent;
 import net.hollowbit.archipeloshared.CollisionRect;
 import net.hollowbit.archipeloshared.Controls;
 import net.hollowbit.archipeloshared.Direction;
 import net.hollowbit.archipeloshared.HitCalculator;
+import net.hollowbit.archipeloshared.RollableEntity;
+import net.hollowbit.archipeloshared.TileSoundType;
 
-public class CurrentPlayer extends Player implements PacketHandler {
+public class CurrentPlayer extends Player implements PacketHandler, RollableEntity {
 	
 	public static final float EMPTY_HAND_USE_ANIMATION_LENTH = 0.5f;
 	public static final float HIT_RANGE = 8;
@@ -48,6 +51,8 @@ public class CurrentPlayer extends Player implements PacketHandler {
 		animationManager.change("default");
 		this.speed = fullSnapshot.getFloat("speed", entityType.getSpeed());
 		this.serverPos = new Vector2(location.pos);
+		this.components.add(new FootstepPlayerComponent(this, true, TileSoundType.GRASS));
+		
 		ArchipeloClient.getGame().getNetworkManager().addPacketHandler(this);
 		overrideControls = true;
 	}
@@ -196,10 +201,6 @@ public class CurrentPlayer extends Player implements PacketHandler {
 				this.moved();
 				gameScreen.playerMoved();
 			}
-			
-			audioManager.setFootstepSound("grass-walk");
-		} else {
-			audioManager.setFootstepSound("");
 		}
 	}
 	
@@ -249,6 +250,7 @@ public class CurrentPlayer extends Player implements PacketHandler {
 		return controls[Controls.LOCK];
 	}
 	
+	@Override
 	public boolean isRolling() {
 		return animationManager.getAnimationId().equals("roll");
 	}

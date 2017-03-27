@@ -17,5 +17,6 @@ public class TileData {
 	public boolean flipX = false;
 	public boolean flipY = false;
 	public int rotation = 0;//0-3
+	public String footstepSound;
 	
 }

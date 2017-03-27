@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import com.badlogic.gdx.math.Vector2;
 
+import net.hollowbit.archipelo.ArchipeloClient;
 import net.hollowbit.archipelo.audio.SoundCalculator;
 import net.hollowbit.archipelo.audio.Soundlet;
 
@@ -75,7 +76,7 @@ public class EntityAudioManager {
 				footstepName = "";
 			} else {
 				if (entity.getEntityType().hasFootstepSound()) {
-					footstepSound.redefine(entity.getEntityType().getFootstepSound(sound));
+					footstepSound.redefine(ArchipeloClient.getGame().getSoundManager().getSound("footsteps/" + sound));
 					
 					Vector2 entityPos = entity.getFeetTile();
 					float volume = SoundCalculator.calculateVolume((int) entityPos.x, (int) entityPos.y);

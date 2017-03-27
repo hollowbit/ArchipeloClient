@@ -1,4 +1,7 @@
 [
-	"footsteps/grass-walk/player",
+	"footsteps/player/grass-walk",
+	"footsteps/player/grass-roll",
+	"footsteps/player/default-walk",
+	"footsteps/player/default-roll",
 	"actions/hit",
 ]

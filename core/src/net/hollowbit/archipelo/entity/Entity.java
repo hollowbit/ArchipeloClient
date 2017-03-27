@@ -191,6 +191,10 @@ public abstract class Entity {
 		return entityType.getDrawOrderY(location.getY());
 	}
 	
+	public EntityAudioManager getAudioManager() {
+		return audioManager;
+	}
+	
 	public float getFootX () {
 		return location.getX() + entityType.getFootstepOffsetX();
 	}

@@ -205,8 +205,8 @@ public enum EntityType {
 		return !footstepSound.equals("");
 	}
 	
-	public Sound getFootstepSound(String name) {
-		return ArchipeloClient.getGame().getSoundManager().getSound("footsteps/" + name + "/" + this.footstepSound);
+	public String getFootstepSound() {
+		return footstepSound;
 	}
 	
 	public int getFootstepOffsetX() {

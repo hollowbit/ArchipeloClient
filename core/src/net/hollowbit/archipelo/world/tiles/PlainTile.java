@@ -12,7 +12,7 @@ public class PlainTile extends Tile {
 	private TextureRegion image;
 	
 	public PlainTile (TileData tileData) {
-		super(tileData.id, tileData.name, tileData.speedMultiplier, tileData.swimmable, tileData.collisionTable, tileData.flipX, tileData.flipY, tileData.rotation);
+		super(tileData.id, tileData.name, tileData.speedMultiplier, tileData.swimmable, tileData.collisionTable, tileData.flipX, tileData.flipY, tileData.rotation, tileData.footstepSound);
 		this.image = ArchipeloClient.getGame().getAssetManager().getTextureMap("tiles")[tileData.y][tileData.x];
 	}
 	

@@ -2,7 +2,8 @@
 "tileList": [
 	{
 		"id": "grass",
-		"name": "Grass"
+		"name": "Grass",
+		"footstepSound": "grass"
 	},
 	{
 		"id": "water",

@@ -13,8 +13,9 @@ public abstract class Tile {
 	protected boolean[][] collisionTable;
 	protected boolean flipX, flipY;
 	protected int rotation;
+	protected String footstepSound;
 	
-	public Tile (String id, String name, float speedMultiplier, boolean swimmable, boolean[][] collisionTable, boolean flipX, boolean flipY, int rotation) {
+	public Tile (String id, String name, float speedMultiplier, boolean swimmable, boolean[][] collisionTable, boolean flipX, boolean flipY, int rotation, String footstepSound) {
 		this.id = id;
 		this.name = name;
 		this.speedMultiplier = speedMultiplier;
@@ -23,6 +24,7 @@ public abstract class Tile {
 		this.flipX = flipX;
 		this.flipY = flipY;
 		this.rotation = rotation;
+		this.footstepSound = footstepSound;
 	}
 	
 	public abstract void draw (SpriteBatch batch, float x, float y);
@@ -69,6 +71,10 @@ public abstract class Tile {
 	
 	protected float getDrawHeight () {
 		return (flipY ? -1:1) * ArchipeloClient.TILE_SIZE;
+	}
+
+	public String getFootstepSound() {
+		return footstepSound;
 	}
 	
 }

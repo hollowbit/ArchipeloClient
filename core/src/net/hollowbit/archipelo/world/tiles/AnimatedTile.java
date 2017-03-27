@@ -13,7 +13,7 @@ public class AnimatedTile extends Tile {
 	Animation animation;
 	
 	public AnimatedTile (TileData tileData) {
-		super(tileData.id, tileData.name, tileData.speedMultiplier, tileData.swimmable, tileData.collisionTable, tileData.flipX, tileData.flipY, tileData.rotation);
+		super(tileData.id, tileData.name, tileData.speedMultiplier, tileData.swimmable, tileData.collisionTable, tileData.flipX, tileData.flipY, tileData.rotation, tileData.footstepSound);
 		
 		//Get animation frames
 		TextureRegion[] frames = new TextureRegion[tileData.animationFrames];

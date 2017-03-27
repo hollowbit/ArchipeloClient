@@ -9,11 +9,13 @@ public abstract class LivingEntity extends Entity {
 	public static final double DIAGONAL_FACTOR = Math.sqrt(2);
 	
 	protected boolean isMoving;
+	protected float speed;
 	
 	@Override
 	public void create(EntitySnapshot fullSnapshot, Map map, EntityType entityType) {
 		super.create(fullSnapshot, map, entityType);
 		isMoving = false;
+		this.speed = entityType.getSpeed();
 	}
 	
 	@Override
@@ -31,6 +33,12 @@ public abstract class LivingEntity extends Entity {
 			moved();
 	}
 	
+	@Override
+	public void applyChangesSnapshot(EntitySnapshot snapshot) {
+		this.speed = snapshot.getFloat("speed", speed);
+		super.applyChangesSnapshot(snapshot);
+	}
+	
 	public boolean isMoving() {
 		return isMoving;
 	}
@@ -43,6 +51,10 @@ public abstract class LivingEntity extends Entity {
 	@Override
 	public boolean isAlive() {
 		return true;
+	}
+	
+	public float getSpeed() {
+		return speed;
 	}
 	
 }

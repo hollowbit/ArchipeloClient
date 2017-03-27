@@ -39,7 +39,7 @@ public class EntityAudioManager {
 	 * @param snapshotTo
 	 */
 	public void change (EntitySnapshot snapshotTo) {
-		setFootstepSound(snapshotTo.footSound);
+		setFootstepSound(snapshotTo.footSound, snapshotTo.footPitch);
 	}
 	
 	/**
@@ -69,7 +69,11 @@ public class EntityAudioManager {
 			entity.getEntityType().getSound(sound).play(volume, 1, pan);
 	}
 	
-	public void setFootstepSound (String sound) {
+	public void stopFootstepSound() {
+		this.setFootstepSound("", 1);
+	}
+	
+	public void setFootstepSound (String sound, float pitch) {
 		if (!sound.equals(footstepName)) {//Sound changed
 			if (sound.equals("")) {
 				footstepSound.redefine(null);
@@ -81,11 +85,12 @@ public class EntityAudioManager {
 					Vector2 entityPos = entity.getFeetTile();
 					float volume = SoundCalculator.calculateVolume((int) entityPos.x, (int) entityPos.y);
 					float pan = SoundCalculator.calculatePan((int) entityPos.x, (int) entityPos.y);
-					footstepSound.loop(volume, 1, pan);
+					footstepSound.loop(volume, pitch, pan);
 					footstepName = sound;
 				}
 			}
 		}
+		footstepSound.setPitch(pitch);
 	}
 	
 	/**

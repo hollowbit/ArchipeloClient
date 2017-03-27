@@ -41,11 +41,11 @@ public class FootstepPlayerComponent extends EntityComponent {
 		
 		if (livingEntity.isMoving()) {
 			if (canRoll && rollableEntity.isRolling())
-				entity.getAudioManager().setFootstepSound(entity.getEntityType().getFootstepSound() + "/" + tileSound + "-roll");
+				entity.getAudioManager().setFootstepSound(entity.getEntityType().getFootstepSound() + "/" + tileSound + "-roll", 1);
 			else
-				entity.getAudioManager().setFootstepSound(entity.getEntityType().getFootstepSound() + "/" + tileSound + "-walk");
+				entity.getAudioManager().setFootstepSound(entity.getEntityType().getFootstepSound() + "/" + tileSound + "-walk", livingEntity.getSpeed() / entity.getEntityType().getSpeed());
 		} else
-			entity.getAudioManager().setFootstepSound("");
+			entity.getAudioManager().stopFootstepSound();
 	}
 
 }

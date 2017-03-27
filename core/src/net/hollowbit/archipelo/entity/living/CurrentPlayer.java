@@ -40,7 +40,6 @@ public class CurrentPlayer extends Player implements PacketHandler, RollableEnti
 	
 	MovementLog movementLog;
 	boolean[] controls;
-	float speed;
 	
 	Vector2 serverPos;
 	
@@ -399,7 +398,7 @@ public class CurrentPlayer extends Player implements PacketHandler, RollableEnti
 	}
 	
 	public float getSpeed () {
-		return speed * (isRolling() ? ROLLING_SPEED_SCALE : (isSprinting() ? SPRINTING_SPEED_SCALE : 1));
+		return isRolling() ? (entityType.getSpeed() * ROLLING_SPEED_SCALE) : (speed * (isSprinting() ? SPRINTING_SPEED_SCALE : 1));
 	}
 	
 	@Override

@@ -64,33 +64,59 @@ public class ClothesRenderEntityComponent extends EntityComponent {
 			useAnimationMeta = null;
 		}
 		
+		boolean renderUsableFirst = false;
+		if (entity.getDirection() == Direction.UP || entity.getDirection() == Direction.UP_LEFT || entity.getDirection() == Direction.DOWN_RIGHT)
+			renderUsableFirst = true;
+		
+		//If facing up, render the usable item first
+		if (renderUsableFirst) {
+			if (isUseAnimation && useAnimationMeta != null) {
+				if (useAnimationMeta.useItem.equipType == ItemType.EQUIP_INDEX_USABLE) {//Only render use animation if item is usable
+					batch.setColor(new Color(useAnimationMeta.useColorR, useAnimationMeta.useColorG, useAnimationMeta.useColorB, useAnimationMeta.useColorA));
+					batch.draw(useAnimationMeta.useItem.getAnimationFrameForUsable(animationId, direction, stateTime, useAnimationMeta.useStyle, useAnimationMeta.useType, useAnimationMeta.useItem.useAnimationLength), x, y);
+					batch.setColor(1, 1, 1, 1);
+				}
+			}
+		}
+		
 		//Render display items
 		for (int i = 0; i < displayInventory.length - 1; i++) {//Loop through each part of equipable
-			if (displayInventory[i] == null)//Don't draw null clothes
+			Item displayItem = displayInventory[i];
+			
+			//Render boots over pants
+			if (i == Player.EQUIP_INDEX_BOOTS) 
+				displayItem = displayInventory[Player.EQUIP_INDEX_PANTS];
+			else if (i == Player.EQUIP_INDEX_PANTS) 
+				displayItem = displayInventory[Player.EQUIP_INDEX_BOOTS];
+			
+			if (displayItem == null)//Don't draw null clothes
 				continue;
 			
 			if (i == Player.EQUIP_INDEX_FACE) {//Change color of different face elements such as for hair, iris, etc.
 				batch.setColor(1, 1, 1, 1);
-				batch.draw(ItemType.getItemTypeByItem(displayInventory[i]).getAnimationFrame(animationId, direction, stateTime, 0, animationLength), x, y);//Draw mouth
+				batch.draw(ItemType.getItemTypeByItem(displayItem).getAnimationFrame(animationId, direction, stateTime, 0, animationLength), x, y);//Draw mouth
 				
-				batch.setColor(new Color(displayInventory[i].color));
-				batch.draw(ItemType.getItemTypeByItem(displayInventory[i]).getAnimationFrame(animationId, direction, stateTime, 1, animationLength), x, y);//Draw eye's iris with color
+				batch.setColor(new Color(displayItem.color));
+				batch.draw(ItemType.getItemTypeByItem(displayItem).getAnimationFrame(animationId, direction, stateTime, 1, animationLength), x, y);//Draw eye's iris with color
 				
 				batch.setColor(new Color(displayInventory[Player.EQUIP_INDEX_HAIR].color));
-				batch.draw(ItemType.getItemTypeByItem(displayInventory[i]).getAnimationFrame(animationId, direction, stateTime, 2, animationLength), x, y);//Draw eyebrows with hair color
+				batch.draw(ItemType.getItemTypeByItem(displayItem).getAnimationFrame(animationId, direction, stateTime, 2, animationLength), x, y);//Draw eyebrows with hair color
 			} else {
-				batch.setColor(new Color(displayInventory[i].color));
-				batch.draw(ItemType.getItemTypeByItem(displayInventory[i]).getAnimationFrame(animationId, direction, stateTime, displayInventory[i].style, animationLength), x, y);
+				batch.setColor(new Color(displayItem.color));
+				batch.draw(ItemType.getItemTypeByItem(displayItem).getAnimationFrame(animationId, direction, stateTime, displayItem.style, animationLength), x, y);
 			}
 			
 			batch.setColor(1, 1, 1, 1);
 		}
 		
-		if (isUseAnimation && useAnimationMeta != null) {
-			if (useAnimationMeta.useItem.equipType == ItemType.EQUIP_INDEX_USABLE) {//Only render use animation if item is usable
-				batch.setColor(new Color(useAnimationMeta.useColorR, useAnimationMeta.useColorG, useAnimationMeta.useColorB, useAnimationMeta.useColorA));
-				batch.draw(useAnimationMeta.useItem.getAnimationFrameForUsable(animationId, direction, stateTime, useAnimationMeta.useStyle, useAnimationMeta.useType, useAnimationMeta.useItem.useAnimationLength), x, y);
-				batch.setColor(1, 1, 1, 1);
+		//If not facing up, render the usable item last
+		if (!renderUsableFirst) {
+			if (isUseAnimation && useAnimationMeta != null) {
+				if (useAnimationMeta.useItem.equipType == ItemType.EQUIP_INDEX_USABLE) {//Only render use animation if item is usable
+					batch.setColor(new Color(useAnimationMeta.useColorR, useAnimationMeta.useColorG, useAnimationMeta.useColorB, useAnimationMeta.useColorA));
+					batch.draw(useAnimationMeta.useItem.getAnimationFrameForUsable(animationId, direction, stateTime, useAnimationMeta.useStyle, useAnimationMeta.useType, useAnimationMeta.useItem.useAnimationLength), x, y);
+					batch.setColor(1, 1, 1, 1);
+				}
 			}
 		}
 		

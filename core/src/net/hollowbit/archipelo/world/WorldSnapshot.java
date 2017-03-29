@@ -2,7 +2,8 @@ package net.hollowbit.archipelo.world;
 
 import java.util.HashMap;
 
-import net.hollowbit.archipelo.entity.EntitySnapshot;
+import net.hollowbit.archipeloshared.EntitySnapshot;
+
 
 public class WorldSnapshot {
 	

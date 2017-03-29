@@ -13,5 +13,10 @@
 				{"id":"open"},
 				{"id":"closed"},
 				{"id":"locked"}
+				],
+	"properties":[
+				{"name":"teleports", "type":"boolean"},
+				{"name":"teleportLocation", "type":"location", "required":false},
+				{"name":"unlockFlag", "type":"string"},
 				]
 }

@@ -5,13 +5,13 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import net.hollowbit.archipelo.entity.Entity;
 import net.hollowbit.archipelo.entity.EntityComponent;
-import net.hollowbit.archipelo.entity.EntitySnapshot;
 import net.hollowbit.archipelo.entity.living.CurrentPlayer;
 import net.hollowbit.archipelo.entity.living.Player;
 import net.hollowbit.archipelo.items.Item;
 import net.hollowbit.archipelo.items.ItemType;
 import net.hollowbit.archipelo.tools.StaticTools;
 import net.hollowbit.archipeloshared.Direction;
+import net.hollowbit.archipeloshared.EntitySnapshot;
 
 public class ClothesRenderEntityComponent extends EntityComponent {
 	

@@ -12,6 +12,8 @@ import net.hollowbit.archipelo.tools.Location;
 import net.hollowbit.archipelo.world.Map;
 import net.hollowbit.archipeloshared.CollisionRect;
 import net.hollowbit.archipeloshared.Direction;
+import net.hollowbit.archipeloshared.EntitySnapshot;
+import net.hollowbit.archipeloshared.Point;
 
 public abstract class Entity {
 	
@@ -32,7 +34,8 @@ public abstract class Entity {
 		this.name = fullSnapshot.name;
 		this.entityType = entityType;
 		this.style = fullSnapshot.getInt("style", 0);
-		this.location = new Location(map, new Vector2(fullSnapshot.getFloat("x", 0), fullSnapshot.getFloat("y", 0)), Direction.values()[fullSnapshot.getInt("direction", 0)]);
+		Point pos = fullSnapshot.getObject("pos", new Point(), Point.class);
+		this.location = new Location(map, new Vector2(pos.x, pos.y), Direction.values()[fullSnapshot.getInt("direction", 0)]);
 		animationManager = new EntityAnimationManager(this, fullSnapshot.anim, fullSnapshot.animTime, fullSnapshot.animMeta);
 		audioManager = new EntityAudioManager(this, fullSnapshot.footSound);
 	}

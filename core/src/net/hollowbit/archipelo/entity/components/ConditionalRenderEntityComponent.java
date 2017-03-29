@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import net.hollowbit.archipelo.ArchipeloClient;
 import net.hollowbit.archipelo.entity.Entity;
 import net.hollowbit.archipelo.entity.EntityComponent;
-import net.hollowbit.archipelo.entity.EntitySnapshot;
+import net.hollowbit.archipeloshared.EntitySnapshot;
 
 public class ConditionalRenderEntityComponent extends EntityComponent {
 

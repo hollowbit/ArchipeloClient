@@ -10,6 +10,9 @@
 		{"name":"post", "width":2, "height":4, "offsetX":6, "hard":true}
 	],
 	"animations":[
-		{"id":"default"}
-	]
+				{"id":"default"}
+				],
+	"properties":[
+				{"name":"startMessageId", "type":"string"},
+				]
 }

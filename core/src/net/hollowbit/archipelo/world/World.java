@@ -10,7 +10,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import net.hollowbit.archipelo.ArchipeloClient;
 import net.hollowbit.archipelo.entity.Entity;
-import net.hollowbit.archipelo.entity.EntitySnapshot;
 import net.hollowbit.archipelo.entity.EntityType;
 import net.hollowbit.archipelo.entity.living.CurrentPlayer;
 import net.hollowbit.archipelo.entity.living.Player;
@@ -26,6 +25,7 @@ import net.hollowbit.archipelo.tools.FlagsManager;
 import net.hollowbit.archipelo.tools.StaticTools;
 import net.hollowbit.archipeloshared.CollisionRect;
 import net.hollowbit.archipeloshared.Direction;
+import net.hollowbit.archipeloshared.EntitySnapshot;
 
 public class World implements PacketHandler {
 
@@ -269,7 +269,7 @@ public class World implements PacketHandler {
 	public boolean handlePacket (Packet packet) {
 		if (packet.packetType == PacketType.ENTITY_ADD) {
 			EntityAddPacket entityAddPacket = (EntityAddPacket) packet;
-			Entity entity = EntityType.createEntityBySnapshot(new EntitySnapshot(entityAddPacket.name, entityAddPacket.type, entityAddPacket.properties, entityAddPacket.anim, entityAddPacket.animMeta, entityAddPacket.animTime), map);
+			Entity entity = EntityType.createEntityBySnapshot(entityAddPacket.snapshot, map);
 			entity.load();
 			addEntity(entity);
 			

@@ -8,5 +8,8 @@
 	"collisionRects":[{}],
 	"animations":[
 				{"id":"default", "totalRuntime":1.2, "looping":true}
+				],
+	"properties":[
+				{"name":"teleportLocation", "type":"location", "required":true},
 				]
 }

@@ -1,7 +1,7 @@
 package net.hollowbit.archipelo.entity.lifeless;
 
-import net.hollowbit.archipelo.entity.EntitySnapshot;
 import net.hollowbit.archipelo.entity.LifelessEntity;
+import net.hollowbit.archipeloshared.EntitySnapshot;
 
 public class Door extends LifelessEntity {
 	

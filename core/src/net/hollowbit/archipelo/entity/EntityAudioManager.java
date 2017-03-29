@@ -7,6 +7,7 @@ import com.badlogic.gdx.math.Vector2;
 import net.hollowbit.archipelo.ArchipeloClient;
 import net.hollowbit.archipelo.audio.SoundCalculator;
 import net.hollowbit.archipelo.audio.Soundlet;
+import net.hollowbit.archipeloshared.EntitySnapshot;
 
 public class EntityAudioManager {
 	

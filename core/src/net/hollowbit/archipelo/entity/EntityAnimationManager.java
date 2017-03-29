@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import net.hollowbit.archipelo.tools.StaticTools;
 import net.hollowbit.archipeloshared.EntityAnimationData;
+import net.hollowbit.archipeloshared.EntitySnapshot;
 
 public class EntityAnimationManager {
 	

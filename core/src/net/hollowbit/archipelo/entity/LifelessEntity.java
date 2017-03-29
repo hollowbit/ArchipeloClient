@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import net.hollowbit.archipeloshared.Direction;
+import net.hollowbit.archipeloshared.EntitySnapshot;
 
 public abstract class LifelessEntity extends Entity {
 

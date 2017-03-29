@@ -3,6 +3,7 @@ package net.hollowbit.archipelo.entity;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import net.hollowbit.archipelo.entity.living.Player;
+import net.hollowbit.archipeloshared.EntitySnapshot;
 
 public abstract class EntityComponent {
 	

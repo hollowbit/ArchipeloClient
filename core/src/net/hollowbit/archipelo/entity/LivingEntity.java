@@ -3,6 +3,7 @@ package net.hollowbit.archipelo.entity;
 import com.badlogic.gdx.math.Vector2;
 
 import net.hollowbit.archipelo.world.Map;
+import net.hollowbit.archipeloshared.EntitySnapshot;
 
 public abstract class LivingEntity extends Entity {
 	

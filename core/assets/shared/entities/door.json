@@ -12,5 +12,9 @@
 	"animations":[
 				{"id":"open"},
 				{"id":"closed"}
+				],
+	"properties":[
+				{"name":"teleports", "type":"boolean"},
+				{"name":"teleportLocation", "type":"location", "required":false},
 				]
 }

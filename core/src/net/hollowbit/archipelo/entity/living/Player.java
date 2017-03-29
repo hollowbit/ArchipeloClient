@@ -3,7 +3,6 @@ package net.hollowbit.archipelo.entity.living;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 
-import net.hollowbit.archipelo.entity.EntitySnapshot;
 import net.hollowbit.archipelo.entity.EntityType;
 import net.hollowbit.archipelo.entity.LivingEntity;
 import net.hollowbit.archipelo.entity.components.ClothesRenderEntityComponent;
@@ -12,6 +11,7 @@ import net.hollowbit.archipelo.items.ItemType;
 import net.hollowbit.archipelo.tools.StaticTools;
 import net.hollowbit.archipelo.world.Map;
 import net.hollowbit.archipeloshared.Direction;
+import net.hollowbit.archipeloshared.EntitySnapshot;
 
 public class Player extends LivingEntity {
 	

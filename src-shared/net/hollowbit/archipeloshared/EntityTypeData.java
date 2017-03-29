@@ -32,4 +32,12 @@ public class EntityTypeData {
 	//Sounds
 	public EntitySoundData[] sounds;
 	
+	//Properties
+	public PropertyDefinition[] defaultProperties = new PropertyDefinition[]{
+			new PropertyDefinition("pos", "point", true),
+			new PropertyDefinition("style", "int", false),
+			new PropertyDefinition("direction", "direction", false),
+	};
+	public ArrayList<PropertyDefinition> properties = new ArrayList<PropertyDefinition>();
+	
 }

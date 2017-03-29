@@ -46,6 +46,9 @@ public class PropertyDefinition {
 		typeMap.put("direction", PropertyType.DIRECTION);
 		typeMap.put("dir", PropertyType.DIRECTION);
 		
+		typeMap.put("rect", PropertyType.RECTANGLE);
+		typeMap.put("rectangle", PropertyType.RECTANGLE);
+		
 		typeMap.put("string", PropertyType.STRING);
 		typeMap.put("text", PropertyType.STRING);
 		
@@ -71,6 +74,7 @@ public class PropertyDefinition {
 		DOUBLE,
 		POINT,//Contains an x and y
 		LOCATION,
+		RECTANGLE,
 		DIRECTION,
 		STRING,
 		BOOLEAN,

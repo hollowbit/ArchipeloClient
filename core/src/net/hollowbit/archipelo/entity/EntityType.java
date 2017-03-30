@@ -13,13 +13,8 @@ import com.badlogic.gdx.utils.reflect.ClassReflection;
 import com.badlogic.gdx.utils.reflect.ReflectionException;
 
 import net.hollowbit.archipelo.ArchipeloClient;
-import net.hollowbit.archipelo.entity.lifeless.BlobbyGrave;
-import net.hollowbit.archipelo.entity.lifeless.Computer;
-import net.hollowbit.archipelo.entity.lifeless.Door;
-import net.hollowbit.archipelo.entity.lifeless.DoorLocked;
-import net.hollowbit.archipelo.entity.lifeless.Sign;
-import net.hollowbit.archipelo.entity.lifeless.Teleporter;
-import net.hollowbit.archipelo.entity.living.Player;
+import net.hollowbit.archipelo.entity.lifeless.*;
+import net.hollowbit.archipelo.entity.living.*;
 import net.hollowbit.archipelo.tools.AssetManager;
 import net.hollowbit.archipelo.world.Map;
 import net.hollowbit.archipeloshared.CollisionRect;
@@ -38,7 +33,8 @@ public enum EntityType {
 	DOOR_LOCKED ("door-locked", DoorLocked.class),
 	SIGN ("sign", Sign.class),
 	BLOBBY_GRAVE ("blobby_grave", BlobbyGrave.class),
-	COMPUTER ("computer", Computer.class);
+	COMPUTER ("computer", Computer.class),
+	WIZARD ("wizard", Wizard.class);
 	
 	private String id;
 	private Class entityClass;

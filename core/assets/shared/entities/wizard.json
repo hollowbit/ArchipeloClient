@@ -3,19 +3,18 @@
 	"hittable":false,
 	"speed":40,
 	"imgWidth":16,
-	"imgHeight":16,
+	"imgHeight":23,
 	"viewRectWidth":16,
-	"viewRectHeight":16,
+	"viewRectHeight":23,
 	"footstepOffsetX":8,
 	"footstepOffsetY":1,
 	"collisionRects":[
-				{"offsetX":4,"offsetY":0,"width":8,"height":8}
+				{"name":"feet", "offsetX":4,"offsetY":0,"width":8,"height":8,"hard":true},
 				],
 	"animations":[
-				{"id":"default", "fileName":"walk", "totalRuntime":0, "numberOfDirections":4, "looping":true},
-				{"id":"walk", "totalRuntime":0.8, "numberOfDirections":4, "looping":true}
+				{"id":"default", "fileName":"walk", "totalRuntime":0, "numberOfDirections":1, "looping":true}
 				],
 	"sounds":[
-			{"id":"hit", "path":"actions/hit"},
+			{"id":"hit", "path":"actions/hit"}
 			]
 }

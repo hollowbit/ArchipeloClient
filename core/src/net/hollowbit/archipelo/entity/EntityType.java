@@ -32,7 +32,7 @@ public enum EntityType {
 	DOOR ("door", Door.class),
 	DOOR_LOCKED ("door-locked", DoorLocked.class),
 	SIGN ("sign", Sign.class),
-	BLOBBY_GRAVE ("blobby_grave", BlobbyGrave.class),
+	BLOBBY_GRAVE ("blobby-grave", BlobbyGrave.class),
 	COMPUTER ("computer", Computer.class),
 	WIZARD ("wizard", Wizard.class);
 	

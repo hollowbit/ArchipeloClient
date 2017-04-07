@@ -7,6 +7,7 @@ public class PropertyDefinition {
 	public String name;
 	public String type;
 	public boolean required = false;
+	public boolean array = false;//Used to specify an array of values using the type
 	
 	public PropertyDefinition() {}
 	
@@ -58,6 +59,8 @@ public class PropertyDefinition {
 		typeMap.put("object", PropertyType.JSON);
 		typeMap.put("json", PropertyType.JSON);
 		typeMap.put("obj", PropertyType.JSON);
+		
+		typeMap.put("style", PropertyType.STYLE);
 	}
 	
 	public static PropertyType getType (String type) {
@@ -68,7 +71,7 @@ public class PropertyDefinition {
 		return getType(definition.type);
 	}
 	
-	private static enum PropertyType {
+	public static enum PropertyType {
 		INTEGER,
 		FLOAT,
 		DOUBLE,
@@ -78,7 +81,9 @@ public class PropertyDefinition {
 		DIRECTION,
 		STRING,
 		BOOLEAN,
-		JSON
+		JSON,
+		STYLE,
+		ITEM
 	}
 	
 }

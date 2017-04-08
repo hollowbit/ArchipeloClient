@@ -9,6 +9,7 @@ import net.hollowbit.archipelo.ArchipeloClient;
 import net.hollowbit.archipelo.entity.EntityAnimationManager.EntityAnimationObject;
 import net.hollowbit.archipelo.entity.living.Player;
 import net.hollowbit.archipelo.tools.Location;
+import net.hollowbit.archipelo.tools.StaticTools;
 import net.hollowbit.archipelo.world.Map;
 import net.hollowbit.archipeloshared.CollisionRect;
 import net.hollowbit.archipeloshared.Direction;
@@ -25,6 +26,7 @@ public abstract class Entity {
 	protected ArrayList<EntityComponent> components;
 	protected boolean overrideControls = false;
 	protected EntityAudioManager audioManager;
+	protected int health;
 	
 	public Entity () {
 		components = new ArrayList<EntityComponent>();
@@ -34,6 +36,9 @@ public abstract class Entity {
 		this.name = fullSnapshot.name;
 		this.entityType = entityType;
 		this.style = fullSnapshot.getInt("style", 0);
+		
+		this.health = fullSnapshot.getInt("health", entityType.getMaxHealth());
+		
 		Point pos = fullSnapshot.getObject("pos", new Point(), Point.class);
 		this.location = new Location(map, new Vector2(pos.x, pos.y), Direction.values()[fullSnapshot.getInt("direction", 0)]);
 		animationManager = new EntityAnimationManager(this, fullSnapshot.anim, fullSnapshot.animTime, fullSnapshot.animMeta);
@@ -66,9 +71,22 @@ public abstract class Entity {
 			if (component.renderAfter(batch, renderCancelled))
 				renderCancelled = true;
 		}
+		
+		this.renderUninterruptable(batch);
 	}
 	
 	protected void render (SpriteBatch batch) {}
+	
+	/**
+	 * Will always render. Rendered on top of an entity.
+	 * @param batch
+	 */
+	private void renderUninterruptable (SpriteBatch batch) {
+		float fraction = StaticTools.singleDimentionLerpFraction(0, getMaxHealth(), health);
+		batch.setColor(1, 0, 0, 1);
+		batch.draw(ArchipeloClient.getGame().getAssetManager().getTexture("blank"), location.getX(), location.getY() + getViewRect().height + 2, getViewRect().width * fraction, 2);
+		batch.setColor(1, 1, 1, 1);
+	}
 	
 	/**
 	 * Tick the entity forward in time
@@ -141,6 +159,7 @@ public abstract class Entity {
 	
 	public void applyChangesSnapshot (EntitySnapshot snapshot) {
 		style = snapshot.getInt("style", style);
+		health = snapshot.getInt("health", health);
 		if (!overrideControls)
 			audioManager.handleChanges(snapshot);
 		
@@ -156,6 +175,10 @@ public abstract class Entity {
 	
 	public int getStyle () {
 		return style;
+	}
+	
+	public int getMaxHealth () {
+		return entityType.getMaxHealth();
 	}
 	
 	public Direction getDirection () {

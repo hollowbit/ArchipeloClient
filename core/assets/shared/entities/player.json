@@ -2,6 +2,7 @@
 	"id":"player",
 	"hittable":false,
 	"speed":60,
+	"maxHealth":100,
 	"footstepSound": "player",
 	"imgWidth":90,
 	"imgHeight":90,

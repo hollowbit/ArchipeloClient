@@ -41,6 +41,8 @@ public enum EntityType {
 	private HashMap<String, EntityAnimation> animations;
 	private int numberOfStyles;
 	private boolean hittable;
+	
+	private int maxHealth;
 	private float speed;
 	
 	private String footstepSound;
@@ -70,6 +72,8 @@ public enum EntityType {
 		
 		this.numberOfStyles = data.numberOfStyles;
 		this.hittable = data.hittable;
+		
+		this.maxHealth = data.maxHealth;
 		this.speed = data.speed;
 		
 		this.footstepSound = data.footstepSound;
@@ -150,6 +154,10 @@ public enum EntityType {
 	
 	public float getSpeed () {
 		return speed;
+	}
+	
+	public int getMaxHealth () {
+		return maxHealth;
 	}
 	
 	public float getDrawOrderY (float y) {

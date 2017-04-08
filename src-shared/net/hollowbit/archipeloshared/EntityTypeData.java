@@ -8,6 +8,8 @@ public class EntityTypeData {
 	public ArrayList<EntityAnimationData> animations = new ArrayList<EntityAnimationData>();
 	public int numberOfStyles = 1;
 	public boolean hittable = true;
+	
+	public int maxHealth = 1;
 	public float speed = 0;
 	
 	public int imgWidth = 16;
@@ -37,6 +39,7 @@ public class EntityTypeData {
 			new PropertyDefinition("pos", "point", true),
 			new PropertyDefinition("style", "style", false),
 			new PropertyDefinition("direction", "direction", false),
+			new PropertyDefinition("health", "int", false),
 	};
 	public ArrayList<PropertyDefinition> properties = new ArrayList<PropertyDefinition>();
 	

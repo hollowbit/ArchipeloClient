@@ -14,8 +14,7 @@ public class ItemTypeData {
 	public boolean material = false;
 	public int numOfStyles = 1;
 	public int numOfUseAnimations = 1;
-	public float useAnimationLength = 0.1f;
-	public boolean useThrust = false;
+	public float[] useAnimationLengths = new float[1];
 	
 	//Combat stats
 	public int minDamage = DEFAULT_MIN_DAMAGE;

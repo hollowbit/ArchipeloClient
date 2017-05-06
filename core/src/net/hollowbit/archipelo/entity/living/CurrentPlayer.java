@@ -30,6 +30,7 @@ import net.hollowbit.archipeloshared.EntitySnapshot;
 import net.hollowbit.archipeloshared.HitCalculator;
 import net.hollowbit.archipeloshared.RollableEntity;
 import net.hollowbit.archipeloshared.TileSoundType;
+import net.hollowbit.archipeloshared.UseTypeSettings;
 
 public class CurrentPlayer extends Player implements PacketHandler, RollableEntity {
 	
@@ -347,7 +348,13 @@ public class CurrentPlayer extends Player implements PacketHandler, RollableEnti
 				//Use item if no "non-hittable" entity hit
 				if(useHitAnimation) {
 					Item item = clothesRenderer.getDisplayInventory()[Player.EQUIP_INDEX_USABLE];
-					playUseAnimation(item);
+					
+					if (item != null) {
+						UseTypeSettings settings = item.useTap();
+						if (settings != null)
+							playUseAnimation(item, settings.animationType, settings.thrust);
+					} else
+						playUseAnimation(null, 0, false);
 				}
 				
 				audioManager.playSound("hit");
@@ -371,18 +378,18 @@ public class CurrentPlayer extends Player implements PacketHandler, RollableEnti
 	 * Play use animation for current player with the specified item
 	 * @param item
 	 */
-	public void playUseAnimation (Item item) {
+	public void playUseAnimation (Item item, int animationType, boolean useThrust) {
 		String animationMeta = "";
 		float useAnimationLength = EMPTY_HAND_USE_ANIMATION_LENTH;
 		
 		if (item != null) {
 			Color color = new Color(item.color);
 			animationMeta = item.getType() + ";" + 0 + ";" + item.style + ";" + color.r + ";" + color.g + ";" + color.b + ";" + color.a;
-			useAnimationLength = item.getType().useAnimationLength;
+			useAnimationLength = item.getType().useAnimationLengths[animationType];
 		}
 		
 		//Use appropriate animations depending
-		if (item != null && item.getType().useThrust) {
+		if (useThrust) {
 			if (isMoving())
 				stopMovement();
 			animationManager.change("thrust", animationMeta, useAnimationLength);

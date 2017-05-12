@@ -17,6 +17,7 @@ public class EntitySnapshot {
 	public String footSound = "";
 	public float footPitch = 1;
 	public ArrayList<String> sounds = new ArrayList<String>();
+	public ArrayList<String> usounds = new ArrayList<String>();
 	public HashMap<String, String> properties;
 	
 	public EntitySnapshot () {
@@ -112,13 +113,18 @@ public class EntitySnapshot {
 		sounds.add(sound);
 	}
 	
+	public void addUnsafeSound(String sound) {
+		usounds.add(sound);
+	}
+	
 	public void clear () {
 		properties.clear();
 		sounds.clear();
+		usounds.clear();
 	}
 	
 	public boolean isEmpty () {
-		return properties.isEmpty() && sounds.isEmpty();
+		return properties.isEmpty() && sounds.isEmpty() && usounds.isEmpty();
 	}
 	
 }

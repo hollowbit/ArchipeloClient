@@ -22,8 +22,5 @@
 				{"id":"use", "totalRuntime":0, "numberOfDirections":8, "looping":false, "finiteLength":true},
 				{"id":"usewalk", "fileName":"use", "totalRuntime":0.08, "numberOfDirections":8, "looping":true, "finiteLength":true},
 				{"id":"thrust", "totalRuntime":0, "numberOfDirections":8, "looping":false, "finiteLength":true},
-				],
-	"sounds":[
-			{"id":"hit", "path":"actions/hit"},
-			]
+				]
 }

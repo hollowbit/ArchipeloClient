@@ -30,7 +30,7 @@ public class EntityAudioManager {
 	
 	public EntityAudioManager (Entity entity, String sound) {
 		this.entity = entity;
-		this.footstepSound = new Soundlet(entity.getEntityType().getSound(sound));
+		this.footstepSound = new Soundlet(sound);
 		this.footstepName = sound;
 		audioManagers.add(this);
 	}
@@ -48,7 +48,7 @@ public class EntityAudioManager {
 	 * @param snapshot
 	 */
 	public void handleChanges(EntitySnapshot snapshot) {
-		if (snapshot.sounds != null && !snapshot.sounds.isEmpty()) {
+		if ((snapshot.sounds != null && !snapshot.sounds.isEmpty()) || (snapshot.usounds != null && !snapshot.usounds.isEmpty())) {
 			Vector2 entityPos = entity.getCenterPointTile();
 			float volume = SoundCalculator.calculateVolume((int) entityPos.x, (int) entityPos.y);
 			float pan = SoundCalculator.calculatePan((int) entityPos.x, (int) entityPos.y);
@@ -56,18 +56,25 @@ public class EntityAudioManager {
 			//Loop through sounds to play and play them all
 			for (String soundName : snapshot.sounds) {
 				if (entity.getEntityType().hasSound(soundName))
-					entity.getEntityType().getSound(soundName).play(volume, 1, pan);
+					ArchipeloClient.getGame().getSoundManager().play(entity.getEntityType().getSound(soundName), volume, 1, pan);
+			}
+			
+			for (String soundName : snapshot.usounds) {
+				ArchipeloClient.getGame().getSoundManager().play(soundName, volume, 1, pan);
 			}
 		}
 	}
 	
 	public void playSound (String sound) {
+		if (entity.getEntityType().hasSound(sound))
+			playUnsafeSound(entity.getEntityType().getSound(sound));
+	}
+	
+	public void playUnsafeSound (String sound) {
 		Vector2 entityPos = entity.getCenterPointTile();
 		float volume = SoundCalculator.calculateVolume((int) entityPos.x, (int) entityPos.y);
 		float pan = SoundCalculator.calculatePan((int) entityPos.x, (int) entityPos.y);
-		
-		if (entity.getEntityType().hasSound(sound))
-			entity.getEntityType().getSound(sound).play(volume, 1, pan);
+		ArchipeloClient.getGame().getSoundManager().play(sound, volume, 1, pan);
 	}
 	
 	public void stopFootstepSound() {
@@ -81,7 +88,7 @@ public class EntityAudioManager {
 				footstepName = "";
 			} else {
 				if (entity.getEntityType().hasFootstepSound()) {
-					footstepSound.redefine(ArchipeloClient.getGame().getSoundManager().getSound("footsteps/" + sound));
+					footstepSound.redefine("footsteps/" + sound);
 					
 					Vector2 entityPos = entity.getFeetTile();
 					float volume = SoundCalculator.calculateVolume((int) entityPos.x, (int) entityPos.y);

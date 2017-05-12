@@ -49,6 +49,7 @@ public enum ItemType {
 	public boolean material;
 	public int numOfStyles;
 	public int numOfUseAnimations;
+	public String[][] sounds;
 	public float[] useAnimationLengths;
 	
 	public int minDamage;
@@ -103,11 +104,25 @@ public enum ItemType {
 		this.numOfStyles = data.numOfStyles;
 		this.numOfUseAnimations = data.numOfUseAnimations;
 		this.useAnimationLengths = data.useAnimationLengths;
+		this.sounds = data.sounds;
 		
 		if (equipType == EQUIP_INDEX_USABLE)
 			this.useType = useType;
 		else
 			useType = null;
+	}
+	
+	public String getSoundById(int style, int id) {
+		if (style >= 0 && style < numOfStyles && id >= 0 && id < sounds[0].length)
+			return sounds[style][id];
+		return "";
+	}
+	
+	private void loadSounds() {
+		for (int i = 0; i < numOfStyles; i++) {
+			for (int u = 0; u < sounds[0].length; u++)
+				ArchipeloClient.getGame().getSoundManager().loadSound(sounds[i][u]);
+		}
 	}
 	
 	private void loadImages (TextureRegion[][] iconMap) {
@@ -262,13 +277,15 @@ public enum ItemType {
 	}
 	
 	/**
-	 * Loads all icon images
+	 * Loads all icon images and sounds
 	 */
-	public static void loadAllImages () {
+	public static void loadAllAssets () {
 		ArchipeloClient.getGame().getAssetManager().putTextureMap("item-icons", "items/icons.png", ArchipeloClient.TILE_SIZE, ArchipeloClient.TILE_SIZE);
 		TextureRegion[][] iconMap = ArchipeloClient.getGame().getAssetManager().getTextureMap("item-icons");
-		for (ItemType type : ItemType.values())
+		for (ItemType type : ItemType.values()) {
 			type.loadImages(iconMap);
+			type.loadSounds();
+		}
 	}
 	
 	public static ItemType getItemTypeByItem (Item item) {

@@ -75,7 +75,7 @@ public class GameScreen extends Screen implements PacketHandler, InputProcessor 
 	
 	@Override
 	public void create () {
-		ArchipeloClient.getGame().getAssetManager().getMusic("title-screen").stop();
+		ArchipeloClient.getGame().getMusicManager().stop("title-screen");
 		
 		controlsManager = new ControlsManager(this);
 		stage = new Stage(ArchipeloClient.getGame().getCameraUi().getScreenViewport(), ArchipeloClient.getGame().getBatch());

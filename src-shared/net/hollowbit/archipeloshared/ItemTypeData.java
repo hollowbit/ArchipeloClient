@@ -14,6 +14,7 @@ public class ItemTypeData {
 	public boolean material = false;
 	public int numOfStyles = 1;
 	public int numOfUseAnimations = 1;
+	public String[][] sounds = new String[numOfStyles][0];
 	public float[] useAnimationLengths = new float[1];
 	
 	//Combat stats

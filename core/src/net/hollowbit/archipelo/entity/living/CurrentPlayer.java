@@ -381,8 +381,6 @@ public class CurrentPlayer extends Player implements PacketHandler, RollableEnti
 					} else
 						playUseAnimation(null, 0, false, 0);
 				}
-				
-				audioManager.playSound("hit");
 			}
 			break;
 		case Controls.UP:
@@ -412,6 +410,8 @@ public class CurrentPlayer extends Player implements PacketHandler, RollableEnti
 			Color color = new Color(item.color);
 			animationMeta = item.getType() + ";" + animationType + ";" + item.style + ";" + color.r + ";" + color.g + ";" + color.b + ";" + color.a;
 			useAnimationLength = item.getType().useAnimationLengths[animationType];
+			
+			audioManager.playUnsafeSound(item.getType().getSoundById(item.style, soundType));
 		}
 		
 		//Use appropriate animations depending

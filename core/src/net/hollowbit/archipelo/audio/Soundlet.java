@@ -1,6 +1,6 @@
 package net.hollowbit.archipelo.audio;
 
-import com.badlogic.gdx.audio.Sound;
+import net.hollowbit.archipelo.ArchipeloClient;
 
 /**
  * Simple sound wrapper class that keeps track of a specific id so you don't have to.
@@ -9,77 +9,65 @@ import com.badlogic.gdx.audio.Sound;
  */
 public class Soundlet {
 	
-	private Sound sound;
+	private String sound;
 	private long id;
 	
-	public Soundlet (Sound sound) {
-		this.sound = sound;
+	public Soundlet (String soundId) {
+		this.sound = soundId;
 		id = -1;
 	}
 	
 	public void play() {
-		if (sound != null)
-			id = sound.play();
+		id = ArchipeloClient.getGame().getSoundManager().play(sound);
 	}
 	
 	public void play(float volume) {
-		if (sound != null)
-			id = sound.play(volume);
+		id = ArchipeloClient.getGame().getSoundManager().play(sound, volume);
 	}
 	
 	public void play(float volume, float pitch, float pan) {
-		if (sound != null)
-			id = sound.play(volume, pitch, pan);
+		id = ArchipeloClient.getGame().getSoundManager().play(sound, volume, pitch, pan);
 	}
 	
 	public void loop() {
-		if (sound != null)
-			id = sound.loop();
+		id = ArchipeloClient.getGame().getSoundManager().loop(sound);
 	}
 	
 	public void loop(float volume) {
-		if (sound != null)
-			id = sound.loop(volume);
+		id = ArchipeloClient.getGame().getSoundManager().loop(sound, volume);
 	}
 	
 	public void loop(float volume, float pitch, float pan) {
-		if (sound != null)
-			id = sound.loop(volume, pitch, pan);
+		id = ArchipeloClient.getGame().getSoundManager().loop(sound, volume, pitch, pan);
 	}
 	
 	public void setPan(float pan, float volume) {
-		if (sound != null)
-			sound.setPan(id, pan, volume);
+		ArchipeloClient.getGame().getSoundManager().setPan(sound, id, pan, volume);
 	}
 	
 	public void setPitch(float pitch) {
-		if (sound != null)
-			sound.setPitch(id, pitch);
+		ArchipeloClient.getGame().getSoundManager().setPitch(sound, id, pitch);
 	}
 	
 	public void stop() {
-		if (sound != null)
-			sound.stop(id);
+		ArchipeloClient.getGame().getSoundManager().stop(sound, id);
 	}
 	
 	public void resume() {
-		if (sound != null)
-			sound.resume(id);
+		ArchipeloClient.getGame().getSoundManager().resume(sound, id);
 	}
 	
 	public void pause() {
-		if (sound != null)
-			sound.pause(id);
+		ArchipeloClient.getGame().getSoundManager().pause(sound, id);
 	}
 	
 	/**
 	 * Give the soundlet a new sound to play. Will stop the old one from playing.
 	 * @param newSound
 	 */
-	public void redefine(Sound newSound) {
-		if (sound != null)
-			sound.stop(id);
-		sound = newSound;
+	public void redefine(String newSoundId) {
+		ArchipeloClient.getGame().getSoundManager().stop(sound, id);
+		sound = newSoundId;
 		id = -1;
 	}
 	

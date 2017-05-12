@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -12,9 +11,14 @@ import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.reflect.ClassReflection;
 import com.badlogic.gdx.utils.reflect.ReflectionException;
 
-import net.hollowbit.archipelo.ArchipeloClient;
-import net.hollowbit.archipelo.entity.lifeless.*;
-import net.hollowbit.archipelo.entity.living.*;
+import net.hollowbit.archipelo.entity.lifeless.BlobbyGrave;
+import net.hollowbit.archipelo.entity.lifeless.Computer;
+import net.hollowbit.archipelo.entity.lifeless.Door;
+import net.hollowbit.archipelo.entity.lifeless.DoorLocked;
+import net.hollowbit.archipelo.entity.lifeless.Sign;
+import net.hollowbit.archipelo.entity.lifeless.Teleporter;
+import net.hollowbit.archipelo.entity.living.Player;
+import net.hollowbit.archipelo.entity.living.Wizard;
 import net.hollowbit.archipelo.tools.AssetManager;
 import net.hollowbit.archipelo.world.Map;
 import net.hollowbit.archipeloshared.CollisionRect;
@@ -202,8 +206,8 @@ public enum EntityType {
 		return sounds.containsKey(name);
 	}
 	
-	public Sound getSound (String name) {
-		return ArchipeloClient.getGame().getSoundManager().getSound(sounds.get(name));
+	public String getSound (String name) {
+		return sounds.get(name);
 	}
 	
 	public boolean hasFootstepSound() {

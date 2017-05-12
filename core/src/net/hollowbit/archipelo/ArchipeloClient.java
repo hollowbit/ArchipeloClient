@@ -23,6 +23,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.BufferUtils;
 import com.badlogic.gdx.utils.ScreenUtils;
 
+import net.hollowbit.archipelo.audio.MusicManager;
 import net.hollowbit.archipelo.audio.SoundManager;
 import net.hollowbit.archipelo.entity.EntityType;
 import net.hollowbit.archipelo.form.MobileCompatibleWindow;
@@ -75,6 +76,7 @@ public class ArchipeloClient extends ApplicationAdapter {
 	ScreenManager screenManager;
 	MapElementManager elementManager;
 	FontManager fontManager;
+	MusicManager musicManager;
 	SoundManager soundManager;
 	Skin skin;
 	HollowBitServerConnectivity hollowBitServerConnectivity;
@@ -121,16 +123,17 @@ public class ArchipeloClient extends ApplicationAdapter {
 		assetManager.putTexture("maptag", "maptag.png", true);
 		assetManager.putTexture("mainmenu-background", "mainmenu_background.png", true);
 		assetManager.putTexture("logo", "logo.png", true);
-		ItemType.loadAllImages();
-		EntityType.loadAllImages();
-		
-		//Music
-		assetManager.putMusic("title-screen", "music/title_screen.ogg");
 		assetManager.putTexture("invalid", "invalid.png");//For some reason this image cannot be loaded by html. Fix later.
+		
+		//Audio
+		musicManager = new MusicManager();
 		soundManager = new SoundManager();
 
 		elementManager = new MapElementManager();
 		elementManager.loadMapElements();
+		
+		ItemType.loadAllAssets();
+		EntityType.loadAllImages();
 		
 		//Cameras
 		cameraGame = new GameCamera();
@@ -288,6 +291,10 @@ public class ArchipeloClient extends ApplicationAdapter {
 	
 	public FontManager getFontManager () {
 		return fontManager;
+	}
+	
+	public MusicManager getMusicManager () {
+		return musicManager;
 	}
 	
 	public SoundManager getSoundManager () {

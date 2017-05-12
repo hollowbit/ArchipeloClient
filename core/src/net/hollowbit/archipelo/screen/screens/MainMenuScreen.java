@@ -153,7 +153,7 @@ public class MainMenuScreen extends Screen {
 		if (error != null)
 			QuickUi.showErrorWindow("!?!?!", error, stage);
 		
-		ArchipeloClient.getGame().getAssetManager().getMusic("title-screen").play();
+		ArchipeloClient.getGame().getMusicManager().play("title-screen");
 	}
 
 	@Override

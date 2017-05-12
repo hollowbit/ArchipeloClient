@@ -9,5 +9,9 @@
 	minDamage: 2,
 	maxDamage: 7,
 	critMultiplier: 1.5,
-	critChance: 15
+	critChance: 15,
+	sounds: [
+		["actions/hit"],
+		["footsteps/player/grass-walk"],
+	]
 }

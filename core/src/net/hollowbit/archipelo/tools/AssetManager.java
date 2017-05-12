@@ -2,9 +2,6 @@ package net.hollowbit.archipelo.tools;
 
 import java.util.HashMap;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.audio.Music;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -17,15 +14,11 @@ public class AssetManager {
 	private HashMap<String, Texture> textureMap;
 	private HashMap<String, TextureRegion[][]> textureRegionMap;
 	private HashMap<String, Animation> animationMap;
-	private HashMap<String, Sound> soundMap;
-	private HashMap<String, Music> musicMap;
 	
 	public AssetManager () {
 		textureMap = new HashMap<String, Texture>();
 		textureRegionMap = new HashMap<String, TextureRegion[][]>();
 		animationMap = new HashMap<String, Animation>();
-		soundMap = new HashMap<String, Sound>();
-		musicMap = new HashMap<String, Music>();
 	}
 	
 	/**
@@ -137,32 +130,6 @@ public class AssetManager {
 	 */
 	public TextureRegion getAnimationKeyFrame (String key, float stateTime, boolean looping) {
 		return animationMap.get(key).getKeyFrame(stateTime, looping);
-	}
-	
-	/**
-	 * Add a sound
-	 * @param key
-	 * @param sound
-	 */
-	public void putSound (String key, String fileLocation) {
-		soundMap.put(key, Gdx.audio.newSound(Gdx.files.internal(fileLocation)));
-	}
-	
-	public Sound getSound (String key) {
-		return soundMap.get(key);
-	}
-	
-	/**
-	 * Add a song
-	 * @param key
-	 * @param music
-	 */
-	public void putMusic (String key, String fileLocation) {
-		musicMap.put(key, Gdx.audio.newMusic(Gdx.files.internal(fileLocation)));
-	}
-	
-	public Music getMusic (String key) {
-		return musicMap.get(key);
 	}
 	
 	/**

@@ -12,6 +12,10 @@ public class Prefs {
 	private String email, password, serverName;
 	private int chosenLanguage;
 	
+	private float masterVolume;
+	private float sfxVolume;
+	private float musicVolume;
+	
 	public Prefs () {
 		prefs = Gdx.app.getPreferences("archipelo");
 		
@@ -23,6 +27,11 @@ public class Prefs {
 		//Server
 		this.serverPicked = prefs.getBoolean("server-picked", false);
 		this.serverName = prefs.getString("server-name", "");
+		
+		//Sound
+		this.masterVolume = prefs.getFloat("master-volume", 1);
+		this.sfxVolume = prefs.getFloat("sfx-volume", 1);
+		this.musicVolume = prefs.getFloat("music-volume", 1);
 		
 		//Other
 		this.showedDisclaimer = prefs.getBoolean("showed-disclaimer", false);
@@ -105,6 +114,36 @@ public class Prefs {
 	
 	public int getChosenLanguageRaw () {
 		return this.chosenLanguage;
+	}
+	
+	public float getMasterVolume() {
+		return masterVolume;
+	}
+
+	public void setMasterVolume(float masterVolume) {
+		this.masterVolume = masterVolume;
+		prefs.putFloat("master-volume", masterVolume);
+		prefs.flush();
+	}
+
+	public float getSfxVolume() {
+		return sfxVolume;
+	}
+
+	public void setSfxVolume(float sfxVolume) {
+		this.sfxVolume = sfxVolume;
+		prefs.putFloat("sfx-volume", sfxVolume);
+		prefs.flush();
+	}
+
+	public float getMusicVolume() {
+		return musicVolume;
+	}
+
+	public void setMusicVolume(float musicVolume) {
+		this.musicVolume = musicVolume;
+		prefs.putFloat("music-volume", musicVolume);
+		prefs.flush();
 	}
 	
 }

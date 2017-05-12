@@ -161,7 +161,15 @@ public class NetworkManager {
         			Packet packet;
         			String[] packetWrapArray = packetString.split(";");
         			int type = Integer.parseInt(packetWrapArray[0]);
-        			String newPacketString = packetWrapArray[1];
+        			
+        			String newPacketString = "";
+        			for (int i = 1; i < packetWrapArray.length; i++) {
+        				newPacketString += packetWrapArray[i];
+        				
+        				if (i < packetWrapArray.length - 1)
+        					newPacketString += ";";
+        			}
+        			
         			packet = (Packet) json.fromJson(PacketType.getPacketClassByType(type), newPacketString);
         			addPacket(new PacketWrapper(packet));
         		} catch (Exception e) {

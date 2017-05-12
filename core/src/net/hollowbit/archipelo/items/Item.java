@@ -2,6 +2,7 @@ package net.hollowbit.archipelo.items;
 
 import com.badlogic.gdx.graphics.Color;
 
+import net.hollowbit.archipelo.entity.living.CurrentPlayer;
 import net.hollowbit.archipeloshared.UseTypeSettings;
 
 public class Item {
@@ -43,16 +44,25 @@ public class Item {
 		this.quantity = quantity;
 	}
 	
-	public UseTypeSettings useTap() {
-		return this.getType().getUseType().useItemTap(this);
+	public UseTypeSettings useTap(CurrentPlayer user) {
+		if (this.getType().getUseType() != null)
+			return this.getType().getUseType().useItemTap(user, this);
+		else
+			return null;
 	}
 	
-	public UseTypeSettings useDoubleTap(float delta) {
-		return this.getType().getUseType().useItemDoubleTap(this, delta);
+	public UseTypeSettings useDoubleTap(CurrentPlayer user, float delta) {
+		if (this.getType().getUseType() != null)
+			return this.getType().getUseType().useItemDoubleTap(user, this, delta);
+		else
+			return null;
 	}
 	
-	public UseTypeSettings useHold(float duration) {
-		return this.getType().getUseType().useItemHold(this, duration);
+	public UseTypeSettings useHold(CurrentPlayer user, float duration) {
+		if (this.getType().getUseType() != null)
+			return this.getType().getUseType().useItemHold(user, this, duration);
+		else
+			return null;
 	}
 	
 	public ItemType getType () {

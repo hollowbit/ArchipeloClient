@@ -11,6 +11,7 @@ import com.badlogic.gdx.utils.reflect.ClassReflection;
 import com.badlogic.gdx.utils.reflect.ReflectionException;
 
 import net.hollowbit.archipelo.ArchipeloClient;
+import net.hollowbit.archipelo.items.usetypes.*;
 import net.hollowbit.archipelo.tools.AssetManager;
 import net.hollowbit.archipelo.tools.LM;
 import net.hollowbit.archipeloshared.Direction;
@@ -26,7 +27,8 @@ public enum ItemType {
 	SHOULDERPADS_BASIC("shoulderpads_basic"),*/
 	HAIR1("hair1"),
 	FACE1("face1"),
-	BLOBBY_ASHES("blobby_ashes")/*,
+	BLOBBY_ASHES("blobby_ashes"),
+	TEST_SWORD("test_sword", new TestSwordUseType())/*,
 	SWORD("sword")*/;
 
 	public static final int NO_EQUIP_TYPE = -1;
@@ -149,7 +151,7 @@ public enum ItemType {
 				for (int useAnim = 0; useAnim < numOfUseAnimations; useAnim++) {
 					TextureRegion[][] useSheet = AssetManager.fixBleedingSpriteSheet(TextureRegion.split(new Texture("items/" + id + "/use_" + style + "_" + useAnim + ".png"), ArchipeloClient.PLAYER_SIZE, ArchipeloClient.PLAYER_SIZE));
 					for (int direction = 0; direction < Direction.TOTAL; direction++) {
-						useAnimation[direction][style][useAnim] = new Animation(useAnimationLengths[useAnim], useSheet[direction]);
+						useAnimation[direction][style][useAnim] = new Animation(useAnimationLengths[useAnim] / useSheet[direction].length, useSheet[direction]);
 					}
 				}
 			}
@@ -167,7 +169,7 @@ public enum ItemType {
 	 */
 	public TextureRegion getAnimationFrameForUsable (String animationId, Direction direction, float statetime, int style, int useStyle, float totalRuntime) {
 		if (animationId.equals("use") || animationId.equals("thrust"))
-			return getUseFrame(direction, 0, useStyle, style, totalRuntime);
+			return getUseFrame(direction, statetime, useStyle, style, totalRuntime);
 		else if (animationId.equals("usewalk"))
 			return getUseFrame(direction, statetime, useStyle, style, totalRuntime);
 		return null;

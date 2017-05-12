@@ -1,0 +1,13 @@
+{
+	id:"test_sword",
+	iconX: 9,
+	durability: 100,
+	equipType: 9,
+	numOfStyles: 2,
+	numOfUseAnimations: 2,
+	useAnimationLengths: [0.5, 0.5],
+	minDamage: 2,
+	maxDamage: 7,
+	critMultiplier: 1.5,
+	critChance: 15
+}

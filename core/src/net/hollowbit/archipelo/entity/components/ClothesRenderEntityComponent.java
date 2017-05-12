@@ -54,10 +54,10 @@ public class ClothesRenderEntityComponent extends EntityComponent {
 				if (useAnimationMeta == null) {
 					useAnimationMeta = new UseAnimationMeta(entity.getAnimationManager().getAnimationMeta());
 					if (useAnimationMeta.useItem.equipType == ItemType.EQUIP_INDEX_USABLE)
-						animationLength = useAnimationMeta.useItem.useAnimationLengths[useAnimationMeta.useStyle];
+						animationLength = useAnimationMeta.useItem.useAnimationLengths[useAnimationMeta.style];
 				} else {
 					if (useAnimationMeta.useItem.equipType == ItemType.EQUIP_INDEX_USABLE)
-						animationLength = useAnimationMeta.useItem.useAnimationLengths[useAnimationMeta.useStyle];
+						animationLength = useAnimationMeta.useItem.useAnimationLengths[useAnimationMeta.style];
 				}
 			}
 		} else {
@@ -65,7 +65,7 @@ public class ClothesRenderEntityComponent extends EntityComponent {
 		}
 		
 		boolean renderUsableFirst = false;
-		if (entity.getDirection() == Direction.UP || entity.getDirection() == Direction.UP_LEFT || entity.getDirection() == Direction.DOWN_RIGHT)
+		if (entity.getDirection() == Direction.UP || entity.getDirection() == Direction.UP_LEFT || entity.getDirection() == Direction.UP_RIGHT)
 			renderUsableFirst = true;
 		
 		//If facing up, render the usable item first
@@ -73,7 +73,7 @@ public class ClothesRenderEntityComponent extends EntityComponent {
 			if (isUseAnimation && useAnimationMeta != null) {
 				if (useAnimationMeta.useItem.equipType == ItemType.EQUIP_INDEX_USABLE) {//Only render use animation if item is usable
 					batch.setColor(new Color(useAnimationMeta.useColorR, useAnimationMeta.useColorG, useAnimationMeta.useColorB, useAnimationMeta.useColorA));
-					batch.draw(useAnimationMeta.useItem.getAnimationFrameForUsable(animationId, direction, stateTime, useAnimationMeta.useStyle, useAnimationMeta.useType, useAnimationMeta.useItem.useAnimationLengths[useAnimationMeta.useStyle]), x, y);
+					batch.draw(useAnimationMeta.useItem.getAnimationFrameForUsable(animationId, direction, stateTime, useAnimationMeta.style, useAnimationMeta.useType, useAnimationMeta.useItem.useAnimationLengths[useAnimationMeta.style]), x, y);
 					batch.setColor(1, 1, 1, 1);
 				}
 			}
@@ -114,7 +114,7 @@ public class ClothesRenderEntityComponent extends EntityComponent {
 			if (isUseAnimation && useAnimationMeta != null) {
 				if (useAnimationMeta.useItem.equipType == ItemType.EQUIP_INDEX_USABLE) {//Only render use animation if item is usable
 					batch.setColor(new Color(useAnimationMeta.useColorR, useAnimationMeta.useColorG, useAnimationMeta.useColorB, useAnimationMeta.useColorA));
-					batch.draw(useAnimationMeta.useItem.getAnimationFrameForUsable(animationId, direction, stateTime, useAnimationMeta.useStyle, useAnimationMeta.useType, useAnimationMeta.useItem.useAnimationLengths[useAnimationMeta.useStyle]), x, y);
+					batch.draw(useAnimationMeta.useItem.getAnimationFrameForUsable(animationId, direction, stateTime, useAnimationMeta.style, useAnimationMeta.useType, useAnimationMeta.useItem.useAnimationLengths[useAnimationMeta.style]), x, y);
 					batch.setColor(1, 1, 1, 1);
 				}
 			}
@@ -140,7 +140,7 @@ public class ClothesRenderEntityComponent extends EntityComponent {
 
 		public ItemType useItem;
 		public int useType;
-		public int useStyle;
+		public int style;
 		public float useColorR;
 		public float useColorG;
 		public float useColorB;
@@ -151,7 +151,7 @@ public class ClothesRenderEntityComponent extends EntityComponent {
 				String[] split = entity.getAnimationManager().getAnimationMeta().split(";");
 				useItem = ItemType.getItemTypeById(split[0]);
 				useType = Integer.parseInt(split[1]);
-				useStyle = Integer.parseInt(split[2]);
+				style = Integer.parseInt(split[2]);
 				useColorR = Float.parseFloat(split[3]);
 				useColorG = Float.parseFloat(split[4]);
 				useColorB = Float.parseFloat(split[5]);

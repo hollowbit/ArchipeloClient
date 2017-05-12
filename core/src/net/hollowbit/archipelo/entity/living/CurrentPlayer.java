@@ -1,6 +1,7 @@
 package net.hollowbit.archipelo.entity.living;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -42,8 +43,8 @@ public class CurrentPlayer extends Player implements PacketHandler, RollableEnti
 	MovementLog movementLog;
 	boolean[] controls;
 	float playerSpeed;
-	
 	Vector2 serverPos;
+	Random random;
 	
 	public void create (EntitySnapshot fullSnapshot, Map map, EntityType entityType) {
 		super.create(fullSnapshot, map, entityType);
@@ -51,6 +52,8 @@ public class CurrentPlayer extends Player implements PacketHandler, RollableEnti
 		this.controls = new boolean[Controls.TOTAL];
 		animationManager.change("default");
 		this.playerSpeed = fullSnapshot.getFloat("playerSpeed", entityType.getSpeed());
+		random = new Random(fullSnapshot.getInt("seed", 0));
+		
 		this.serverPos = new Vector2(location.pos);
 		this.components.add(new FootstepPlayerComponent(this, true, TileSoundType.GRASS));
 		
@@ -92,7 +95,9 @@ public class CurrentPlayer extends Player implements PacketHandler, RollableEnti
 		boolean[] oldControls = new boolean[controls.length];
 		for (int i = 0; i < controls.length; i++)
 			oldControls[i] = controls[i];
-		this.controls = packet.parse();
+		boolean[] newControls = packet.parse();
+		applyControlExceptions(newControls);
+		this.controls = newControls;
 		
 		//Loops through all controls to handle them one by one.
 		for (int i = 0; i < Controls.TOTAL; i++) {
@@ -109,6 +114,19 @@ public class CurrentPlayer extends Player implements PacketHandler, RollableEnti
 		applyCommand(packet);
 		packet.x = location.getX();
 		packet.y = location.getY();
+	}
+	
+	/**
+	 * Cleans up controls when there are certain conditions.
+	 * @param controls
+	 */
+	private void applyControlExceptions (boolean[] controls) {
+		if (isThrusting()) {
+			controls[Controls.UP] = false;
+			controls[Controls.LEFT] = false;
+			controls[Controls.DOWN] = false;
+			controls[Controls.RIGHT] = false;
+		}
 	}
 	
 	@SuppressWarnings("incomplete-switch")
@@ -184,8 +202,7 @@ public class CurrentPlayer extends Player implements PacketHandler, RollableEnti
 			case DOWN_RIGHT:
 				speedMoved = getSpeed() / LivingEntity.DIAGONAL_FACTOR;
 				pos.add((float) (deltaTime * speedMoved), 0);
-				break;
-				
+				break;	
 			}
 			
 			collidesWithMap = false;
@@ -236,7 +253,7 @@ public class CurrentPlayer extends Player implements PacketHandler, RollableEnti
 	}
 	
 	private boolean isMoving(boolean[] controls) {
-		return controls[Controls.UP] || controls[Controls.LEFT] || controls[Controls.DOWN] || controls[Controls.RIGHT];
+		return (controls[Controls.UP] || controls[Controls.LEFT] || controls[Controls.DOWN] || controls[Controls.RIGHT]) && !animationManager.getAnimationId().equals("thrust");
 	}
 	
 	public boolean isSprinting () {
@@ -254,6 +271,14 @@ public class CurrentPlayer extends Player implements PacketHandler, RollableEnti
 	@Override
 	public boolean isRolling() {
 		return animationManager.getAnimationId().equals("roll");
+	}
+
+	/**
+	 * Tells whether the player is currently in the thrust animation
+	 * @return
+	 */
+	public boolean isThrusting() {
+		return animationManager.getAnimationId().equals("thrust");
 	}
 	
 	/**
@@ -301,7 +326,7 @@ public class CurrentPlayer extends Player implements PacketHandler, RollableEnti
 		case Controls.LEFT:
 		case Controls.DOWN:
 		case Controls.RIGHT:
-			if (!isMoving() && !isRolling()) {
+			if (!isMoving() && !isRolling() && !isThrusting()) {
 				if (isUsing())
 					animationManager.change("use");
 				else
@@ -350,11 +375,11 @@ public class CurrentPlayer extends Player implements PacketHandler, RollableEnti
 					Item item = clothesRenderer.getDisplayInventory()[Player.EQUIP_INDEX_USABLE];
 					
 					if (item != null) {
-						UseTypeSettings settings = item.useTap();
+						UseTypeSettings settings = item.useTap(this);
 						if (settings != null)
-							playUseAnimation(item, settings.animationType, settings.thrust);
+							playUseAnimation(item, settings.animationType, settings.thrust, settings.soundType);
 					} else
-						playUseAnimation(null, 0, false);
+						playUseAnimation(null, 0, false, 0);
 				}
 				
 				audioManager.playSound("hit");
@@ -364,6 +389,7 @@ public class CurrentPlayer extends Player implements PacketHandler, RollableEnti
 		case Controls.LEFT:
 		case Controls.DOWN:
 		case Controls.RIGHT:
+			System.out.println("Current Player  " + control);
 			if (!isRolling()) {
 				if (isUsing())
 					animationManager.change("usewalk");
@@ -378,13 +404,13 @@ public class CurrentPlayer extends Player implements PacketHandler, RollableEnti
 	 * Play use animation for current player with the specified item
 	 * @param item
 	 */
-	public void playUseAnimation (Item item, int animationType, boolean useThrust) {
+	public void playUseAnimation (Item item, int animationType, boolean useThrust, int soundType) {
 		String animationMeta = "";
 		float useAnimationLength = EMPTY_HAND_USE_ANIMATION_LENTH;
 		
 		if (item != null) {
 			Color color = new Color(item.color);
-			animationMeta = item.getType() + ";" + 0 + ";" + item.style + ";" + color.r + ";" + color.g + ";" + color.b + ";" + color.a;
+			animationMeta = item.getType() + ";" + animationType + ";" + item.style + ";" + color.r + ";" + color.g + ";" + color.b + ";" + color.a;
 			useAnimationLength = item.getType().useAnimationLengths[animationType];
 		}
 		
@@ -403,6 +429,10 @@ public class CurrentPlayer extends Player implements PacketHandler, RollableEnti
 	
 	public void stopMovement () {
 		rollDoubleClickTimer = 0;
+	}
+	
+	public Random getRandom() {
+		return random;
 	}
 	
 	public float getSpeed () {

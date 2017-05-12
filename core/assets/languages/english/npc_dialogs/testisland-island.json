@@ -1,0 +1,5 @@
+{dialogs:[
+	{id:"swordSignGive", name:"Sword Giver", message:"Here is a free sword for you!"},
+	{id:"swordSignAlready", name:"Angry Sword Giver", message:"Don't be greedy, you already got a sword!"},
+	{id:"swordSignEnd", name:"Sword Giver", message:"You're welcome!"}
+]}

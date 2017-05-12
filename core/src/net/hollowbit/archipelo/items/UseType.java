@@ -1,5 +1,6 @@
 package net.hollowbit.archipelo.items;
 
+import net.hollowbit.archipelo.entity.living.CurrentPlayer;
 import net.hollowbit.archipeloshared.UseTypeSettings;
 
 public interface UseType {
@@ -10,7 +11,7 @@ public interface UseType {
 	 * @param item
 	 * @return
 	 */
-	public abstract UseTypeSettings useItemTap (Item item);
+	public abstract UseTypeSettings useItemTap (CurrentPlayer user, Item item);
 	
 	/**
 	 * Use item after action button held. Returns a UseTypeSettings object with information about animations and sounds.
@@ -19,7 +20,7 @@ public interface UseType {
 	 * @param duration
 	 * @return
 	 */
-	public abstract UseTypeSettings useItemHold (Item item, float duration);
+	public abstract UseTypeSettings useItemHold (CurrentPlayer user, Item item, float duration);
 	
 	/**
 	 * Use an item on double tapping action button. Returns a UseTypeSettings object with information about animations and sounds.
@@ -28,6 +29,6 @@ public interface UseType {
 	 * @param delta Time between both presses.
 	 * @return
 	 */
-	public abstract UseTypeSettings useItemDoubleTap (Item item, float delta);
+	public abstract UseTypeSettings useItemDoubleTap (CurrentPlayer user, Item item, float delta);
 	
 }

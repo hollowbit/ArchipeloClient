@@ -29,10 +29,10 @@ public class EntityTypeData {
 	public float viewRectHeight = 16;
 	
 	//Collision rect
-	public CollisionRectData[] collisionRects;
+	public CollisionRectData[] collisionRects = new CollisionRectData[0];
 	
 	//Sounds
-	public EntitySoundData[] sounds;
+	public EntitySoundData[] sounds = new EntitySoundData[0];
 	
 	//Properties
 	public PropertyDefinition[] defaultProperties = new PropertyDefinition[]{

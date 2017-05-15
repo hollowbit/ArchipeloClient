@@ -387,7 +387,6 @@ public class CurrentPlayer extends Player implements PacketHandler, RollableEnti
 		case Controls.LEFT:
 		case Controls.DOWN:
 		case Controls.RIGHT:
-			System.out.println("Current Player  " + control);
 			if (!isRolling()) {
 				if (isUsing())
 					animationManager.change("usewalk");

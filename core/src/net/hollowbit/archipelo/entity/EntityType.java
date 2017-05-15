@@ -11,14 +11,8 @@ import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.reflect.ClassReflection;
 import com.badlogic.gdx.utils.reflect.ReflectionException;
 
-import net.hollowbit.archipelo.entity.lifeless.BlobbyGrave;
-import net.hollowbit.archipelo.entity.lifeless.Computer;
-import net.hollowbit.archipelo.entity.lifeless.Door;
-import net.hollowbit.archipelo.entity.lifeless.DoorLocked;
-import net.hollowbit.archipelo.entity.lifeless.Sign;
-import net.hollowbit.archipelo.entity.lifeless.Teleporter;
-import net.hollowbit.archipelo.entity.living.Player;
-import net.hollowbit.archipelo.entity.living.Wizard;
+import net.hollowbit.archipelo.entity.lifeless.*;
+import net.hollowbit.archipelo.entity.living.*;
 import net.hollowbit.archipelo.tools.AssetManager;
 import net.hollowbit.archipelo.world.Map;
 import net.hollowbit.archipeloshared.CollisionRect;
@@ -38,7 +32,9 @@ public enum EntityType {
 	SIGN ("sign", Sign.class),
 	BLOBBY_GRAVE ("blobby-grave", BlobbyGrave.class),
 	COMPUTER ("computer", Computer.class),
-	WIZARD ("wizard", Wizard.class);
+	WIZARD ("wizard", Wizard.class),
+	SLIME ("slime", Slime.class),
+	SPAWNER("spawner", Spawner.class);
 	
 	private String id;
 	private Class entityClass;
@@ -135,7 +131,8 @@ public enum EntityType {
 	}
 	
 	public CollisionRect getViewRect (float x, float y) {
-		return viewRect.move(x, y);
+		CollisionRect newViewRect = new CollisionRect(viewRect);
+		return newViewRect.move(x, y);
 	}
 	
 	public CollisionRect[] getCollisionRects (float x, float y) {

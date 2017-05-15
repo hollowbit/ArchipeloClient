@@ -60,6 +60,9 @@ public class PropertyDefinition {
 		typeMap.put("json", PropertyType.JSON);
 		typeMap.put("obj", PropertyType.JSON);
 		
+		typeMap.put("snapshot", PropertyType.ENTITY_SNAPSHOT);
+		typeMap.put("entity", PropertyType.ENTITY_SNAPSHOT);
+		
 		typeMap.put("style", PropertyType.STYLE);
 	}
 	
@@ -83,7 +86,8 @@ public class PropertyDefinition {
 		BOOLEAN,
 		JSON,
 		STYLE,
-		ITEM
+		ITEM,
+		ENTITY_SNAPSHOT
 	}
 	
 }

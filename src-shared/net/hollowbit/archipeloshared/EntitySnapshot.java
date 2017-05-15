@@ -18,11 +18,9 @@ public class EntitySnapshot {
 	public float footPitch = 1;
 	public ArrayList<String> sounds = new ArrayList<String>();
 	public ArrayList<String> usounds = new ArrayList<String>();
-	public HashMap<String, String> properties;
+	public HashMap<String, String> properties = new HashMap<String, String>();
 	
-	public EntitySnapshot () {
-		properties = new HashMap<String, String>();
-	}
+	public EntitySnapshot () {}
 	
 	public EntitySnapshot (String name, String entityTypeId, boolean ignoreType) {
 		this.name = name;
@@ -31,6 +29,29 @@ public class EntitySnapshot {
 		else
 			this.type = entityTypeId;
 		properties = new HashMap<String, String>();
+	}
+	
+	/**
+	 * Clone constructor
+	 * @param snapshot
+	 */
+	public EntitySnapshot (EntitySnapshot snapshot) {
+		this.name = snapshot.name;
+		this.type = snapshot.type;
+		this.anim = snapshot.anim;
+		this.animTime = snapshot.animTime;
+		this.animMeta = snapshot.animMeta;
+		this.footSound = snapshot.footSound;
+		this.footPitch = snapshot.footPitch;
+		
+		for (String sound : snapshot.sounds)
+			this.sounds.add(sound);
+		
+		for (String usound : snapshot.usounds)
+			this.usounds.add(usound);
+		
+		for (HashMap.Entry<String, String> property : snapshot.properties.entrySet())
+			this.properties.put(property.getKey(), property.getValue());
 	}
 	
 	public void putFloat (String key, float value) {

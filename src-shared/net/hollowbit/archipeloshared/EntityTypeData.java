@@ -9,6 +9,7 @@ public class EntityTypeData {
 	public int numberOfStyles = 1;
 	public boolean hittable = true;
 	
+	public boolean showHealthBar = false;
 	public int maxHealth = 1;
 	public float speed = 0;
 	

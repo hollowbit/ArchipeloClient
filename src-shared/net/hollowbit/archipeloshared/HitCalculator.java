@@ -13,6 +13,14 @@ public class HitCalculator {
 		return collRectsHit;
 	}
 	
+	public static boolean didEntityHitEntityRects(float hitterCenterX, float hitterCenterY, CollisionRect[] hitted, float range, Direction directionOfHitter) {
+		for (CollisionRect rect : hitted) {
+			if (didEntityHitEntityCollRect(hitterCenterX, hitterCenterY, rect, range, directionOfHitter))
+				return false;
+		}
+		return false;
+	}
+	
 	public static boolean didEntityHitEntityCollRect (float hitterCenterX, float hitterCenterY, CollisionRect hittedColRect, float range, Direction directionOfHitter) {
 		//Calculates if hitted entity is even within the scope of the hitter entity
 		switch (directionOfHitter) {

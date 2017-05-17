@@ -18,6 +18,8 @@ import net.hollowbit.archipeloshared.Point;
 
 public abstract class Entity {
 	
+	private static final int HEALTHBAR_RENDER_DISTANCE = ArchipeloClient.TILE_SIZE * 6;
+	
 	protected String name;
 	protected Location location;
 	protected EntityType entityType;
@@ -82,10 +84,18 @@ public abstract class Entity {
 	 * @param batch
 	 */
 	private void renderUninterruptable (SpriteBatch batch) {
-		float fraction = StaticTools.singleDimentionLerpFraction(0, getMaxHealth(), health);
-		batch.setColor(1, 0, 0, 1);
-		batch.draw(ArchipeloClient.getGame().getAssetManager().getTexture("blank"), location.getX(), location.getY() + getViewRect().height + 2, getViewRect().width * fraction, 2);
-		batch.setColor(1, 1, 1, 1);
+		if (this.getEntityType().showHealthBar() && !ArchipeloClient.CINEMATIC_MODE) {//If show healthbar for entity
+			float dX = this.getFootX() - this.getLocation().getWorld().getPlayer().getFootX();
+			float dY = this.getFootY() - this.getLocation().getWorld().getPlayer().getFootY();
+			
+			//Only render healthbar if within render distance
+			if ((dX * dX) + (dY * dY) <= HEALTHBAR_RENDER_DISTANCE * HEALTHBAR_RENDER_DISTANCE) {
+				float fraction = StaticTools.singleDimentionLerpFraction(0, getMaxHealth(), health);
+				batch.setColor(1, 0, 0, 1);
+				batch.draw(ArchipeloClient.getGame().getAssetManager().getTexture("blank"), location.getX(), location.getY() + getViewRect().height + 2, getViewRect().width * fraction, 1);
+				batch.setColor(1, 1, 1, 1);
+			}
+		}
 	}
 	
 	/**
@@ -179,6 +189,10 @@ public abstract class Entity {
 	
 	public int getMaxHealth () {
 		return entityType.getMaxHealth();
+	}
+	
+	public int getHealth() {
+		return health;
 	}
 	
 	public Direction getDirection () {

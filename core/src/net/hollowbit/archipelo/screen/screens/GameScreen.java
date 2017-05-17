@@ -32,6 +32,7 @@ import net.hollowbit.archipelo.screen.ScreenType;
 import net.hollowbit.archipelo.screen.screens.gamescreen.ChatManager;
 import net.hollowbit.archipelo.screen.screens.gamescreen.ChatMessage;
 import net.hollowbit.archipelo.screen.screens.gamescreen.ChatWindow;
+import net.hollowbit.archipelo.screen.screens.gamescreen.HealthBar;
 import net.hollowbit.archipelo.screen.screens.gamescreen.MainMenuWindow;
 import net.hollowbit.archipelo.screen.screens.gamescreen.NpcDialogBox;
 import net.hollowbit.archipelo.screen.screens.gamescreen.PopupTextManager;
@@ -57,6 +58,7 @@ public class GameScreen extends Screen implements PacketHandler, InputProcessor 
 	PopupTextManager popupTextManager;
 	ChatManager chatManager;
 	NpcDialogBox npcDialogBox;
+	HealthBar healthBar;
 	
 	//Ui Elements
 	TextField chatTextField = null;
@@ -89,6 +91,8 @@ public class GameScreen extends Screen implements PacketHandler, InputProcessor 
 		forms = new HashMap<String, Form>();
 		ArchipeloClient.getGame().getNetworkManager().addPacketHandler(this);
 		ArchipeloClient.getGame().getCamera().zoom(1);
+		
+		healthBar = new HealthBar(world);
 		
 		//Add stage elements
 		homeButton = QuickUi.getIconButton(IconType.HOME);
@@ -225,6 +229,7 @@ public class GameScreen extends Screen implements PacketHandler, InputProcessor 
 		
 		popupTextManager.render(batch);
 		chatManager.render(batch, stage.getKeyboardFocus() == chatTextField);
+		healthBar.render(batch);
 		batch.end();
 		stage.draw();
 		batch.begin();

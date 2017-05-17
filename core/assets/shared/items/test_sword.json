@@ -10,6 +10,7 @@
 	maxDamage: 7,
 	critMultiplier: 1.5,
 	critChance: 15,
+	hitRange: 16,
 	sounds: [
 		["actions/hit"],
 		["footsteps/player/grass-walk"],

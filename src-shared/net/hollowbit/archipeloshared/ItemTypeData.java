@@ -26,6 +26,7 @@ public class ItemTypeData {
 	public float speedMultiplier = DEFAULT_SPEED_MULTIPLIER;
 	public float critMultiplier = DEFAULT_CRIT_MULTIPLIER;
 	public int critChance = DEFAULT_CRIT_CHANCE;
+	public int hitRange = 8;
 	
 	public static final int DEFAULT_MIN_DAMAGE = 0;
 	public static final int DEFAULT_MAX_DAMAGE = 0;

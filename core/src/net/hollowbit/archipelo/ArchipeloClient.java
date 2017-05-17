@@ -124,6 +124,7 @@ public class ArchipeloClient extends ApplicationAdapter {
 		assetManager.putTexture("mainmenu-background", "mainmenu_background.png", true);
 		assetManager.putTexture("logo", "logo.png", true);
 		assetManager.putTexture("invalid", "invalid.png");//For some reason this image cannot be loaded by html. Fix later.
+		assetManager.putTexture("health-bar", "ui/healthbar.png");
 		
 		//Audio
 		musicManager = new MusicManager();

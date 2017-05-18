@@ -11,3 +11,4 @@
 - [ ] Player health saves in database
 - [ ] Fix hit boxes for using items
 - [ ] Entities flash when damaged
+- [ ] Limit how fast items can be used

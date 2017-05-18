@@ -1,6 +1,8 @@
 {messages:{
 serverTag: "&R<SERVER>&1",
 youJustRolled: "You have just rolled!",
+youWereKilledBy: "You were killed by",
+youDied: "You just died.",
 youSteppedOn: "You stepped on",
 youSteppedOff: "You stepped off of",
 youHit: "You hit",

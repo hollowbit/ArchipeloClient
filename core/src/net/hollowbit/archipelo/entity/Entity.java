@@ -28,7 +28,7 @@ public abstract class Entity {
 	protected ArrayList<EntityComponent> components;
 	protected boolean overrideControls = false;
 	protected EntityAudioManager audioManager;
-	protected int health;
+	protected float health;
 	
 	public Entity () {
 		components = new ArrayList<EntityComponent>();
@@ -39,7 +39,7 @@ public abstract class Entity {
 		this.entityType = entityType;
 		this.style = fullSnapshot.getInt("style", 0);
 		
-		this.health = fullSnapshot.getInt("health", entityType.getMaxHealth());
+		this.health = fullSnapshot.getFloat("health", entityType.getMaxHealth());
 		
 		Point pos = fullSnapshot.getObject("pos", new Point(), Point.class);
 		this.location = new Location(map, new Vector2(pos.x, pos.y), Direction.values()[fullSnapshot.getInt("direction", 0)]);
@@ -169,7 +169,7 @@ public abstract class Entity {
 	
 	public void applyChangesSnapshot (EntitySnapshot snapshot) {
 		style = snapshot.getInt("style", style);
-		health = snapshot.getInt("health", health);
+		health = snapshot.getFloat("health", health);
 		if (!overrideControls)
 			audioManager.handleChanges(snapshot);
 		
@@ -191,7 +191,11 @@ public abstract class Entity {
 		return entityType.getMaxHealth();
 	}
 	
-	public int getHealth() {
+	/**
+	 * May not be accurate if health of this entity is hidden.
+	 * @return
+	 */
+	public float getHealth() {
 		return health;
 	}
 	

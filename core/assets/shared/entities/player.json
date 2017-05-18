@@ -12,7 +12,7 @@
 	"footstepOffsetY":34,
 	"drawOrderOffsetY":34,
 	"collisionRects":[
-				{"offsetX":40,"offsetY":34,"width":9,"height":9}
+				{"name": "feet", "offsetX":40,"offsetY":34,"width":9,"height":9}
 				],
 	"animations":[
 				{"id":"default", "fileName":"walk", "totalRuntime":0, "numberOfDirections":8, "looping":true},

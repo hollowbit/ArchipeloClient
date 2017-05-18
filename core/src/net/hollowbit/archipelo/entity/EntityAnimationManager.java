@@ -71,16 +71,16 @@ public class EntityAnimationManager {
 	}
 	
 	public void change (String animationId, String animationMeta) {
-		if (entity.getEntityType().hasAnimation(animationId))
-			this.change(animationId, animationMeta, entity.getEntityType().getEntityAnimation(animationId).getTotalRuntime());
+		this.change(animationId, animationMeta, entity.getEntityType().getEntityAnimation(animationId).getTotalRuntime());
 	}
 	
 	public void change (String animationId, String animationMeta, float customAnimationLength) {
 		if (entity.getEntityType().hasAnimation(animationId)) {
+			if (!animationId.equals(id))
+				this.stateTime = 0;
 			this.id = animationId;
 			this.data = entity.getEntityType().getEntityAnimation(animationId).getData();
 			this.meta = animationMeta;
-			this.stateTime = 0;
 			this.animationLength = customAnimationLength;
 		}
 	}

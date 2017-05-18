@@ -5,7 +5,7 @@
 	equipType: 9,
 	numOfStyles: 2,
 	numOfUseAnimations: 2,
-	useAnimationLengths: [0.5, 0.5],
+	useAnimationLengths: [1, 1],
 	minDamage: 2,
 	maxDamage: 7,
 	critMultiplier: 1.5,

@@ -292,6 +292,14 @@ public class CurrentPlayer extends Player implements PacketHandler, RollableEnti
 		return animationManager.getAnimationId().equals("use") || animationManager.getAnimationId().equals("usewalk");
 	}
 	
+	/**
+	 * Returns whether the player is currently using an item, whether in thrust, use or usewalk.
+	 * @return
+	 */
+	public boolean isCurrentlyUsingAnItem () {
+		return isUsing() || isThrusting();
+	}
+	
 	public Direction getMovementDirection () {
 		if (controls[Controls.UP]) {
 			if (controls[Controls.LEFT])
@@ -354,7 +362,7 @@ public class CurrentPlayer extends Player implements PacketHandler, RollableEnti
 			}
 			break;
 		case Controls.ATTACK:
-			if (!isRolling() && !isUsing()) {
+			if (!isRolling() && !isCurrentlyUsingAnItem()) {
 				ArrayList<Entity> entitiesOnMap = (ArrayList<Entity>) ArchipeloClient.getGame().getWorld().cloneEntitiesList();
 				boolean useHitAnimation = true;
 				for (Entity entity : entitiesOnMap) {

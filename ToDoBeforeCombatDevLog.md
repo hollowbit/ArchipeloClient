@@ -9,6 +9,7 @@
 - [ ] Player gameover screen
 - [x] Player respawn location
 - [x] Player health saves in database
-- [ ] Fix hit boxes for using items
-- [ ] Entities flash when damaged
-- [ ] Limit how fast items can be used
+- [x] Fix hit boxes for using items
+- [x] Entities flash when damaged
+- [x] Limit how fast items can be used
+- [x] Improve event handling system with priorities

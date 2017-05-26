@@ -10,6 +10,7 @@ import net.hollowbit.archipelo.entity.EntityAnimationManager.EntityAnimationObje
 import net.hollowbit.archipelo.entity.living.Player;
 import net.hollowbit.archipelo.tools.Location;
 import net.hollowbit.archipelo.tools.StaticTools;
+import net.hollowbit.archipelo.tools.ShaderManager.ShaderType;
 import net.hollowbit.archipelo.world.Map;
 import net.hollowbit.archipeloshared.CollisionRect;
 import net.hollowbit.archipeloshared.Direction;
@@ -18,6 +19,7 @@ import net.hollowbit.archipeloshared.Point;
 
 public abstract class Entity {
 	
+	private static final float FLASH_DURATION = 0.2f;
 	private static final int HEALTHBAR_RENDER_DISTANCE = ArchipeloClient.TILE_SIZE * 6;
 	
 	protected String name;
@@ -29,6 +31,8 @@ public abstract class Entity {
 	protected boolean overrideControls = false;
 	protected EntityAudioManager audioManager;
 	protected float health;
+	protected float flashTimer = 0;
+	protected boolean damageFlash;
 	
 	public Entity () {
 		components = new ArrayList<EntityComponent>();
@@ -55,6 +59,17 @@ public abstract class Entity {
 		//CollisionRect collRect = this.getCollisionRect();
 		//batch.draw(ArchipeloClient.getGame().getAssetManager().getTexture("invalid"), collRect.x, collRect.y, collRect.width, collRect.height);
 		
+		//Pick shader to use when rendering based on flash
+		ArchipeloClient.getGame().getShaderManager().save();
+		if (flashTimer > 0 && flashTimer <= FLASH_DURATION / 2) {//White
+			ArchipeloClient.getGame().getShaderManager().applyShader(batch, ShaderType.WHITE);
+		} else if (flashTimer > 0){ //Color
+			if (damageFlash)//Red
+				ArchipeloClient.getGame().getShaderManager().applyShader(batch, ShaderType.RED);
+			else//Green
+				ArchipeloClient.getGame().getShaderManager().applyShader(batch, ShaderType.GREEN);
+		}
+		
 		//Render components and check if they cancelled further rendering
 		boolean renderCancelled = false;
 		for (EntityComponent component : components
@@ -73,6 +88,8 @@ public abstract class Entity {
 			if (component.renderAfter(batch, renderCancelled))
 				renderCancelled = true;
 		}
+		
+		ArchipeloClient.getGame().getShaderManager().restore(batch);
 		
 		this.renderUninterruptable(batch);
 	}
@@ -105,6 +122,12 @@ public abstract class Entity {
 	public void update (float deltaTime) {
 		for (EntityComponent component : components)
 			component.update(deltaTime);
+		
+		//Update and clamp flashTimer
+		if (this.flashTimer > 0)
+			this.flashTimer -= deltaTime;
+		if (flashTimer < 0)
+			flashTimer = 0;
 	}
 	
 	/**
@@ -170,6 +193,13 @@ public abstract class Entity {
 	public void applyChangesSnapshot (EntitySnapshot snapshot) {
 		style = snapshot.getInt("style", style);
 		health = snapshot.getFloat("health", health);
+		
+		//Do flash animation if property is there
+		if (snapshot.doesPropertyExist("flash")) {
+			this.damageFlash = snapshot.getBoolean("flash", damageFlash);
+			this.flashTimer = FLASH_DURATION;
+		}
+		
 		if (!overrideControls)
 			audioManager.handleChanges(snapshot);
 		

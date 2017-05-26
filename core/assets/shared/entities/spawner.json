@@ -3,8 +3,6 @@
 	hittable:true,
 	"imgWidth":1,
 	"imgHeight":1,
-	"viewRectWidth":1,
-	"viewRectHeight":1,
 	animations:[
 		{id:"default", totalRuntime:0}
 	],

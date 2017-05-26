@@ -60,7 +60,6 @@ public enum EntityType {
 	private HashMap<String, String> sounds;
 	
 	//Rects
-	private CollisionRect viewRect;
 	private CollisionRect[] collRects;
 	
 	private EntityType (String id, Class entityClass) {
@@ -86,8 +85,6 @@ public enum EntityType {
 		
 		this.imgWidth = data.imgWidth;
 		this.imgHeight = data.imgHeight;
-		
-		this.viewRect = new CollisionRect(0, 0, data.viewRectOffsetX, data.viewRectOffsetY, data.viewRectWidth, data.viewRectHeight);
 		
 		this.collRects = new CollisionRect[data.collisionRects.length];
 		for (int i = 0; i < collRects.length; i++) {
@@ -133,7 +130,7 @@ public enum EntityType {
 	}
 	
 	public CollisionRect getViewRect (float x, float y) {
-		CollisionRect newViewRect = new CollisionRect(viewRect);
+		CollisionRect newViewRect = new CollisionRect(x, y, 0, 0, imgWidth, imgHeight);
 		return newViewRect.move(x, y);
 	}
 	
@@ -168,7 +165,7 @@ public enum EntityType {
 	}
 	
 	public float getDrawOrderY (float y) {
-		return y + drawOrderOffsetY + viewRect.offsetY;
+		return y + drawOrderOffsetY;
 	}
 	
 	public float getDrawOrderOffsetY() {

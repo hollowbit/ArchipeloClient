@@ -4,8 +4,6 @@
 	"speed":40,
 	"imgWidth":16,
 	"imgHeight":23,
-	"viewRectWidth":16,
-	"viewRectHeight":23,
 	"footstepOffsetX":8,
 	"footstepOffsetY":1,
 	"collisionRects":[

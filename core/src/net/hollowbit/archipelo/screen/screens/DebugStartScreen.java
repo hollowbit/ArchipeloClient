@@ -16,8 +16,8 @@ import net.hollowbit.archipelo.tools.QuickUi;
 
 public class DebugStartScreen extends Screen {
 	
-	private static final String DEBUG_EMAIL = "joetheman@gmail.com";
-	private static final String DEBUG_PASS = "joetheman";
+	private static final String DEBUG_EMAIL = "joetheshmo@gmail.com";
+	private static final String DEBUG_PASS = "joetheshmo";
 	
 	Stage stage;
 	boolean packetSent = false;

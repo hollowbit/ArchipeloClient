@@ -182,7 +182,7 @@ public class World implements PacketHandler {
 			Entity entity = null;
 			
 			//If it is the current player, use a custom creator, else use the default one
-			if (entitySnapshot.getValue().name.equals(ArchipeloClient.getGame().getPlayerName())) {
+			if (entitySnapshot.getValue().name.equals(ArchipeloClient.getGame().getPlayerInfoManager().getName())) {
 				player = new CurrentPlayer();
 				player.create(entitySnapshot.getValue(), map, EntityType.PLAYER);
 				ArchipeloClient.getGame().getCamera().focusOnEntityFast(player);
@@ -291,11 +291,20 @@ public class World implements PacketHandler {
 		if (packet.packetType == PacketType.TELEPORT) {
 			TeleportPacket tpPacket = (TeleportPacket) packet;
 			Entity entity = getEntity(tpPacket.username);
-			if (entity == player && tpPacket.newMap) {
-				teleportPacket = tpPacket;
+			if (entity == player) {
+				if (tpPacket.newMap)
+					teleportPacket = tpPacket;
+				else {
+					player.teleport(tpPacket.x, tpPacket.y, Direction.values()[tpPacket.direction]);
+				}
 			} else {
+				if (tpPacket.newMap) {
+					entity.unload();
+					removeEntity(entity);
+				} else {
 				if (entity != null)
 					entity.teleport(tpPacket.x, tpPacket.y, Direction.values()[tpPacket.direction]);
+				}
 			}
 			return true;
 		}

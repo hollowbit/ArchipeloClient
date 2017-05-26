@@ -72,7 +72,7 @@ public class GameScreen extends Screen implements PacketHandler, InputProcessor 
 	
 	public GameScreen (String playerName) {
 		super(ScreenType.GAME);
-		ArchipeloClient.getGame().setPlayerName(playerName);
+		ArchipeloClient.getGame().getPlayerInfoManager().setName(playerName);
 	}
 	
 	@Override

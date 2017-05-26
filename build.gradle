@@ -50,6 +50,8 @@ project(":core") {
     dependencies {
         compile "com.badlogicgames.gdx:gdx:$gdxVersion"
 		compile "com.neovisionaries:nv-websocket-client:$nvVersion"
+		compile group: 'com.esotericsoftware.kryo', name: 'kryo', version: '2.10'
+		
 		compile group: 'org.bouncycastle', name: 'bcprov-jdk15on', version: '1.46'
     }
 }

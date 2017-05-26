@@ -5,7 +5,7 @@ import java.util.HashMap;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.reflect.ClassReflection;
 
-@SuppressWarnings("rawtypes")
+@SuppressWarnings({ "unchecked" })
 public class PacketType {
 	
 	public static final int MESSAGE = 0;
@@ -31,10 +31,10 @@ public class PacketType {
 	public static final int POSITION_CORRECTION = 20;
 	public static final int PLAYER_STATS = 21;
 	
-	private static HashMap<Integer, Class> registeredPackets;
+	private static HashMap<Integer, Class<Packet>> registeredPackets;
 	
 	static {
-		registeredPackets = new HashMap<Integer, Class>();
+		registeredPackets = new HashMap<Integer, Class<Packet>>();
 		try {
 			registeredPackets.put(MESSAGE, ClassReflection.forName("net.hollowbit.archipelo.network.packets.MessagePacket"));
 			registeredPackets.put(LOGIN, ClassReflection.forName("net.hollowbit.archipelo.network.packets.LoginPacket"));
@@ -63,11 +63,11 @@ public class PacketType {
 		}
 	}
 	
-	public static HashMap<Integer, Class> registerPackets () {
+	public static HashMap<Integer, Class<Packet>> getRegisteredPackets () {
 		return registeredPackets;
 	}
 	
-	public static Class getPacketClassByType (int type) {
+	public static Class<Packet> getPacketClassByType (int type) {
 		return registeredPackets.get(type);
 	}
 	

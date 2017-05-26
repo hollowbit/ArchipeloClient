@@ -4,7 +4,6 @@
 	"hittable":false,
 	"imgWidth":16,
 	"imgHeight":32,
-	"viewRectHeight":32,
 	"collisionRects":[{}],
 	"animations":[
 				{"id":"default", "totalRuntime":1.2, "looping":true}

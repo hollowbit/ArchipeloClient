@@ -23,12 +23,6 @@ public class EntityTypeData {
 	
 	public float drawOrderOffsetY = 0;//Used to offset render order of an entity
 	
-	//View rect
-	public float viewRectOffsetX = 0;
-	public float viewRectOffsetY = 0;
-	public float viewRectWidth = 16;
-	public float viewRectHeight = 16;
-	
 	//Collision rect
 	public CollisionRectData[] collisionRects = new CollisionRectData[0];
 	

@@ -18,7 +18,6 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.PixmapIO;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.BufferUtils;
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -39,8 +38,11 @@ import net.hollowbit.archipelo.tools.FontManager;
 import net.hollowbit.archipelo.tools.GameCamera;
 import net.hollowbit.archipelo.tools.LanguageSpecificMessageManager;
 import net.hollowbit.archipelo.tools.LanguageSpecificMessageManager.Cat;
+import net.hollowbit.archipelo.tools.PlayerInformationManager;
 import net.hollowbit.archipelo.tools.Prefs;
 import net.hollowbit.archipelo.tools.QuickUi;
+import net.hollowbit.archipelo.tools.ShaderManager;
+import net.hollowbit.archipelo.tools.ShaderManager.ShaderType;
 import net.hollowbit.archipelo.tools.UiCamera;
 import net.hollowbit.archipelo.world.MapElementManager;
 import net.hollowbit.archipelo.world.World;
@@ -69,7 +71,7 @@ public class ArchipeloClient extends ApplicationAdapter {
 	private static ArchipeloClient game;
 	
 	SpriteBatch batch;
-	ShaderProgram shader;
+	ShaderManager shaderManager;
 	
 	AssetManager assetManager;
 	NetworkManager networkManager;
@@ -82,13 +84,13 @@ public class ArchipeloClient extends ApplicationAdapter {
 	HollowBitServerConnectivity hollowBitServerConnectivity;
 	LanguageSpecificMessageManager languageSpecificMessageManager;
 	Prefs prefs;
+	PlayerInformationManager playerInformationManager;
 	
 	GameCamera cameraGame;
 	UiCamera cameraUi;
 	
 	World world = null;
 	
-	private String playerName = "";
 	LinkedList<MobileCompatibleWindow> windows;
 	
 	@Override
@@ -100,10 +102,7 @@ public class ArchipeloClient extends ApplicationAdapter {
 		prefs = new Prefs();
 		
 		batch = new SpriteBatch();
-		ShaderProgram.pedantic = false;
-		shader = new ShaderProgram(Gdx.files.internal("shaders/test.vsh"), Gdx.files.internal("shaders/test.fsh"));
-		System.out.println(shader.isCompiled() ? "Shader compiled!" : shader.getLog());
-		batch.setShader(shader);
+		shaderManager = new ShaderManager();
 		
 		skin = new Skin(Gdx.files.internal("ui/uiskin.json"));
 		
@@ -153,6 +152,7 @@ public class ArchipeloClient extends ApplicationAdapter {
 		languageSpecificMessageManager = new LanguageSpecificMessageManager();
 		languageSpecificMessageManager.reloadWithNewLanguage();
 		hollowBitServerConnectivity = new HollowBitServerConnectivity();
+		playerInformationManager = new PlayerInformationManager();
 		
 		if (hollowBitServerConnectivity.connect()) {
 			if (DEBUGMODE)
@@ -222,9 +222,9 @@ public class ArchipeloClient extends ApplicationAdapter {
 		networkManager.update();
 		screenManager.update(DELTA_TIME);
 		if (INVERT)
-			batch.setShader(shader);
+			shaderManager.applyShader(batch, ShaderType.EXPERIMENTAL);
 		screenManager.render(batch, cameraGame.getWidth(), cameraGame.getHeight());
-		batch.setShader(null);
+		shaderManager.resetShader(batch);
 		batch.end();
 		
 		if (batch.isDrawing())
@@ -264,6 +264,10 @@ public class ArchipeloClient extends ApplicationAdapter {
 	
 	public SpriteBatch getBatch () {
 		return batch;
+	}
+	
+	public ShaderManager getShaderManager () {
+		return shaderManager;
 	}
 	
 	public GameCamera getCamera () {
@@ -326,12 +330,8 @@ public class ArchipeloClient extends ApplicationAdapter {
 		return prefs;
 	}
 	
-	public void setPlayerName (String playerName) {
-		this.playerName = playerName;
-	}
-	
-	public String getPlayerName () {
-		return playerName;
+	public PlayerInformationManager getPlayerInfoManager() {
+		return playerInformationManager;
 	}
 	
 	public void addWindow (MobileCompatibleWindow window) {

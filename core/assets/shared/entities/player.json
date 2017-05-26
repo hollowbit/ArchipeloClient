@@ -6,8 +6,6 @@
 	"footstepSound": "player",
 	"imgWidth":90,
 	"imgHeight":90,
-	"viewRectWidth":90,
-	"viewRectHeight":90,
 	"footstepOffsetX":45,
 	"footstepOffsetY":34,
 	"drawOrderOffsetY":34,

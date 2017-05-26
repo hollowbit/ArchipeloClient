@@ -3,8 +3,6 @@
 	"hittable":"false",
 	"imgWidth":18,
 	"imgHeight":18,
-	"viewRectWidth":18,
-	"viewRectHeight":18,
 	"collisionRects":[
 		{"name":"full", "width":18, "height":18},
 		{"name":"post", "width":2, "height":4, "offsetX":6, "hard":true}

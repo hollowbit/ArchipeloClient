@@ -16,7 +16,7 @@ public class HitCalculator {
 	public static boolean didEntityHitEntityRects(float hitterCenterX, float hitterCenterY, CollisionRect[] hitted, float range, Direction directionOfHitter) {
 		for (CollisionRect rect : hitted) {
 			if (didEntityHitEntityCollRect(hitterCenterX, hitterCenterY, rect, range, directionOfHitter))
-				return false;
+				return true;
 		}
 		return false;
 	}

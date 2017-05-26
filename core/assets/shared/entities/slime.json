@@ -7,13 +7,11 @@
 	"footstepSound":"slime",
 	"imgWidth":24,
 	"imgHeight":16,
-	"viewRectWidth":24,
-	"viewRectHeight":16,
 	"footstepOffsetX":12,
 	"footstepOffsetY":8,
 	"drawOrderOffsetY":8,
 	"collisionRects":[
-		{"name":"hit", "hard": true, "offsetX":2, "offsetY":2, "width":20, "height":12}
+		{"name":"hit", "hard": true, "offsetX":2, "offsetY":2, "width":20, "height":6}
 		],
 	"animations":[
 		{"id":"walk", "totalRuntime":0.7, "numberOfDirections":8, "looping":true},

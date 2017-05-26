@@ -20,7 +20,6 @@ import net.hollowbit.archipelo.network.Packet;
 import net.hollowbit.archipelo.network.PacketHandler;
 import net.hollowbit.archipelo.network.PacketType;
 import net.hollowbit.archipelo.network.packets.ControlsPacket;
-import net.hollowbit.archipelo.network.packets.PlayerStatsPacket;
 import net.hollowbit.archipelo.network.packets.PositionCorrectionPacket;
 import net.hollowbit.archipelo.screen.screens.GameScreen;
 import net.hollowbit.archipelo.tools.ControlsManager;
@@ -71,6 +70,9 @@ public class CurrentPlayer extends Player implements PacketHandler, RollableEnti
 	@Override
 	public void update(float deltaTime) {
 		super.update(deltaTime);
+		
+		//Refresh stats for this player every tick
+		this.health = ArchipeloClient.getGame().getPlayerInfoManager().getHealth();
 		
 		animationManager.update(deltaTime);
 		
@@ -476,10 +478,6 @@ public class CurrentPlayer extends Player implements PacketHandler, RollableEnti
 			//Redo player prediction movements
 			for (ControlsPacket command : movementLog.getCurrentlyStoredCommands())
 				applyCommand(command);
-			return true;
-		} else  if(packet.packetType == PacketType.PLAYER_STATS) {
-			PlayerStatsPacket statsPacket = (PlayerStatsPacket) packet;
-			this.health = statsPacket.health;
 			return true;
 		}
 		return false;

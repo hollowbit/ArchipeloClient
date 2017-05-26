@@ -9,13 +9,14 @@ import java.util.ArrayList;
 
 import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.utils.Json;
 import com.github.czyzby.websocket.WebSocket;
 import com.github.czyzby.websocket.WebSocketAdapter;
 import com.github.czyzby.websocket.data.WebSocketCloseCode;
 import com.github.czyzby.websocket.net.ExtendedNet;
 
 import net.hollowbit.archipelo.ArchipeloClient;
+import net.hollowbit.archipelo.network.serialization.JsonSerializer;
+import net.hollowbit.archipelo.network.serialization.Serializer;
 import net.hollowbit.archipelo.screen.ScreenType;
 import net.hollowbit.archipelo.screen.screens.ErrorScreen;
 import net.hollowbit.archipelo.screen.screens.MainMenuScreen;
@@ -27,7 +28,8 @@ public class NetworkManager {
 	
 	private ArrayList<PacketHandler> packetHandlers;
 	private ArrayList<PacketWrapper> packets;
-	private Json json;
+	
+	private Serializer serializer;
 	
 	private WebSocket socket;
 	
@@ -39,7 +41,9 @@ public class NetworkManager {
 	public NetworkManager () {
 		packetHandlers = new ArrayList<PacketHandler>();
 		packets = new ArrayList<PacketWrapper>();
-		json = new Json();
+		
+		//Initialize json serializer
+		serializer = new JsonSerializer();
 	}
 	
 	public void update () {
@@ -96,18 +100,18 @@ public class NetworkManager {
 	
 	public void sendPacket (Packet packet) {
 		if (socket != null) {
-			String packetString = packet.packetType + ";" + json.toJson(packet);
-			socket.send(packetString);
+			byte[] packetData = serializer.serialize(packet); 
+			socket.send(packetData);
 		}
 	}
 	
-	public void sendPacketString (String packetString) {
+	public void sendPacketData (byte[] packetData) {
 		if (socket != null)
-			socket.send(packetString);
+			socket.send(packetData);
 	}
 	
-	public String getPacketString (Packet packet) {
-		return packet.packetType + ";" + json.toJson(packet);
+	public byte[] getPacketData (Packet packet) {
+		return serializer.serialize(packet);
 	}
 	
 	public synchronized void addPacketHandler (PacketHandler packetHandler) {
@@ -143,7 +147,17 @@ public class NetworkManager {
                 return FULLY_HANDLED;
             }
 
-            @SuppressWarnings("unchecked")
+            @Override
+            public boolean onMessage(WebSocket webSocket, byte[] packetData) {
+            	try {
+        			Packet packet = serializer.deserialize(packetData);
+        			addPacket(new PacketWrapper(packet));
+        		} catch (Exception e) {
+        			return NOT_HANDLED;
+        		}
+            	return FULLY_HANDLED;
+            }
+            
 			@Override
             public boolean onMessage(final WebSocket webSocket, final String packetString) {
             	if (packetString.equals("ping")) {
@@ -156,26 +170,7 @@ public class NetworkManager {
             		ping = (int) (System.currentTimeMillis() - lastPingSendTime);
             		return FULLY_HANDLED;
             	}
-            	
-            	try {
-        			Packet packet;
-        			String[] packetWrapArray = packetString.split(";");
-        			int type = Integer.parseInt(packetWrapArray[0]);
-        			
-        			String newPacketString = "";
-        			for (int i = 1; i < packetWrapArray.length; i++) {
-        				newPacketString += packetWrapArray[i];
-        				
-        				if (i < packetWrapArray.length - 1)
-        					newPacketString += ";";
-        			}
-        			
-        			packet = (Packet) json.fromJson(PacketType.getPacketClassByType(type), newPacketString);
-        			addPacket(new PacketWrapper(packet));
-        		} catch (Exception e) {
-        			return NOT_HANDLED;
-        		}
-        		return FULLY_HANDLED;
+        		return NOT_HANDLED;
             }
             
             @Override

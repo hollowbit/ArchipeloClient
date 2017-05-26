@@ -3,8 +3,6 @@
 	"hittable":"false",
 	"imgWidth":16,
 	"imgHeight":34,
-	"viewRectWidth":16,
-	"viewRectHeight":34,
 	"drawOrderOffsetY":12,
 	"collisionRects":[
 		{"name":"computer", "width":16, "height":4, "offsetY": 12, "hard": true}

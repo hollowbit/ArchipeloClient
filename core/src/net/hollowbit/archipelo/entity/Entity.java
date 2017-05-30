@@ -11,13 +11,14 @@ import net.hollowbit.archipelo.entity.living.Player;
 import net.hollowbit.archipelo.tools.Location;
 import net.hollowbit.archipelo.tools.StaticTools;
 import net.hollowbit.archipelo.tools.ShaderManager.ShaderType;
+import net.hollowbit.archipelo.tools.rendering.RenderableGameWorldObject;
 import net.hollowbit.archipelo.world.Map;
 import net.hollowbit.archipeloshared.CollisionRect;
 import net.hollowbit.archipeloshared.Direction;
 import net.hollowbit.archipeloshared.EntitySnapshot;
 import net.hollowbit.archipeloshared.Point;
 
-public abstract class Entity {
+public abstract class Entity implements RenderableGameWorldObject {
 	
 	private static final float DAMAGE_FLASH_DURATION = 0.2f;
 	private static final int HEALTHBAR_RENDER_DISTANCE = ArchipeloClient.TILE_SIZE * 6;
@@ -55,7 +56,8 @@ public abstract class Entity {
 	 * Begin rendering entity. Will handle cancelled renders and animations.
 	 * @param batch
 	 */
-	public void renderStart (SpriteBatch batch) {
+	@Override
+	public void renderObject (SpriteBatch batch) {
 		//CollisionRect collRect = this.getCollisionRect();
 		//batch.draw(ArchipeloClient.getGame().getAssetManager().getTexture("invalid"), collRect.x, collRect.y, collRect.width, collRect.height);
 		
@@ -257,11 +259,12 @@ public abstract class Entity {
 		return entityType.getCollisionRects(potentialPosition.x, potentialPosition.y);
 	}
 	
+	@Override
 	public CollisionRect getViewRect () {
 		return entityType.getViewRect(location.getX(), location.getY());
 	}
 	
-	public float getDrawOrderY () {
+	public float getRenderY () {
 		return entityType.getDrawOrderY(location.getY());
 	}
 	

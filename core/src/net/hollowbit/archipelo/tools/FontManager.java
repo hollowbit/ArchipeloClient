@@ -7,7 +7,7 @@ public class FontManager {
 	
 	public static final int LOADED_FONTS = 1;
 	
-	public enum Fonts { PIXELATED }
+	public enum Fonts { PIXELATED, GAMEWORLD }
 	public enum Sizes { VERY_SMALL, SMALL, MEDIUM, LARGE }
 	
 	private BitmapFont[][] fonts;
@@ -19,14 +19,20 @@ public class FontManager {
 	
 	//Load all fonts here
 	private void load () {
-		fonts[Fonts.PIXELATED.ordinal()][Sizes.VERY_SMALL.ordinal()] = new BitmapFont(Gdx.files.internal("ui/pixelated_very_small.fnt"));
+		fonts[Fonts.PIXELATED.ordinal()][Sizes.VERY_SMALL.ordinal()] = new BitmapFont(Gdx.files.internal("ui/fonts/pixelated_very_small.fnt"));
 		fonts[Fonts.PIXELATED.ordinal()][Sizes.VERY_SMALL.ordinal()].getData().markupEnabled = true;
-		fonts[Fonts.PIXELATED.ordinal()][Sizes.SMALL.ordinal()] = new BitmapFont(Gdx.files.internal("ui/pixelated_small.fnt"));
+		fonts[Fonts.PIXELATED.ordinal()][Sizes.SMALL.ordinal()] = new BitmapFont(Gdx.files.internal("ui/fonts/pixelated_small.fnt"));
 		fonts[Fonts.PIXELATED.ordinal()][Sizes.SMALL.ordinal()].getData().markupEnabled = true;
-		fonts[Fonts.PIXELATED.ordinal()][Sizes.MEDIUM.ordinal()] = new BitmapFont(Gdx.files.internal("ui/pixelated_medium.fnt"));
+		fonts[Fonts.PIXELATED.ordinal()][Sizes.MEDIUM.ordinal()] = new BitmapFont(Gdx.files.internal("ui/fonts/pixelated_medium.fnt"));
 		fonts[Fonts.PIXELATED.ordinal()][Sizes.MEDIUM.ordinal()].getData().markupEnabled = true;
-		fonts[Fonts.PIXELATED.ordinal()][Sizes.LARGE.ordinal()] = new BitmapFont(Gdx.files.internal("ui/pixelated_large.fnt"));
+		fonts[Fonts.PIXELATED.ordinal()][Sizes.LARGE.ordinal()] = new BitmapFont(Gdx.files.internal("ui/fonts/pixelated_large.fnt"));
 		fonts[Fonts.PIXELATED.ordinal()][Sizes.LARGE.ordinal()].getData().markupEnabled = true;
+		
+		fonts[Fonts.GAMEWORLD.ordinal()][Sizes.LARGE.ordinal()] = new BitmapFont(Gdx.files.internal("ui/fonts/gameworld.fnt"));
+		fonts[Fonts.GAMEWORLD.ordinal()][Sizes.LARGE.ordinal()].getData().markupEnabled = true;
+		fonts[Fonts.GAMEWORLD.ordinal()][Sizes.VERY_SMALL.ordinal()] = fonts[Fonts.GAMEWORLD.ordinal()][Sizes.LARGE.ordinal()];
+		fonts[Fonts.GAMEWORLD.ordinal()][Sizes.SMALL.ordinal()] = fonts[Fonts.GAMEWORLD.ordinal()][Sizes.LARGE.ordinal()];
+		fonts[Fonts.GAMEWORLD.ordinal()][Sizes.MEDIUM.ordinal()] = fonts[Fonts.GAMEWORLD.ordinal()][Sizes.LARGE.ordinal()];
 	}
 	
 	public BitmapFont getFont (Fonts font, Sizes size) {

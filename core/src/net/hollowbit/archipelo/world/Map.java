@@ -8,8 +8,12 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import net.hollowbit.archipelo.ArchipeloClient;
 import net.hollowbit.archipelo.audio.MapAudioManager;
 import net.hollowbit.archipelo.entity.Entity;
-import net.hollowbit.archipelo.entity.EntityHeightComparator;
+import net.hollowbit.archipelo.particles.Particle;
+import net.hollowbit.archipelo.particles.ParticleManager;
+import net.hollowbit.archipelo.tools.rendering.RenderableGameWorldObject;
+import net.hollowbit.archipelo.tools.rendering.RenderableGameWorldObjectComparator;
 import net.hollowbit.archipeloshared.CollisionRect;
+import net.hollowbit.archipeloshared.MapSnapshot;
 import net.hollowbit.archipeloshared.TileData;
 
 public class Map {
@@ -21,6 +25,7 @@ public class Map {
 	private String[][] elementData;
 	private String music;
 	private MapAudioManager audioManager;
+	private ParticleManager particleManager;
 	
 	boolean[][] collisionMap;
 	World world;
@@ -34,6 +39,7 @@ public class Map {
 		tileData = fullSnapshot.tileData;
 		elementData = fullSnapshot.elementData;
 		audioManager = new MapAudioManager(this);
+		particleManager = new ParticleManager();
 		generateCollisionMap();
 	}
 	
@@ -112,7 +118,7 @@ public class Map {
 	}
 	
 	public void update (float deltaTime) {
-		
+		particleManager.update(deltaTime);
 	}
 	
 	public void render (SpriteBatch batch, ArrayList<Entity> entities) {
@@ -148,21 +154,31 @@ public class Map {
 				}
 			}
 			
-			//Render entities for row
-			ArrayList<Entity> entitiesInThisTileRow = new ArrayList<Entity>();
+			//Render objects for row
+			ArrayList<RenderableGameWorldObject> objectsInThisTileRow = new ArrayList<RenderableGameWorldObject>();
+			
+			//Add entities
 			for (Entity entity : entities) {
-				float y = entity.getDrawOrderY();
+				float y = entity.getRenderY();
 				if (y > (elementData.length - r - 2) * ArchipeloClient.TILE_SIZE && y <= (elementData.length - r - 1) * ArchipeloClient.TILE_SIZE) {
-					entitiesInThisTileRow.add(entity);
+					objectsInThisTileRow.add(entity);
 				}
 			}
 			
-			Collections.sort(entitiesInThisTileRow, new EntityHeightComparator());
+			//Add particles
+			for (Particle particle : particleManager.getParticles()) {
+				float y = particle.getRenderY();
+				if (y > (elementData.length - r - 2) * ArchipeloClient.TILE_SIZE && y <= (elementData.length - r - 1) * ArchipeloClient.TILE_SIZE) {
+					objectsInThisTileRow.add(particle);
+				}
+			}
+			
+			Collections.sort(objectsInThisTileRow, new RenderableGameWorldObjectComparator());
 			
 			//Render entities in tile row
-			for (Entity entity : entitiesInThisTileRow) {
-				if (cameraViewRect.collidesWith(entity.getViewRect()))
-					entity.renderStart(batch);
+			for (RenderableGameWorldObject object : objectsInThisTileRow) {
+				if (cameraViewRect.collidesWith(object.getViewRect()))
+					object.renderObject(batch);
 			}
 		}
 		
@@ -188,6 +204,7 @@ public class Map {
 	public void applyChangesSnapshot (MapSnapshot snapshot) {
 		displayName = snapshot.getString("display-name", displayName);
 		audioManager.applyChangesSnapshot(snapshot);
+		particleManager.applyChangesSnapshot(snapshot);
 		if (snapshot.tileData != null)
 			tileData = snapshot.tileData;
 		

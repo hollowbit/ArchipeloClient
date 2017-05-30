@@ -18,6 +18,7 @@ public class EntityTypeData {
 	
 	public int footstepOffsetX = imgWidth / 2;
 	public int footstepOffsetY = 0;
+	public int headOffsetFromTop = 0;
 	
 	public String footstepSound = "";
 	

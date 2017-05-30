@@ -17,6 +17,10 @@ public class CollisionRect {
 		this.hard = data.hard;
 	}
 	
+	public CollisionRect (float x, float y, float width, float height) {
+		this(x, y, 0, 0, width, height, false);
+	}
+	
 	public CollisionRect (float x, float y, float offsetX, float offsetY, float width, float height) {
 		this(x, y, offsetX, offsetY, width, height, false);
 	}

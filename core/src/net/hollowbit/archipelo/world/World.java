@@ -26,6 +26,7 @@ import net.hollowbit.archipelo.tools.StaticTools;
 import net.hollowbit.archipeloshared.CollisionRect;
 import net.hollowbit.archipeloshared.Direction;
 import net.hollowbit.archipeloshared.EntitySnapshot;
+import net.hollowbit.archipeloshared.MapSnapshot;
 
 public class World implements PacketHandler {
 

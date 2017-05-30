@@ -9,6 +9,7 @@
 	"footstepOffsetX":45,
 	"footstepOffsetY":34,
 	"drawOrderOffsetY":34,
+	"headOffsetFromTop":30,
 	"collisionRects":[
 				{"name": "feet", "offsetX":40,"offsetY":34,"width":9,"height":9}
 				],

@@ -11,10 +11,10 @@ import net.hollowbit.archipelo.network.Packet;
 import net.hollowbit.archipelo.network.PacketHandler;
 import net.hollowbit.archipelo.network.PacketType;
 import net.hollowbit.archipelo.network.packets.WorldSnapshotPacket;
-import net.hollowbit.archipelo.world.MapSnapshot;
 import net.hollowbit.archipelo.world.World;
 import net.hollowbit.archipelo.world.WorldSnapshot;
 import net.hollowbit.archipeloshared.EntitySnapshot;
+import net.hollowbit.archipeloshared.MapSnapshot;
 
 public class WorldSnapshotManager implements PacketHandler {
 	

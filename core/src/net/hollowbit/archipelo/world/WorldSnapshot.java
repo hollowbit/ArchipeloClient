@@ -3,7 +3,7 @@ package net.hollowbit.archipelo.world;
 import java.util.HashMap;
 
 import net.hollowbit.archipeloshared.EntitySnapshot;
-
+import net.hollowbit.archipeloshared.MapSnapshot;
 
 public class WorldSnapshot {
 	

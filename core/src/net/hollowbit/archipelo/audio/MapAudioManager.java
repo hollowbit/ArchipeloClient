@@ -2,7 +2,7 @@ package net.hollowbit.archipelo.audio;
 
 import net.hollowbit.archipelo.ArchipeloClient;
 import net.hollowbit.archipelo.world.Map;
-import net.hollowbit.archipelo.world.MapSnapshot;
+import net.hollowbit.archipeloshared.MapSnapshot;
 import net.hollowbit.archipeloshared.SoundPlayData;
 
 public class MapAudioManager {

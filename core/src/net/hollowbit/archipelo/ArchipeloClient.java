@@ -123,7 +123,11 @@ public class ArchipeloClient extends ApplicationAdapter {
 		assetManager.putTexture("mainmenu-background", "mainmenu_background.png", true);
 		assetManager.putTexture("logo", "logo.png", true);
 		assetManager.putTexture("invalid", "invalid.png");//For some reason this image cannot be loaded by html. Fix later.
-		assetManager.putTexture("health-bar", "ui/healthbar.png");
+		assetManager.putTexture("health-bar", "ui/statusbar/health.png");
+		assetManager.putTexture("mana-bar", "ui/statusbar/mana.png");
+		assetManager.putTexture("exp-bar", "ui/statusbar/exp.png");
+		assetManager.putTexture("status-bar-overlay", "ui/statusbar/overlay.png");
+		assetManager.putTexture("status-bar-background", "ui/statusbar/background.png");
 		
 		//Audio
 		musicManager = new MusicManager();
@@ -163,7 +167,7 @@ public class ArchipeloClient extends ApplicationAdapter {
 			screenManager.setScreen(new ErrorScreen(languageSpecificMessageManager.getMessage(Cat.UI, "couldNotConnectToHB")));
 		
 		//For testing purposes
-		//IS_MOBILE = true;
+		IS_MOBILE = true;
 		//IS_GWT = true;
 		
 		//If on mobile device, set IS_MOBILE to true

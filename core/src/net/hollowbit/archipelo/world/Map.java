@@ -170,8 +170,16 @@ public class Map {
 			for (int r = 0; r < collisionMap.length; r++) {
 				for (int c = 0; c < collisionMap[0].length; c++) {
 					if (collisionMap[r][c]) {
-						batch.draw(ArchipeloClient.getGame().getAssetManager().getTexture("invalid"), (c + 1) * ArchipeloClient.TILE_SIZE / TileData.COLLISION_MAP_SCALE, (collisionMap.length - r - 1) * ArchipeloClient.TILE_SIZE / TileData.COLLISION_MAP_SCALE, ArchipeloClient.TILE_SIZE / TileData.COLLISION_MAP_SCALE, ArchipeloClient.TILE_SIZE / TileData.COLLISION_MAP_SCALE);
+						batch.draw(ArchipeloClient.getGame().getAssetManager().getTexture("invalid"), c * ArchipeloClient.TILE_SIZE / TileData.COLLISION_MAP_SCALE, (collisionMap.length - r - 1) * ArchipeloClient.TILE_SIZE / TileData.COLLISION_MAP_SCALE, ArchipeloClient.TILE_SIZE / TileData.COLLISION_MAP_SCALE, ArchipeloClient.TILE_SIZE / TileData.COLLISION_MAP_SCALE);
 					}
+				}
+			}
+			
+			//Render collision texture for hard entity rects
+			for (Entity entity : entities) {
+				for (CollisionRect rect : entity.getCollisionRects()) {
+					if (rect.hard && !entity.ignoreHardnessOfCollisionRects(world.getPlayer(), rect.name))
+						batch.draw(ArchipeloClient.getGame().getAssetManager().getTexture("invalid"), rect.xWithOffset(), rect.yWithOffset(), rect.width, rect.height);
 				}
 			}
 		}

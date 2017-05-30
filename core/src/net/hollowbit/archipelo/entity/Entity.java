@@ -19,7 +19,7 @@ import net.hollowbit.archipeloshared.Point;
 
 public abstract class Entity {
 	
-	private static final float FLASH_DURATION = 0.2f;
+	private static final float DAMAGE_FLASH_DURATION = 0.2f;
 	private static final int HEALTHBAR_RENDER_DISTANCE = ArchipeloClient.TILE_SIZE * 6;
 	
 	protected String name;
@@ -61,7 +61,7 @@ public abstract class Entity {
 		
 		//Pick shader to use when rendering based on flash
 		ArchipeloClient.getGame().getShaderManager().save();
-		if (flashTimer > 0 && flashTimer <= FLASH_DURATION / 2) {//White
+		if (flashTimer > 0 && flashTimer <= DAMAGE_FLASH_DURATION / 2) {//White
 			ArchipeloClient.getGame().getShaderManager().applyShader(batch, ShaderType.WHITE);
 		} else if (flashTimer > 0){ //Color
 			if (damageFlash)//Red
@@ -197,7 +197,7 @@ public abstract class Entity {
 		//Do flash animation if property is there
 		if (snapshot.doesPropertyExist("flash")) {
 			this.damageFlash = snapshot.getBoolean("flash", damageFlash);
-			this.flashTimer = FLASH_DURATION;
+			this.flashTimer = DAMAGE_FLASH_DURATION;
 		}
 		
 		if (!overrideControls)

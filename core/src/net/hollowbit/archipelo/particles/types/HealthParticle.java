@@ -15,7 +15,7 @@ import net.hollowbit.archipelo.tools.FontManager.Sizes;
 
 public class HealthParticle extends Particle {
 	
-	private static final float MAX_DAMAGE = 100;
+	private static final float MAX_DAMAGE = 256;
 	private static final int SPEED = 12;
 	private static final int DISTANCE_TO_TRAVEL = 8;
 	

@@ -16,6 +16,7 @@ public class EntityChunkParticle extends Particle {
 	
 	private static final int MIN_SIZE = 2;
 	private static final int MAX_SIZE = 4;
+	private static final int MIN_VELOCITY = 30;
 	private static final int MAX_VELOCITY = 50;
 	private static final float LIFE_TIME = 1;
 	private static final float DECELERATION_TIME = 0.8f;
@@ -38,8 +39,8 @@ public class EntityChunkParticle extends Particle {
 		Random random = new Random(wildcard);
 		
 		this.size = random.nextInt(MAX_SIZE - MIN_SIZE) + MIN_SIZE;
-		this.velocityX = random.nextInt(MAX_VELOCITY * 2) - MAX_VELOCITY;
-		this.velocityY = random.nextInt(MAX_VELOCITY * 2) - MAX_VELOCITY;
+		this.velocityX = random.nextInt(MAX_VELOCITY - MIN_VELOCITY) + MIN_VELOCITY * (random.nextInt(2) - 1);
+		this.velocityY = random.nextInt(MAX_VELOCITY - MIN_VELOCITY) + MIN_VELOCITY * (random.nextInt(2) - 1);
 		this.decelerationX = velocityX / DECELERATION_TIME;
 		this.decelerationY = velocityY / DECELERATION_TIME;
 	}

@@ -2,11 +2,13 @@ package net.hollowbit.archipelo.particles;
 
 import com.badlogic.gdx.graphics.Texture;
 
+import net.hollowbit.archipelo.particles.types.EntityChunkParticle;
 import net.hollowbit.archipelo.particles.types.HealthParticle;
 
 public enum ParticleType {
 	
-	HEALTH(HealthParticle.class);
+	HEALTH(HealthParticle.class),
+	ENTITY_CHUNK(EntityChunkParticle.class);
 	
 	private Class<? extends Particle> blueprint;
 	private Texture image;

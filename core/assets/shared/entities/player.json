@@ -1,6 +1,6 @@
 {
 	"id":"player",
-	"hittable":false,
+	"hittable":true,
 	"speed":60,
 	"maxHealth":100,
 	"footstepSound": "player",

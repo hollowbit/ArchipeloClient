@@ -236,6 +236,10 @@ public enum EntityType {
 		}
 	}
 	
+	public static EntityType getById(String id) {
+		return entityTypeMap.get(id);
+	}
+	
 	public static Entity createEntityBySnapshot (EntitySnapshot fullSnapshot, Map map) {
 		return entityTypeMap.get(fullSnapshot.type).getNewEntityOfType(fullSnapshot, map);
 	}

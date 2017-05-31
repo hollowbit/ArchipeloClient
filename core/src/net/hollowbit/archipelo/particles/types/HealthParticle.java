@@ -87,5 +87,10 @@ public class HealthParticle extends Particle {
 		
 		font.setColor(1, 1, 1, 1);
 	}
+	
+	@Override
+	public float getRenderY() {
+		return super.getRenderY() - DISTANCE_TO_TRAVEL;//Set render Y to lower than it is
+	}
 
 }

@@ -1,5 +1,5 @@
 {
-com.badlogic.gdx.graphics.g2d.BitmapFont: { default-font: { file: uifont.fnt }, medium-font: { file: fonts/pixelated_medium.fnt }, chat-font: { file: fonts/pixelated_very_small.fnt}, large-font: { file: fonts/pixelated_large.fnt} },
+com.badlogic.gdx.graphics.g2d.BitmapFont: { default-font: { file: fonts/pixelated_small.fnt }, medium-font: { file: fonts/pixelated_medium.fnt }, chat-font: { file: fonts/pixelated_very_small.fnt}, large-font: { file: fonts/pixelated_large.fnt} },
 com.badlogic.gdx.graphics.Color: {
 	green: { a: 1, b: 0, g: 1, r: 0 },
 	white: { a: 1, b: 1, g: 1, r: 1 },

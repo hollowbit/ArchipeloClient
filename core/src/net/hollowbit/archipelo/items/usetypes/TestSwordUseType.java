@@ -9,8 +9,8 @@ public class TestSwordUseType implements UseType {
 
 	@Override
 	public UseTypeSettings useItemTap(CurrentPlayer user, Item item) {
-		int useAnimation = user.getRandom().nextInt(item.getType().numOfUseAnimations);
-		return new UseTypeSettings(useAnimation, 0, true);
+		//int useAnimation = user.getRandom().nextInt(item.getType().numOfUseAnimations);
+		return new UseTypeSettings(0, 0, false);
 	}
 
 	@Override

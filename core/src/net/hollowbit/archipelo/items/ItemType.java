@@ -218,31 +218,31 @@ public enum ItemType {
 	}
 	
 	public TextureRegion getWalkFrame (Direction direction, float statetime, int style, float totalRuntime) {
-		Animation animation = walkAnimation[direction.ordinal()][style];
+		Animation animation = walkAnimation[direction.ordinal()][style % numOfStyles];
 		animation.setFrameDuration(totalRuntime / animation.getKeyFrames().length);
 		return animation.getKeyFrame(statetime, true);
 	}
 	
 	public TextureRegion getSprintFrame (Direction direction, float statetime, int style, float totalRuntime) {
-		Animation animation = sprintAnimation[direction.ordinal()][style];
+		Animation animation = sprintAnimation[direction.ordinal()][style % numOfStyles];
 		animation.setFrameDuration(totalRuntime / animation.getKeyFrames().length);
 		return animation.getKeyFrame(statetime, true);
 	}
 	
 	public TextureRegion getRollFrame (Direction direction, float statetime, int style, float totalRuntime) {
-		Animation animation = rollAnimation[direction.ordinal()][style];
+		Animation animation = rollAnimation[direction.ordinal()][style % numOfStyles];
 		animation.setFrameDuration(totalRuntime / animation.getKeyFrames().length);
 		return animation.getKeyFrame(statetime, true);
 	}
 	
 	public TextureRegion getUseFrame (Direction direction, float statetime, int useStyle, int style, float totalRuntime) {
-		Animation animation = useAnimation[direction.ordinal()][style][useStyle];
+		Animation animation = useAnimation[direction.ordinal()][style % numOfStyles][useStyle % numOfUseAnimations];
 		animation.setFrameDuration(totalRuntime / animation.getKeyFrames().length);
 		return animation.getKeyFrame(statetime, true);
 	}
 	
 	public TextureRegion getThrustFrame (Direction direction, float statetime, int useStyle, int style, float totalRuntime) {
-		Animation animation = thrustAnimation[direction.ordinal()][style][useStyle];
+		Animation animation = thrustAnimation[direction.ordinal()][style % numOfStyles][useStyle % numOfUseAnimations];
 		animation.setFrameDuration(totalRuntime / animation.getKeyFrames().length);
 		return animation.getKeyFrame(statetime, true);
 	}

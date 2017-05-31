@@ -54,10 +54,10 @@ public class ClothesRenderEntityComponent extends EntityComponent {
 				if (useAnimationMeta == null) {
 					useAnimationMeta = new UseAnimationMeta(entity.getAnimationManager().getAnimationMeta());
 					if (useAnimationMeta.useItem.equipType == ItemType.EQUIP_INDEX_USABLE)
-						animationLength = useAnimationMeta.useItem.useAnimationLengths[useAnimationMeta.style];
+						animationLength = useAnimationMeta.useItem.useAnimationLengths[useAnimationMeta.useType % useAnimationMeta.useItem.numOfUseAnimations];
 				} else {
 					if (useAnimationMeta.useItem.equipType == ItemType.EQUIP_INDEX_USABLE)
-						animationLength = useAnimationMeta.useItem.useAnimationLengths[useAnimationMeta.style];
+						animationLength = useAnimationMeta.useItem.useAnimationLengths[useAnimationMeta.useType % useAnimationMeta.useItem.numOfUseAnimations];
 				}
 			}
 		} else {
@@ -73,7 +73,7 @@ public class ClothesRenderEntityComponent extends EntityComponent {
 			if (isUseAnimation && useAnimationMeta != null) {
 				if (useAnimationMeta.useItem.equipType == ItemType.EQUIP_INDEX_USABLE) {//Only render use animation if item is usable
 					batch.setColor(new Color(useAnimationMeta.useColorR, useAnimationMeta.useColorG, useAnimationMeta.useColorB, useAnimationMeta.useColorA));
-					batch.draw(useAnimationMeta.useItem.getAnimationFrameForUsable(animationId, direction, stateTime, useAnimationMeta.style, useAnimationMeta.useType, useAnimationMeta.useItem.useAnimationLengths[useAnimationMeta.style]), x, y);
+					batch.draw(useAnimationMeta.useItem.getAnimationFrameForUsable(animationId, direction, stateTime, useAnimationMeta.style, useAnimationMeta.useType, useAnimationMeta.useItem.useAnimationLengths[useAnimationMeta.useType % useAnimationMeta.useItem.numOfUseAnimations]), x, y);
 					batch.setColor(1, 1, 1, 1);
 				}
 			}
@@ -114,7 +114,7 @@ public class ClothesRenderEntityComponent extends EntityComponent {
 			if (isUseAnimation && useAnimationMeta != null) {
 				if (useAnimationMeta.useItem.equipType == ItemType.EQUIP_INDEX_USABLE) {//Only render use animation if item is usable
 					batch.setColor(new Color(useAnimationMeta.useColorR, useAnimationMeta.useColorG, useAnimationMeta.useColorB, useAnimationMeta.useColorA));
-					batch.draw(useAnimationMeta.useItem.getAnimationFrameForUsable(animationId, direction, stateTime, useAnimationMeta.style, useAnimationMeta.useType, useAnimationMeta.useItem.useAnimationLengths[useAnimationMeta.style]), x, y);
+					batch.draw(useAnimationMeta.useItem.getAnimationFrameForUsable(animationId, direction, stateTime, useAnimationMeta.style, useAnimationMeta.useType, useAnimationMeta.useItem.useAnimationLengths[useAnimationMeta.useType % useAnimationMeta.useItem.numOfUseAnimations]), x, y);
 					batch.setColor(1, 1, 1, 1);
 				}
 			}

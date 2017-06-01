@@ -28,8 +28,11 @@ public enum ItemType {
 	HAIR1("hair1"),
 	FACE1("face1"),
 	BLOBBY_ASHES("blobby_ashes"),
-	TEST_SWORD("test_sword", new TestSwordUseType())/*,
-	SWORD("sword")*/;
+	SPEAR_BASIC("spear_basic", new BasicWeaponUseType()),
+	ASSISTANT_GENERAL("assistant_general", new BasicWeaponUseType()),
+	SOUL_DISRUPTOR("soul_disruptor", new BasicWeaponUseType()),
+	SPIRIT_DISRUPTOR("spirit_disruptor", new BasicWeaponUseType()),
+	DEMONS_TONGUE("demons_tongue", new BasicWeaponUseType());
 
 	public static final int NO_EQUIP_TYPE = -1;
 	public static final int EQUIP_INDEX_USABLE = 9;
@@ -83,7 +86,7 @@ public enum ItemType {
 		} catch (ReflectionException e) {
 		}
 		
-		this.id = data.id;
+		this.id = id;
 		this.iconX = data.iconX;
 		this.iconY = data.iconY;
 		this.minDamage = data.minDamage;
@@ -113,9 +116,7 @@ public enum ItemType {
 	}
 	
 	public String getSoundById(int style, int id) {
-		if (style >= 0 && style < numOfStyles && id >= 0 && id < sounds[0].length)
-			return sounds[style][id];
-		return "";
+		return sounds[style % numOfStyles][id % sounds[0].length];
 	}
 	
 	private void loadSounds() {

@@ -17,5 +17,15 @@ messages:{
 	shoulderpads_basicName: "Basic Shoulderpads",
 	shoulderpads_basicDesc: "Just some basic shoulderpads.",
 	blobby_ashesName: "Blobby Bob's Ashes",
-	blobby_ashesDesc: "The ashes of Blobby Bob. R.I.P. He will not be missed."
+	blobby_ashesDesc: "The ashes of Blobby Bob. R.I.P. He will not be missed.",
+	spear_basicName: "Basic Spear",
+	spear_basicDesc: "A basic spear with a high attack rate.",
+	assistant_generalName: "Assistant General",
+	assistant_generalDesc: "Powerful broadsword",
+	soul_disruptorName: "Soul Disruptor",
+	soul_disruptorDesc: "Opposite to the Spirit Disruptor, this weapon has high damage but a low critical hit multiplier and critical hit chance.",
+	spirit_disruptorName: "Spirit Disruptor",
+	spirit_disruptorDesc: "Opposite to the Soul Disruptor, this weapon has low damage but a high critical hit multiplier and critical hit chance.",
+	demons_tongueName: "Demon's Tongue",
+	demons_tongueDesc: "Legit, it's a tongue from a demon.",
 }}

@@ -17,7 +17,7 @@ import net.hollowbit.archipelo.screen.screens.ErrorScreen;
 public class HollowBitServerConnectivity {
 	
 	//public static final String ADDRESS = "loginserver.hollowbit.net";
-	public static final String ADDRESS = "hollowbit.net";
+	public static final String ADDRESS = "localhost";
 	private static final int PORT = 22123;
 	private static final int TIMEOUT_LENGTH = 8000;//Time in milliseconds to wait to connect to HollowBitServer
 	

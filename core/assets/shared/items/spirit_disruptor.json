@@ -1,0 +1,16 @@
+{
+	iconX: 9,
+	durability: 250,
+	equipType: 9,
+	numOfStyles: 1,
+	numOfUseAnimations: 1,
+	useAnimationLengths: [0.4],
+	minDamage: 25,
+	maxDamage: 35,
+	critMultiplier: 3,
+	critChance: 50,
+	hitRange: 24,
+	sounds: [
+		["actions/hit"],
+	]
+}

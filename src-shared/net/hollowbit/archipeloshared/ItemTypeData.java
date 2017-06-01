@@ -2,7 +2,6 @@ package net.hollowbit.archipeloshared;
 
 public class ItemTypeData {
 	
-	public String id = "item";
 	public int iconX = 0;
 	public int iconY = 0;
 	public int maxStackSize = 1;

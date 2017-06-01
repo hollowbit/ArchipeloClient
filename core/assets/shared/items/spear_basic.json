@@ -1,5 +1,4 @@
 {
-	id:"test_sword",
 	iconX: 9,
 	durability: 100,
 	equipType: 9,
@@ -13,6 +12,5 @@
 	hitRange: 24,
 	sounds: [
 		["actions/hit"],
-		["footsteps/player/grass-walk"],
 	]
 }

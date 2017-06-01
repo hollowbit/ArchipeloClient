@@ -11,9 +11,6 @@ public class EntitySnapshot {
 	
 	public String name;
 	public String type;
-	public String anim;
-	public float animTime;
-	public String animMeta = "";
 	public String footSound = "";
 	public float footPitch = 1;
 	public ArrayList<String> sounds = new ArrayList<String>();
@@ -38,9 +35,6 @@ public class EntitySnapshot {
 	public EntitySnapshot (EntitySnapshot snapshot) {
 		this.name = snapshot.name;
 		this.type = snapshot.type;
-		this.anim = snapshot.anim;
-		this.animTime = snapshot.animTime;
-		this.animMeta = snapshot.animMeta;
 		this.footSound = snapshot.footSound;
 		this.footPitch = snapshot.footPitch;
 		

@@ -48,7 +48,7 @@ public abstract class Entity implements RenderableGameWorldObject {
 		
 		Point pos = fullSnapshot.getObject("pos", new Point(), Point.class);
 		this.location = new Location(map, new Vector2(pos.x, pos.y), Direction.values()[fullSnapshot.getInt("direction", 0)]);
-		animationManager = new EntityAnimationManager(this, fullSnapshot.anim, fullSnapshot.animTime, fullSnapshot.animMeta);
+		animationManager = new EntityAnimationManager(this, fullSnapshot);
 		audioManager = new EntityAudioManager(this, fullSnapshot.footSound);
 	}
 	
@@ -122,6 +122,7 @@ public abstract class Entity implements RenderableGameWorldObject {
 	 * @param deltaTime
 	 */
 	public void update (float deltaTime) {
+		animationManager.update(deltaTime);
 		for (EntityComponent component : components)
 			component.update(deltaTime);
 		
@@ -140,7 +141,6 @@ public abstract class Entity implements RenderableGameWorldObject {
 	 * @param fraction
 	 */
 	public void interpolate (long timeStamp, EntitySnapshot snapshotFrom, EntitySnapshot snapshotTo, float fraction) {
-		animationManager.change(timeStamp, snapshotFrom, snapshotTo, fraction);
 		audioManager.change(snapshotTo);
 		
 		for (EntityComponent component : components)
@@ -202,8 +202,10 @@ public abstract class Entity implements RenderableGameWorldObject {
 			this.flashTimer = DAMAGE_FLASH_DURATION;
 		}
 		
-		if (!overrideControls)
+		if (!overrideControls) {
+			animationManager.change(snapshot);
 			audioManager.handleChanges(snapshot);
+		}
 		
 		if (!overrideControls)
 			location.direction = Direction.values()[snapshot.getInt("direction", location.direction.ordinal())];
@@ -289,7 +291,7 @@ public abstract class Entity implements RenderableGameWorldObject {
 	}
 	
 	/**
-	 * Called when the current animation is complete. Only used by entities where animations are overridden.
+	 * Called when the current animation is complete. Only used by entities where animations are overridden, like the CurrentPlayer.
 	 * @param animationId
 	 * @return
 	 */

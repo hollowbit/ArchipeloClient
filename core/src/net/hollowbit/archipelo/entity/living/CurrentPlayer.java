@@ -74,8 +74,6 @@ public class CurrentPlayer extends Player implements PacketHandler, RollableEnti
 		//Refresh stats for this player every tick
 		this.health = ArchipeloClient.getGame().getPlayerInfoManager().getHealth();
 		
-		animationManager.update(deltaTime);
-		
 		//Tick timer for roll double-click
 		if (rollDoubleClickTimer >= 0) {
 			rollDoubleClickTimer -= deltaTime;
@@ -337,11 +335,19 @@ public class CurrentPlayer extends Player implements PacketHandler, RollableEnti
 		case Controls.LEFT:
 		case Controls.DOWN:
 		case Controls.RIGHT:
-			if (!isMoving() && !isRolling() && !isThrusting()) {
-				if (isUsing())
-					animationManager.change("use");
-				else
-					animationManager.change("default");
+			if (!isRolling() && !isThrusting()) {
+				if (isMoving()) {
+					if (isUsing())
+						animationManager.change("usewalk");
+					else
+						animationManager.changeWithoutReset("walk");
+				} else {
+
+					if (isUsing())
+						animationManager.changeWithoutReset("use");
+					else
+						animationManager.change("default");
+				}
 			}
 			break;
 		}
@@ -400,7 +406,7 @@ public class CurrentPlayer extends Player implements PacketHandler, RollableEnti
 		case Controls.RIGHT:
 			if (!isRolling()) {
 				if (isUsing())
-					animationManager.change("usewalk");
+					animationManager.changeWithoutReset("usewalk");
 				else
 					animationManager.change("walk");
 			}

@@ -2,7 +2,6 @@ package net.hollowbit.archipelo.entity;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
-import net.hollowbit.archipelo.tools.StaticTools;
 import net.hollowbit.archipeloshared.EntityAnimationData;
 import net.hollowbit.archipeloshared.EntitySnapshot;
 
@@ -15,13 +14,13 @@ public class EntityAnimationManager {
 	private String meta;
 	private float animationLength;
 	
-	public EntityAnimationManager (Entity entity, String animation, float stateTime, String animationMeta) {
+	public EntityAnimationManager (Entity entity, EntitySnapshot fullSnapshot) {
 		this.entity = entity;
-		this.id = animation;
-		this.stateTime = stateTime;
-		this.meta = animationMeta;
-		this.data = entity.getEntityType().getEntityAnimation(animation).getData();
-		animationLength = data.totalRuntime;
+		this.id = fullSnapshot.getString("anim", entity.getEntityType().getDefaultAnimationId());
+		this.stateTime = fullSnapshot.getFloat("animTime", 0);
+		this.meta = fullSnapshot.getString("animMeta", "");
+		this.data = entity.getEntityType().getEntityAnimation(id).getData();
+		animationLength = fullSnapshot.getFloat("animLength", data.totalRuntime);
 	}
 	
 	/**
@@ -33,37 +32,51 @@ public class EntityAnimationManager {
 	}
 	
 	/**
-	 * Updates time of animation. Only call if using client-side prediction
+	 * Updates time of animation.
 	 * @param deltaTime
 	 */
 	public void update (float deltaTime) {
 		stateTime += deltaTime;
 		
 		//If this animation doesn't loop and is over time limit, call change event on entities to get a new animation to replace it.
-		if (data.finiteLength && stateTime > animationLength) {
-			EntityAnimationObject newAnim = entity.animationCompleted(id);
-					
-			//Set new animation if not null
-			if (newAnim != null)
-				this.change(newAnim.animationId, newAnim.animationMeta);
-			else//If null, use the default animation for this entity
-				this.change(entity.getEntityType().getDefaultAnimationId());
+		if (entity.overrideControls) {
+			if (data.finiteLength && stateTime > animationLength) {
+				EntityAnimationObject newAnim = entity.animationCompleted(id);
+						
+				//Set new animation if not null
+				if (newAnim != null)
+					this.change(newAnim.animationId, newAnim.animationMeta);
+				else//If null, use the default animation for this entity
+					this.change(entity.getEntityType().getDefaultAnimationId());
+			}
+		}
+	}
+
+	
+	/**
+	 * Will change the animation id without reseting the statetime, meta and custom length.
+	 * @param animationId
+	 */
+	public void changeWithoutReset(String animationId) {
+		if (entity.getEntityType().hasAnimation(animationId)) {
+			this.id = animationId;
+			this.data = entity.getEntityType().getEntityAnimation(animationId).getData();
 		}
 	}
 	
 	/**
-	 * Updates goalStateTime of the animation and changes the animations if needed
+	 * Updates the animation if there is a new one
 	 * @param animation
 	 * @param stateTime
 	 */
-	public void change (long timeStamp, EntitySnapshot snapshot1, EntitySnapshot snapshot2, float fraction) {
-		if (!snapshot2.anim.equals(id) || !snapshot1.anim.equals(snapshot2.anim))
-			this.stateTime = 0;
-		
-		this.id = snapshot2.anim;
-		this.meta = snapshot2.animMeta;
-		float snapshot1Time = (snapshot1.anim.equals(snapshot2.anim) ? snapshot1.animTime : 0);
-		this.stateTime = StaticTools.singleDimensionLerp(snapshot1Time, snapshot2.animTime, fraction);
+	public void change (EntitySnapshot changes) {
+		if (changes.doesPropertyExist("anim")) {
+			this.id = changes.getString("anim", this.id);
+			this.meta = changes.getString("animMeta", meta);
+			this.animationLength = changes.getFloat("animLength", animationLength);
+			if (changes.getBoolean("resetAnim", false))
+				this.stateTime = 0;
+		}
 	}
 	
 	public void change (String animationId) {

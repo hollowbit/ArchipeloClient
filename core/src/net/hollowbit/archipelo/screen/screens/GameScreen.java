@@ -311,6 +311,10 @@ public class GameScreen extends Screen implements PacketHandler, InputProcessor 
 	public PopupTextManager getPopupTextManager () {
 		return popupTextManager;
 	}
+	
+	public ControlsManager getControlsManager() {
+		return controlsManager;
+	}
 
 	@Override
 	public boolean keyDown (int keycode) { 

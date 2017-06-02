@@ -16,6 +16,7 @@ import net.hollowbit.archipelo.entity.LivingEntity;
 import net.hollowbit.archipelo.entity.components.FootstepPlayerComponent;
 import net.hollowbit.archipelo.entity.living.player.MovementLog;
 import net.hollowbit.archipelo.items.Item;
+import net.hollowbit.archipelo.items.ItemUseAnimation;
 import net.hollowbit.archipelo.network.Packet;
 import net.hollowbit.archipelo.network.PacketHandler;
 import net.hollowbit.archipelo.network.PacketType;
@@ -45,6 +46,7 @@ public class CurrentPlayer extends Player implements PacketHandler, RollableEnti
 	float playerSpeed;
 	Vector2 serverPos;
 	Random random;
+	float timeSinceLastCorrection = 0;
 	
 	public void create (EntitySnapshot fullSnapshot, Map map, EntityType entityType) {
 		super.create(fullSnapshot, map, entityType);
@@ -70,6 +72,8 @@ public class CurrentPlayer extends Player implements PacketHandler, RollableEnti
 	@Override
 	public void update(float deltaTime) {
 		super.update(deltaTime);
+		
+		this.timeSinceLastCorrection += deltaTime;
 		
 		//Refresh stats for this player every tick
 		this.health = ArchipeloClient.getGame().getPlayerInfoManager().getHealth();
@@ -323,6 +327,10 @@ public class CurrentPlayer extends Player implements PacketHandler, RollableEnti
 	
 	public void controlUp (int control) {
 		switch (control) {
+		case Controls.ATTACK:
+			if (isCurrentlyUsingAnItem())
+				animationManager.endCurrentAnimation();
+			break;
 		case Controls.ROLL:
 			if (!isCurrentlyUsingAnItem() && !isRolling()) {
 				if (isMoving())
@@ -431,15 +439,20 @@ public class CurrentPlayer extends Player implements PacketHandler, RollableEnti
 		}
 		
 		//Use appropriate animations depending
+		ItemUseAnimation animationInfo = null;
+		if (item != null)
+			animationInfo = item.getType().getAnimationFromUseType(animationType);
+		else
+			animationInfo = ItemUseAnimation.DEFAULT;
 		if (useThrust) {
 			if (isMoving())
 				stopMovement();
-			animationManager.change("thrust", animationMeta, useAnimationLength);
+			animationManager.change("thrust", animationMeta, useAnimationLength, animationInfo.doesStick(), animationInfo.canEndEarly());
 		} else {
 			if (isMoving())
-				animationManager.change("usewalk", animationMeta, useAnimationLength);
+				animationManager.change("usewalk", animationMeta, useAnimationLength, animationInfo.doesStick(), animationInfo.canEndEarly());
 			else
-				animationManager.change("use", animationMeta, useAnimationLength);
+				animationManager.change("use", animationMeta, useAnimationLength, animationInfo.doesStick(), animationInfo.canEndEarly());
 		}
 	}
 	
@@ -482,11 +495,13 @@ public class CurrentPlayer extends Player implements PacketHandler, RollableEnti
 			serverPos = new Vector2(posPacket.x, posPacket.y);
 			movementLog.removeCommandsOlderThan(posPacket.id);
 			
-			//If the player is close enough to the server pos, don't correct
-			if (serverPos == null || posMatchingCommand == null || serverPos.epsilonEquals(posMatchingCommand.x, posMatchingCommand.y, 0.5f))
-				return true;
+			this.timeSinceLastCorrection = 0;
 			
-			//Correct player position using interp snapshot and time stamp from server
+			//If the player is close enough to the server pos, don't correct
+			if (serverPos == null || posMatchingCommand == null || serverPos.epsilonEquals(posMatchingCommand.x, posMatchingCommand.y, 0.2f)) {
+				return true;
+			}
+
 			location.pos.set(serverPos);
 			
 			//Redo player prediction movements

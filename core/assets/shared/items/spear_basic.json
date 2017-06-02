@@ -4,13 +4,13 @@
 	equipType: 9,
 	numOfStyles: 1,
 	useAnimData: [
-		{stick: true, runtime: 0.2}
+		{stick: true, runtime: 0.2, canEndEarly: true}
 	],
 	minDamage: 2,
 	maxDamage: 7,
 	critMultiplier: 1.5,
 	critChance: 15,
-	hitRange: 24,
+	hitRange: 28,
 	sounds: [
 		["actions/hit"],
 	]

@@ -10,7 +10,7 @@
 	maxDamage: 50,
 	critMultiplier: 1.5,
 	critChance: 15,
-	hitRange: 40,
+	hitRange: 36,
 	sounds: [
 		["actions/hit"],
 	]

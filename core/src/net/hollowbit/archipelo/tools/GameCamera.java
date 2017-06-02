@@ -42,7 +42,7 @@ public class GameCamera {
 	public void update (float deltatime) {
 		if (goal == null) {
 			if (entityToFocusOn != null)
-				cam.position.set(entityToFocusOn.getLocation().getX() + entityToFocusOn.getViewRect().width / 2, entityToFocusOn.getLocation().getY() + entityToFocusOn.getViewRect().height / 2, 0);
+				cam.position.set(new Vector3(entityToFocusOn.getLocation().getX() + entityToFocusOn.getViewRect().width / 2, entityToFocusOn.getLocation().getY() + entityToFocusOn.getViewRect().height / 2, 0f));
 		} else {
 			cam.position.lerp(new Vector3(goal.x, goal.y, 0), 0.2f);
 			if (cam.position.epsilonEquals(goal.x + ArchipeloClient.PLAYER_SIZE / 2, goal.y + ArchipeloClient.PLAYER_SIZE / 2, 0, 1f)) {

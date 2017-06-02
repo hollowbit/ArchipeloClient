@@ -14,6 +14,9 @@ import net.hollowbit.archipeloshared.rangeindexer.RangeMap;
 
 public class ItemUseAnimation {
 	
+	public static final ItemUseAnimation DEFAULT = new ItemUseAnimation();
+	
+	private boolean canEndEarly;
 	private boolean thrust;
 	private boolean stick;
 	private Animation[][] runtimeAnimation = null;
@@ -21,9 +24,15 @@ public class ItemUseAnimation {
 	private RangeMap<Float, TextureRegion>[][] frames = null;
 	private TextureRegion[][] lastFrames = null;
 	
+	private ItemUseAnimation() {
+		this.canEndEarly = true;
+		this.stick = true;
+	}
+	
 	public ItemUseAnimation(ItemType item, int useAnim, ItemUseAnimationData data) throws IllegalItemUseAnimationDataException {
 		this.stick = data.stick;
 		this.thrust = data.thrust;
+		this.canEndEarly = data.canEndEarly;
 		this.lastFrames = new TextureRegion[Direction.TOTAL][item.numOfStyles];
 		if (data.timings == null && data.runtime > 0)
 			createRuntimeAnimation(item, useAnim, data);
@@ -89,6 +98,10 @@ public class ItemUseAnimation {
 	
 	public boolean usesThrust() {
 		return thrust;
+	}
+	
+	public boolean canEndEarly() {
+		return canEndEarly;
 	}
 	
 	public boolean isRuntime() {

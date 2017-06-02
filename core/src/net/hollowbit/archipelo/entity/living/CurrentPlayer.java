@@ -324,7 +324,7 @@ public class CurrentPlayer extends Player implements PacketHandler, RollableEnti
 	public void controlUp (int control) {
 		switch (control) {
 		case Controls.ROLL:
-			if (!isRolling()) {
+			if (!isCurrentlyUsingAnItem() && !isRolling()) {
 				if (isMoving())
 					animationManager.change("walk");
 				else
@@ -338,7 +338,7 @@ public class CurrentPlayer extends Player implements PacketHandler, RollableEnti
 			if (!isRolling() && !isThrusting()) {
 				if (isMoving()) {
 					if (isUsing())
-						animationManager.change("usewalk");
+						animationManager.changeWithoutReset("usewalk");
 					else
 						animationManager.changeWithoutReset("walk");
 				} else {
@@ -356,7 +356,7 @@ public class CurrentPlayer extends Player implements PacketHandler, RollableEnti
 	public void controlDown (int control) {
 		switch (control) {
 		case Controls.ROLL:
-			if (!isUsing() && isMoving()) {
+			if (!isCurrentlyUsingAnItem() && isMoving()) {
 				animationManager.change("sprint");
 				if (rollDoubleClickTimer <= 0) {
 					rollDoubleClickTimer = ROLL_DOUBLE_CLICK_DURATION;
@@ -394,7 +394,7 @@ public class CurrentPlayer extends Player implements PacketHandler, RollableEnti
 					if (item != null) {
 						UseTypeSettings settings = item.useTap(this);
 						if (settings != null)
-							playUseAnimation(item, settings.animationType, settings.thrust, settings.soundType);
+							playUseAnimation(item, settings.animationType, item.getType().getAnimationFromUseType(settings.animationType).usesThrust(), settings.soundType);
 					} else
 						playUseAnimation(null, 0, false, 0);
 				}
@@ -425,7 +425,7 @@ public class CurrentPlayer extends Player implements PacketHandler, RollableEnti
 		if (item != null) {
 			Color color = new Color(item.color);
 			animationMeta = item.getType() + ";" + animationType + ";" + item.style + ";" + color.r + ";" + color.g + ";" + color.b + ";" + color.a;
-			useAnimationLength = item.getType().useAnimationLengths[animationType];
+			useAnimationLength = item.getType().getUseAnimationLength(animationType);
 			
 			audioManager.playUnsafeSound(item.getType().getSoundById(item.style, soundType));
 		}

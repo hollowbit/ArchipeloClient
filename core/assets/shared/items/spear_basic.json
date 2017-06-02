@@ -1,10 +1,11 @@
 {
-	iconX: 9,
+	iconSize: 26,
 	durability: 100,
 	equipType: 9,
 	numOfStyles: 1,
-	numOfUseAnimations: 1,
-	useAnimationLengths: [0.3],
+	useAnimData: [
+		{stick: true, runtime: 0.2}
+	],
 	minDamage: 2,
 	maxDamage: 7,
 	critMultiplier: 1.5,

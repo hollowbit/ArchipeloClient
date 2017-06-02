@@ -1,15 +1,16 @@
 {
-	iconX: 9,
+	iconSize: 40,
 	durability: 280,
 	equipType: 9,
 	numOfStyles: 1,
-	numOfUseAnimations: 1,
-	useAnimationLengths: [0.4],
+	useAnimData: [
+		{stick: true, timings:[0.1, 0.1, 0.2]}
+	],
 	minDamage: 25,
 	maxDamage: 30,
 	critMultiplier: 2,
 	critChance: 15,
-	hitRange: 24,
+	hitRange: 38,
 	sounds: [
 		["actions/hit"],
 	]

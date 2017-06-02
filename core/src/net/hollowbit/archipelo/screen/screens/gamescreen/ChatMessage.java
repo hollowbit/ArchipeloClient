@@ -15,7 +15,7 @@ import net.hollowbit.archipelo.tools.QuickUi;
 
 public class ChatMessage {
 	
-	public static float WIDTH = (ArchipeloClient.IS_MOBILE ? 250 : 600);
+	public static float WIDTH = (ArchipeloClient.IS_MOBILE ? 250 : 525);
 	
 	private static final int START_Y = 50;
 	private static final int MOBILE_BUMP = 250;

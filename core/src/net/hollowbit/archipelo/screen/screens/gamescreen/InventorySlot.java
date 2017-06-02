@@ -43,6 +43,7 @@ public class InventorySlot extends Widget {
 				return false;
 			}
 		});
+		
 		this.addListener(new ClickListener() { 
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
@@ -89,7 +90,7 @@ public class InventorySlot extends Widget {
 			Color itemIconDrawColor = _item.getColor();
 			itemIconDrawColor.a = parentAlpha;
 			batch.setColor(itemIconDrawColor);
-			batch.draw(_item.getType().getIcon(), this.getX() + OFFSET, this.getY() + OFFSET, this.getWidth() - OFFSET * 2, this.getHeight() - OFFSET * 2);
+			batch.draw(_item.getType().getIcon(_item.style), this.getX() + OFFSET, this.getY() + OFFSET, this.getWidth() - OFFSET * 2, this.getHeight() - OFFSET * 2);
 			batch.setColor(1, 1, 1, parentAlpha);
 			if (_item.quantity > 1) {
 				GlyphLayout quantityLayout = new GlyphLayout(skin.getFont("chat-font"), "" + _item.quantity);

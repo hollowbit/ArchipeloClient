@@ -3,6 +3,7 @@ package net.hollowbit.archipelo.items;
 import java.util.HashMap;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -11,11 +12,13 @@ import com.badlogic.gdx.utils.reflect.ClassReflection;
 import com.badlogic.gdx.utils.reflect.ReflectionException;
 
 import net.hollowbit.archipelo.ArchipeloClient;
+import net.hollowbit.archipelo.items.ItemUseAnimation.IllegalItemUseAnimationDataException;
 import net.hollowbit.archipelo.items.usetypes.*;
 import net.hollowbit.archipelo.tools.AssetManager;
 import net.hollowbit.archipelo.tools.LM;
 import net.hollowbit.archipeloshared.Direction;
 import net.hollowbit.archipeloshared.ItemTypeData;
+import net.hollowbit.archipeloshared.ItemUseAnimationData;
 
 public enum ItemType {
 	
@@ -41,8 +44,10 @@ public enum ItemType {
 	public static final float ROLL_ANIMATION_LENGTH = 0.08f;
 	public static final float SPRINT_ANIMATION_LENGTH = 0.16f;
 	
+	public static TextureRegion invalidIconTexture = null;;
+	
 	public String id;
-	public int iconX, iconY;
+	public int iconSize;
 	public int maxStackSize;
 	public int durability;
 	public int equipType;
@@ -51,9 +56,8 @@ public enum ItemType {
 	public boolean consumable;
 	public boolean material;
 	public int numOfStyles;
-	public int numOfUseAnimations;
 	public String[][] sounds;
-	public float[] useAnimationLengths;
+	public ItemUseAnimationData[] useableAnimationData;
 	
 	public int minDamage;
 	public int maxDamage;
@@ -64,12 +68,14 @@ public enum ItemType {
 	public float critMultiplier;
 	public int critChance;
 	
-	private TextureRegion icon;
+	private TextureRegion[] icon;
 	private Animation[][] walkAnimation = null;//Not null if wearable
 	private Animation[][] sprintAnimation = null;//Not null if wearable
 	private Animation[][] rollAnimation = null;//Not null if wearable
-	private Animation[][][] useAnimation = null;//Not null if usable or wearable
-	private Animation[][][] thrustAnimation = null;//Not null if usable or wearable
+	private Animation[][] useAnimation = null;//Not null if usable or wearable
+	private Animation[][] thrustAnimation = null;//Not null if usable or wearable
+	
+	private ItemUseAnimation[] usableItemAnimations = null;//Not null if usable
 	
 	private UseType useType;
 	
@@ -87,8 +93,7 @@ public enum ItemType {
 		}
 		
 		this.id = id;
-		this.iconX = data.iconX;
-		this.iconY = data.iconY;
+		this.iconSize = data.iconSize;
 		this.minDamage = data.minDamage;
 		this.maxDamage = data.maxDamage;
 		this.defense = data.defense;
@@ -105,9 +110,8 @@ public enum ItemType {
 		this.consumable = data.consumable;
 		this.material = data.material;
 		this.numOfStyles = data.numOfStyles;
-		this.numOfUseAnimations = data.numOfUseAnimations;
-		this.useAnimationLengths = data.useAnimationLengths;
 		this.sounds = data.sounds;
+		this.useableAnimationData = data.useAnimData;
 		
 		if (equipType == EQUIP_INDEX_USABLE)
 			this.useType = useType;
@@ -126,8 +130,13 @@ public enum ItemType {
 		}
 	}
 	
-	private void loadImages (TextureRegion[][] iconMap) {
-		this.icon = iconMap[iconY][iconX];
+	private void loadImages () {
+		FileHandle iconFile = Gdx.files.internal("items/" + id + "/icon.png");
+		if (iconFile.exists())
+			this.icon = TextureRegion.split(new Texture(iconFile), iconSize, iconSize)[0];
+		
+		if (invalidIconTexture == null)
+			invalidIconTexture = new TextureRegion(ArchipeloClient.getGame().getAssetManager().getTexture("invalid"));
 		
 		//Load images depending on conditions
 		if (equipType != NO_EQUIP_TYPE && equipType != EQUIP_INDEX_USABLE) {
@@ -147,28 +156,26 @@ public enum ItemType {
 				}
 			}
 			
-			useAnimation = new Animation[Direction.TOTAL][numOfStyles][numOfUseAnimations];
-			thrustAnimation = new Animation[Direction.TOTAL][numOfStyles][numOfUseAnimations];
+			useAnimation = new Animation[Direction.TOTAL][numOfStyles];
+			thrustAnimation = new Animation[Direction.TOTAL][numOfStyles];
 			for (int style = 0; style < numOfStyles; style++) {
 				TextureRegion[][] useSheet = AssetManager.fixBleedingSpriteSheet(TextureRegion.split(new Texture("items/" + id + "/use_" + style + ".png"), ArchipeloClient.PLAYER_SIZE, ArchipeloClient.PLAYER_SIZE));
 				for (int direction = 0; direction < Direction.TOTAL; direction++) {
-					useAnimation[direction][style][0] = new Animation(0.1f, useSheet[direction]);
+					useAnimation[direction][style] = new Animation(0.1f, useSheet[direction]);
 				}
 				
 				TextureRegion[][] thrustSheet = AssetManager.fixBleedingSpriteSheet(TextureRegion.split(new Texture("items/" + id + "/thrust_" + style + ".png"), ArchipeloClient.PLAYER_SIZE, ArchipeloClient.PLAYER_SIZE));
 				for (int direction = 0; direction < Direction.TOTAL; direction++) {
-					thrustAnimation[direction][style][0] = new Animation(0.1f, thrustSheet[direction]);
+					thrustAnimation[direction][style] = new Animation(0.1f, thrustSheet[direction]);
 				}
 			}
 		} else if (equipType != NO_EQUIP_TYPE) {//Usable item
-			useAnimation = new Animation[Direction.TOTAL][numOfStyles][numOfUseAnimations];
-			thrustAnimation = new Animation[Direction.TOTAL][numOfStyles][numOfUseAnimations];
-			for (int style = 0; style < numOfStyles; style++) {
-				for (int useAnim = 0; useAnim < numOfUseAnimations; useAnim++) {
-					TextureRegion[][] useSheet = AssetManager.fixBleedingSpriteSheet(TextureRegion.split(new Texture("items/" + id + "/use_" + style + "_" + useAnim + ".png"), ArchipeloClient.PLAYER_SIZE, ArchipeloClient.PLAYER_SIZE));
-					for (int direction = 0; direction < Direction.TOTAL; direction++) {
-						useAnimation[direction][style][useAnim] = new Animation(useAnimationLengths[useAnim] / useSheet[direction].length, useSheet[direction]);
-					}
+			usableItemAnimations = new ItemUseAnimation[useableAnimationData.length];
+			for (int i = 0; i < usableItemAnimations.length; i++) {
+				try {
+					usableItemAnimations[i] = new ItemUseAnimation(this, i, useableAnimationData[i]);
+				} catch (IllegalItemUseAnimationDataException e) {
+					System.out.println(e.getMessage());
 				}
 			}
 		}
@@ -183,12 +190,8 @@ public enum ItemType {
 	 * @param useStyle
 	 * @return
 	 */
-	public TextureRegion getAnimationFrameForUsable (String animationId, Direction direction, float statetime, int style, int useStyle, float totalRuntime) {
-		if (animationId.equals("use") || animationId.equals("thrust"))
-			return getUseFrame(direction, statetime, useStyle, style, totalRuntime);
-		else if (animationId.equals("usewalk"))
-			return getUseFrame(direction, statetime, useStyle, style, totalRuntime);
-		return null;
+	public TextureRegion getAnimationFrameForUsable (Direction direction, float statetime, int style, int useStyle) {
+		return usableItemAnimations[useStyle % getNumOfUseAnimations()].getFrame(statetime, direction, style);
 	}
 	
 	/**
@@ -209,11 +212,11 @@ public enum ItemType {
 		else if (animationId.equals("roll"))
 			return getRollFrame(direction, statetime, style, totalRuntime);
 		else if (animationId.equals("use"))
-			return getUseFrame(direction, 0, 0, style, totalRuntime);
+			return getUseFrame(direction, 0, style, totalRuntime);
 		else if (animationId.equals("usewalk"))
-			return getUseFrame(direction, statetime, 0, style, totalRuntime);
+			return getUseFrame(direction, statetime, style, totalRuntime);
 		else if (animationId.equals("thrust"))
-			return getThrustFrame(direction, statetime, 0, style, totalRuntime);
+			return getThrustFrame(direction, statetime, style, totalRuntime);
 		else
 			return null;
 	}
@@ -236,20 +239,23 @@ public enum ItemType {
 		return animation.getKeyFrame(statetime, true);
 	}
 	
-	public TextureRegion getUseFrame (Direction direction, float statetime, int useStyle, int style, float totalRuntime) {
-		Animation animation = useAnimation[direction.ordinal()][style % numOfStyles][useStyle % numOfUseAnimations];
+	public TextureRegion getUseFrame (Direction direction, float statetime, int style, float totalRuntime) {
+		Animation animation = useAnimation[direction.ordinal()][style % numOfStyles];
 		animation.setFrameDuration(totalRuntime / animation.getKeyFrames().length);
 		return animation.getKeyFrame(statetime, true);
 	}
 	
-	public TextureRegion getThrustFrame (Direction direction, float statetime, int useStyle, int style, float totalRuntime) {
-		Animation animation = thrustAnimation[direction.ordinal()][style % numOfStyles][useStyle % numOfUseAnimations];
+	public TextureRegion getThrustFrame (Direction direction, float statetime, int style, float totalRuntime) {
+		Animation animation = thrustAnimation[direction.ordinal()][style % numOfStyles];
 		animation.setFrameDuration(totalRuntime / animation.getKeyFrames().length);
 		return animation.getKeyFrame(statetime, true);
 	}
 	
-	public TextureRegion getIcon () {
-		return icon;
+	public TextureRegion getIcon (int style) {
+		if (icon == null)
+			return invalidIconTexture;
+		else
+			return icon[style % numOfStyles];
 	}
 	
 	@Override
@@ -269,6 +275,18 @@ public enum ItemType {
 		return useType;
 	}
 	
+	public int getNumOfUseAnimations() {
+		return usableItemAnimations.length;
+	}
+	
+	public float getUseAnimationLength(int useType) {
+		return usableItemAnimations[useType % getNumOfUseAnimations()].getTotalRuntime();
+	}
+	
+	public ItemUseAnimation getAnimationFromUseType(int useType) {
+		return usableItemAnimations[useType % getNumOfUseAnimations()];
+	}
+	
 	private static HashMap<String, ItemType> itemTypes;
 	static {
 		itemTypes = new HashMap<String, ItemType>();
@@ -281,10 +299,8 @@ public enum ItemType {
 	 * Loads all icon images and sounds
 	 */
 	public static void loadAllAssets () {
-		ArchipeloClient.getGame().getAssetManager().putTextureMap("item-icons", "items/icons.png", ArchipeloClient.TILE_SIZE, ArchipeloClient.TILE_SIZE);
-		TextureRegion[][] iconMap = ArchipeloClient.getGame().getAssetManager().getTextureMap("item-icons");
 		for (ItemType type : ItemType.values()) {
-			type.loadImages(iconMap);
+			type.loadImages();
 			type.loadSounds();
 		}
 	}

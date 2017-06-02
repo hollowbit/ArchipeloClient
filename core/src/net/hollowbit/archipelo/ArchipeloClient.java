@@ -105,9 +105,15 @@ public class ArchipeloClient extends ApplicationAdapter {
 		shaderManager = new ShaderManager();
 		
 		skin = new Skin(Gdx.files.internal("ui/uiskin.json"));
+		//Scale skin fonts
+		skin.getFont("default-font").getData().setScale(2);
+		skin.getFont("medium-font").getData().setScale(3);
+		skin.getFont("chat-font").getData().setScale(1);
+		skin.getFont("large-font").getData().setScale(4);
 		
 		//Enable color markup on skin fonts
 		skin.getFont("default-font").getData().markupEnabled = true;
+		skin.getFont("medium-font").getData().markupEnabled = true;
 		skin.getFont("large-font").getData().markupEnabled = true;
 		skin.getFont("chat-font").getData().markupEnabled = true;
 		
@@ -167,7 +173,7 @@ public class ArchipeloClient extends ApplicationAdapter {
 			screenManager.setScreen(new ErrorScreen(languageSpecificMessageManager.getMessage(Cat.UI, "couldNotConnectToHB")));
 		
 		//For testing purposes
-		IS_MOBILE = true;
+		//IS_MOBILE = true;
 		//IS_GWT = true;
 		
 		//If on mobile device, set IS_MOBILE to true

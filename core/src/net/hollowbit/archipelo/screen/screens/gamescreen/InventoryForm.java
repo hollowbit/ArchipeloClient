@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
@@ -228,7 +229,7 @@ public class InventoryForm extends Form implements InventorySlotActionHandler {
 		super.draw(batch, parentAlpha);
 		if (itemInHand != null) {
 			batch.setColor(itemInHand.getColor());
-			batch.draw(itemInHand.getType().getIcon(), Gdx.input.getX() - xOffset, Gdx.graphics.getHeight() - Gdx.input.getY() - yOffset, InventorySlot.SIZE * this.getScaleX() - InventorySlot.OFFSET * 2, InventorySlot.SIZE * this.getScaleY() - InventorySlot.OFFSET * 2);
+			batch.draw(itemInHand.getType().getIcon(itemInHand.style), Gdx.input.getX() - xOffset, Gdx.graphics.getHeight() - Gdx.input.getY() - yOffset, InventorySlot.SIZE * this.getScaleX() - InventorySlot.OFFSET * 2, InventorySlot.SIZE * this.getScaleY() - InventorySlot.OFFSET * 2);
 			batch.setColor(1, 1, 1, 1);
 		}
 	}
@@ -326,10 +327,14 @@ public class InventoryForm extends Form implements InventorySlotActionHandler {
 		
 		itemStatTable.clear();
 		
-		Label title = new Label(item.getType().getDisplayName(), getSkin());
+		Label title = new Label(item.getType().getDisplayName(), getSkin(), "menu-title");
 		itemStatTable.add(title).padBottom(2);
 		itemStatTable.row();
-
+		
+		Image image = new Image(item.getType().getIcon(item.style));
+		itemStatTable.add(image).padBottom(6).width(100).height(100).center();
+		itemStatTable.row();
+		
 		Label desc = new Label(item.getType().getDescription(), getSkin(), "small");
 		desc.setWrap(true);
 		itemStatTable.add(desc).growX().left().padBottom(6).minWidth(300);

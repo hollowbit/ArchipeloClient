@@ -138,7 +138,7 @@ public class GameScreen extends Screen implements PacketHandler, InputProcessor 
 			chatTextField.setPosition(2, 270);
 		} else {
 			chatTextField = new TextField("", ArchipeloClient.getGame().getUiSkin());
-			chatTextField.setBounds(0, 0, ChatMessage.WIDTH, 40);
+			chatTextField.setBounds(0, 0, ChatMessage.WIDTH, 45);
 			chatTextField.setPosition(2, 2);
 		}
 		QuickUi.makeTextFieldMobileCompatible("Chat", chatTextField, stage, new TextFieldMessageListener() {

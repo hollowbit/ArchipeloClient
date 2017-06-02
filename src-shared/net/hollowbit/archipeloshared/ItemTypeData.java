@@ -2,8 +2,7 @@ package net.hollowbit.archipeloshared;
 
 public class ItemTypeData {
 	
-	public int iconX = 0;
-	public int iconY = 0;
+	public int iconSize = 16;
 	public int maxStackSize = 1;
 	public int durability = 1;
 	public int equipType = -1;
@@ -12,9 +11,8 @@ public class ItemTypeData {
 	public boolean consumable = false;
 	public boolean material = false;
 	public int numOfStyles = 1;
-	public int numOfUseAnimations = 1;
 	public String[][] sounds = new String[numOfStyles][0];
-	public float[] useAnimationLengths = new float[1];
+	public ItemUseAnimationData[] useAnimData = new ItemUseAnimationData[0];
 	
 	//Combat stats
 	public int minDamage = DEFAULT_MIN_DAMAGE;

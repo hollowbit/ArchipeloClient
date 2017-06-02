@@ -5,7 +5,7 @@ import net.hollowbit.archipelo.items.Item;
 import net.hollowbit.archipelo.items.UseType;
 import net.hollowbit.archipeloshared.UseTypeSettings;
 
-public class BasicWeaponUseType implements UseType {
+public class BasicWeaponUseType extends UseType {
 
 	@Override
 	public UseTypeSettings useItemTap(CurrentPlayer user, Item item) {

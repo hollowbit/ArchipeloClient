@@ -17,7 +17,7 @@ public class Player extends LivingEntity {
 	
 	public static final float ROLLING_SPEED_SCALE = 3.0f;
 	public static final float SPRINTING_SPEED_SCALE = 1.4f;
-	public static final float ROLL_DOUBLE_CLICK_DURATION = 0.3f;
+	public static final float ROLL_DOUBLE_CLICK_DURATION = 0.21f;
 	
 	//Equipped Inventory Index
 	public static final int EQUIP_SIZE = 10;

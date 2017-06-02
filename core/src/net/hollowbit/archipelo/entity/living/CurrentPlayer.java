@@ -47,6 +47,7 @@ public class CurrentPlayer extends Player implements PacketHandler, RollableEnti
 	Vector2 serverPos;
 	Random random;
 	float timeSinceLastCorrection = 0;
+	float timeAttackHeld = 0;
 	
 	public void create (EntitySnapshot fullSnapshot, Map map, EntityType entityType) {
 		super.create(fullSnapshot, map, entityType);
@@ -73,6 +74,7 @@ public class CurrentPlayer extends Player implements PacketHandler, RollableEnti
 	public void update(float deltaTime) {
 		super.update(deltaTime);
 		
+		this.timeAttackHeld += deltaTime;
 		this.timeSinceLastCorrection += deltaTime;
 		
 		//Refresh stats for this player every tick
@@ -328,8 +330,13 @@ public class CurrentPlayer extends Player implements PacketHandler, RollableEnti
 	public void controlUp (int control) {
 		switch (control) {
 		case Controls.ATTACK:
-			if (isCurrentlyUsingAnItem())
+			if (isCurrentlyUsingAnItem()) {
 				animationManager.endCurrentAnimation();
+				Item item = clothesRenderer.getDisplayInventory()[Player.EQUIP_INDEX_USABLE];
+				
+				if (item != null)
+					item.useHold(this, timeAttackHeld);
+			}
 			break;
 		case Controls.ROLL:
 			if (!isCurrentlyUsingAnItem() && !isRolling()) {
@@ -376,7 +383,12 @@ public class CurrentPlayer extends Player implements PacketHandler, RollableEnti
 			}
 			break;
 		case Controls.ATTACK:
-			if (!isRolling() && !isCurrentlyUsingAnItem()) {
+			if (isCurrentlyUsingAnItem()) {
+				Item item = clothesRenderer.getDisplayInventory()[Player.EQUIP_INDEX_USABLE];
+				
+				if (item != null)
+					item.useDoubleTap(this, timeAttackHeld);
+			} else if (!isRolling()) {
 				ArrayList<Entity> entitiesOnMap = (ArrayList<Entity>) ArchipeloClient.getGame().getWorld().cloneEntitiesList();
 				boolean useHitAnimation = true;
 				for (Entity entity : entitiesOnMap) {
@@ -400,6 +412,7 @@ public class CurrentPlayer extends Player implements PacketHandler, RollableEnti
 					Item item = clothesRenderer.getDisplayInventory()[Player.EQUIP_INDEX_USABLE];
 					
 					if (item != null) {
+						this.timeAttackHeld = 0;
 						UseTypeSettings settings = item.useTap(this);
 						if (settings != null)
 							playUseAnimation(item, settings.animationType, item.getType().getAnimationFromUseType(settings.animationType).usesThrust(), settings.soundType);

@@ -57,6 +57,8 @@ public class InventoryForm extends Form implements InventorySlotActionHandler {
 	public static final int BUFFS_INVENTORY = 7;
 	public static final int AMMO_INVENTORY = 8;
 	
+	public static final int IN_HAND_ITEM_SIZE = 80;
+	
 	private static final int DISPLAY_SIZE = 180;
 	
 	private Table mainInventoryTable;
@@ -72,8 +74,6 @@ public class InventoryForm extends Form implements InventorySlotActionHandler {
 	
 	private int slotDown = -1, inventoryDown = -1;
 	private Item itemInHand = null;
-	
-	private float xOffset = 0, yOffset = 0;
 	
 	private InventorySlot[] mainInventorySlots;
 	private InventorySlot[] equippedInventorySlots;
@@ -214,7 +214,7 @@ public class InventoryForm extends Form implements InventorySlotActionHandler {
 		this.add(mainInventoryTable);
 		
 		itemStatTable = new Table(getSkin());
-		this.add(itemStatTable).pad(10).width(400).height(400);
+		this.add(itemStatTable).pad(10).width(400).height(500);
 		itemStatTable.setBackground(new NinePatchDrawable(getSkin().getPatch("textfield")));
 		
 		this.pack();
@@ -232,7 +232,7 @@ public class InventoryForm extends Form implements InventorySlotActionHandler {
 		super.draw(batch, parentAlpha);
 		if (itemInHand != null) {
 			batch.setColor(itemInHand.getColor());
-			batch.draw(itemInHand.getType().getIcon(itemInHand.style), Gdx.input.getX() - xOffset, Gdx.graphics.getHeight() - Gdx.input.getY() - yOffset, InventorySlot.SIZE * this.getScaleX() - InventorySlot.OFFSET * 2, InventorySlot.SIZE * this.getScaleY() - InventorySlot.OFFSET * 2);
+			batch.draw(itemInHand.getType().getIcon(itemInHand.style), Gdx.input.getX() - (IN_HAND_ITEM_SIZE * this.getScaleX()) / 2, Gdx.graphics.getHeight() - Gdx.input.getY() - (IN_HAND_ITEM_SIZE * this.getScaleY()) / 2, IN_HAND_ITEM_SIZE * this.getScaleX(), IN_HAND_ITEM_SIZE * this.getScaleY());
 			batch.setColor(1, 1, 1, 1);
 		}
 	}
@@ -243,12 +243,11 @@ public class InventoryForm extends Form implements InventorySlotActionHandler {
 			slotDown = slot;
 			inventoryDown = inventoryNum;
 			this.itemInHand = item;
-			this.xOffset = xOffset;
-			this.yOffset = yOffset;
 		} else {
 			if (inventoryNum == -1) {
 				String command = "delete";
 				HashMap<String, String> data = new HashMap<String, String>();
+				
 				data.put(KEY_FROM_SLOT, "" + slotDown);
 				data.put(KEY_FROM_INVENTORY, "" + inventoryDown);
 
@@ -354,7 +353,7 @@ public class InventoryForm extends Form implements InventorySlotActionHandler {
 		
 		Label desc = new Label(item.getType().getDescription(), getSkin(), "small");
 		desc.setWrap(true);
-		itemStatTable.add(desc).growX().left().padBottom(6).minWidth(300);
+		itemStatTable.add(desc).growX().left().padBottom(4).minWidth(300);
 		
 		boolean showStats = item.getType().maxDamage != ItemTypeData.DEFAULT_MAX_DAMAGE ||
 							item.getType().maxDamage != ItemTypeData.DEFAULT_MAX_DAMAGE ||
@@ -367,44 +366,45 @@ public class InventoryForm extends Form implements InventorySlotActionHandler {
 		
 		if (showStats) {
 			itemStatTable.row();
-			Label stats = new Label(LM.ui("stats") + ":", getSkin(), "default");
-			itemStatTable.add(stats).growX().left().padBottom(2);
+			Label stats = new Label(LM.ui("stats") + ":", getSkin());
+			itemStatTable.add(stats).growX().left();
 			itemStatTable.row();
 			
 			//Add stats if they are different from defaults
 			if (item.getType().maxDamage != ItemTypeData.DEFAULT_MAX_DAMAGE) {
-				Label stat = new Label(LM.ui("minDamage") + ": " + item.getType().minDamage, getSkin(), "small");
-				itemStatTable.add(stat).growX().left().padBottom(2);
+				Label stat = new Label(LM.ui("minDamage") + ": " + item.getType().minDamage, getSkin());
+				stat.setFontScale(1);
+				itemStatTable.add(stat).growX().left();
 				itemStatTable.row();
 			}
 			
 			if (item.getType().maxDamage != ItemTypeData.DEFAULT_MAX_DAMAGE) {
-				Label stat = new Label(LM.ui("maxDamage") + ": " + item.getType().maxDamage, getSkin(), "small");
-				itemStatTable.add(stat).growX().left().padBottom(2);
+				Label stat = new Label(LM.ui("maxDamage") + ": " + item.getType().maxDamage, getSkin());
+				itemStatTable.add(stat).growX().left();
 				itemStatTable.row();
 			}
 			
 			if (item.getType().defense != ItemTypeData.DEFAULT_DEFENSE) {
-				Label stat = new Label(LM.ui("defense") + ": " + item.getType().defense, getSkin(), "small");
-				itemStatTable.add(stat).growX().left().padBottom(2);
+				Label stat = new Label(LM.ui("defense") + ": " + item.getType().defense, getSkin());
+				itemStatTable.add(stat).growX().left();
 				itemStatTable.row();
 			}
 			
 			if (item.getType().damageMultiplier != ItemTypeData.DEFAULT_DAMAGE_MULTIPLIER) {
-				Label stat = new Label(LM.ui("damageMultiplier") + ": " + item.getType().damageMultiplier, getSkin(), "small");
-				itemStatTable.add(stat).growX().left().padBottom(2);
+				Label stat = new Label(LM.ui("damageMultiplier") + ": " + item.getType().damageMultiplier, getSkin());
+				itemStatTable.add(stat).growX().left();
 				itemStatTable.row();
 			}
 			
 			if (item.getType().defenseMultiplier != ItemTypeData.DEFAULT_DEFENSE_MULTIPLIER) {
-				Label stat = new Label(LM.ui("defenseMultiplier") + ": " + item.getType().defenseMultiplier, getSkin(), "small");
-				itemStatTable.add(stat).growX().left().padBottom(2);
+				Label stat = new Label(LM.ui("defenseMultiplier") + ": " + item.getType().defenseMultiplier, getSkin());
+				itemStatTable.add(stat).growX().left();
 				itemStatTable.row();
 			}
 			
 			if (item.getType().speedMultiplier != ItemTypeData.DEFAULT_SPEED_MULTIPLIER) {
-				Label stat = new Label(LM.ui("speedMultiplier") + ": " + item.getType().speedMultiplier, getSkin(), "small");
-				itemStatTable.add(stat).growX().left().padBottom(2);
+				Label stat = new Label(LM.ui("speedMultiplier") + ": " + item.getType().speedMultiplier, getSkin());
+				itemStatTable.add(stat).growX().left();
 				itemStatTable.row();
 			}
 			
@@ -412,14 +412,14 @@ public class InventoryForm extends Form implements InventorySlotActionHandler {
 			 * Check if max damage is different for crit stuff since they could be default but still be used. Also min damage could still be 0 and make these not display
 			 */
 			if (item.getType().maxDamage != ItemTypeData.DEFAULT_MAX_DAMAGE) {
-				Label stat = new Label(LM.ui("critMultiplier") + ": " + item.getType().critMultiplier, getSkin(), "small");
-				itemStatTable.add(stat).growX().left().padBottom(2);
+				Label stat = new Label(LM.ui("critMultiplier") + ": " + item.getType().critMultiplier, getSkin());
+				itemStatTable.add(stat).growX().left();
 				itemStatTable.row();
 			}
 			
 			if (item.getType().maxDamage != ItemTypeData.DEFAULT_MAX_DAMAGE) {
-				Label stat = new Label(LM.ui("critChance") + ": " + item.getType().critChance, getSkin(), "small");
-				itemStatTable.add(stat).growX().left().padBottom(2);
+				Label stat = new Label(LM.ui("critChance") + ": " + item.getType().critChance, getSkin());
+				itemStatTable.add(stat).growX().left();
 				itemStatTable.row();
 			}
 		}

@@ -30,9 +30,7 @@ import net.hollowbit.archipelo.hollowbitserver.HollowBitServerConnectivity;
 import net.hollowbit.archipelo.items.ItemType;
 import net.hollowbit.archipelo.network.NetworkManager;
 import net.hollowbit.archipelo.screen.ScreenManager;
-import net.hollowbit.archipelo.screen.screens.DebugStartScreen;
-import net.hollowbit.archipelo.screen.screens.ErrorScreen;
-import net.hollowbit.archipelo.screen.screens.MainMenuScreen;
+import net.hollowbit.archipelo.screen.screens.*;
 import net.hollowbit.archipelo.tools.AssetManager;
 import net.hollowbit.archipelo.tools.FontManager;
 import net.hollowbit.archipelo.tools.GameCamera;
@@ -166,9 +164,10 @@ public class ArchipeloClient extends ApplicationAdapter {
 		playerInformationManager = new PlayerInformationManager();
 		
 		if (hollowBitServerConnectivity.connect()) {
-			if (DEBUGMODE)
+			if (DEBUGMODE) {
 				screenManager.setScreen(new DebugStartScreen());
-			else
+				//screenManager.setScreen(new FontTestScreen());
+			} else
 				screenManager.setScreen(new MainMenuScreen());
 		} else
 			screenManager.setScreen(new ErrorScreen(languageSpecificMessageManager.getMessage(Cat.UI, "couldNotConnectToHB")));

@@ -94,7 +94,7 @@ public class InventorySlot extends Widget {
 		batch.setColor(1, 1, 1, parentAlpha);
 		patch.draw(batch, this.getX(), this.getY(), this.getWidth(), this.getHeight());
 		if (background != null)
-			batch.draw(background, this.getX(), this.getY(), this.getWidth(), this.getHeight());
+			batch.draw(background, this.getX() + OFFSET, this.getY() + OFFSET, this.getWidth() - OFFSET * 2, this.getHeight() - OFFSET * 2);
 			
 		if (_item != null) {
 			Color itemIconDrawColor = _item.getColor();

@@ -1,0 +1,22 @@
+{
+messages:{
+	body: "Basic plain body to be colored.",
+	shirt_basic: "Just a basic shirt.",
+	boots_basic: "Just some basic boots.",
+	face1: "Face1",
+	gloves_basic: "Just some basic gloves",
+	hair1: "Hair1",
+	pants_basic: "Just some basic pants.",
+	shoulderpads_basic: "Just some basic shoulderpads.",
+	blobby_ashes: "The ashes of Blobby Bob. R.I.P. He will not be missed.",
+	spear_basic: "A basic spear with a high attack rate.",
+	assistant_general: "Powerful broadsword",
+	soul_disruptor: "Opposite to the Spirit Disruptor, this weapon has high damage but a low critical hit multiplier and critical hit chance.",
+	spirit_disruptor: "Opposite to the Soul Disruptor, this weapon has low damage but a high critical hit multiplier and critical hit chance.",
+	demons_tongue: "Legit, it's a tongue from a demon.",
+	fann_katana: "High quality kanata built by the Fann Corporation",
+	hylian_broadsword: "It has been rumoured that this weapon was stolen from a crazy little boy with a green tunic.",
+	little_red: "High rate of fire axe specialized in killing big bad wolfs.",
+	soul_trapper: "Sometimes their voices can still be heared...",
+	training_sword: "Typical beginner's sword, usually used by children.",
+}}

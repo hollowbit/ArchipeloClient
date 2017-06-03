@@ -4,7 +4,7 @@
 	equipType: 9,
 	numOfStyles: 1,
 	useAnimData: [
-		{stick: true, timings:[0.1, 0.1, 0.2]}
+		{stick: true, timings:[0.08, 0.08, 0.08, 0.2]}
 	],
 	minDamage: 25,
 	maxDamage: 30,

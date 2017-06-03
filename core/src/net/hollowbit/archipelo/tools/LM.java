@@ -37,8 +37,12 @@ public class LM {
 		return getMsg(Cat.ERROR, id);
 	}
 	
-	public static String items(String id) {
-		return getMsg(Cat.ITEMS, id);
+	public static String itemNames(String id) {
+		return getMsg(Cat.ITEM_NAMES, id);
+	}
+	
+	public static String itemDescs(String id) {
+		return getMsg(Cat.ITEM_DESCS, id);
 	}
 	
 }

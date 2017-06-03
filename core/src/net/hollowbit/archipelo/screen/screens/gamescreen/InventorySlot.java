@@ -2,6 +2,7 @@ package net.hollowbit.archipelo.screen.screens.gamescreen;
 
 import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.NinePatch;
@@ -27,8 +28,10 @@ public class InventorySlot extends Widget {
 	private float timer = -1;
 	private InventorySlotActionHandler handler;
 	private boolean ignoreClick = false;
+	private Texture background;
 	
-	public InventorySlot (Item item, final int slotNum, final int inventoryNum, final InventorySlotActionHandler handler) {
+	public InventorySlot (Item item, final int slotNum, final int inventoryNum, final InventorySlotActionHandler handler, Texture background) {
+		this.background = background;
 		this._item = item;
 		this.handler = handler;
 		this.skin = ArchipeloClient.getGame().getUiSkin();
@@ -69,6 +72,10 @@ public class InventorySlot extends Widget {
 		});
 	}
 	
+	public InventorySlot (Item item, final int slotNum, final int inventoryNum, final InventorySlotActionHandler handler) {
+		this(item, slotNum, inventoryNum, handler, null);
+	}
+	
 	@Override
 	public void act (float delta) {
 		if (timer >= 0) {
@@ -86,6 +93,9 @@ public class InventorySlot extends Widget {
 	public void draw (Batch batch, float parentAlpha) {
 		batch.setColor(1, 1, 1, parentAlpha);
 		patch.draw(batch, this.getX(), this.getY(), this.getWidth(), this.getHeight());
+		if (background != null)
+			batch.draw(background, this.getX(), this.getY(), this.getWidth(), this.getHeight());
+			
 		if (_item != null) {
 			Color itemIconDrawColor = _item.getColor();
 			itemIconDrawColor.a = parentAlpha;

@@ -1,0 +1,22 @@
+{
+messages:{
+	body: "Body",
+	shirt_basic: "Basic Shirt",
+	boots_basic: "Basic Boots",
+	face1: "Face1",
+	gloves_basic: "Basic Gloves",
+	hair1: "Hair1",
+	pants_basic: "Basic Pants",
+	shoulderpads_basic: "Basic Shoulderpads",
+	blobby_ashes: "Blobby Bob's Ashes",
+	spear_basic: "Basic Spear",
+	assistant_general: "Assistant General",
+	soul_disruptor: "Soul Disruptor",
+	spirit_disruptor: "Spirit Disruptor",
+	demons_tongue: "Demon's Tongue",
+	fann_katana: "Fann Katana",
+	hylian_broadsword: "Hylian Broadsword",
+	little_red: "Little Red",
+	soul_trapper: "Soul Trapper",
+	training_sword: "Training Sword",
+}}

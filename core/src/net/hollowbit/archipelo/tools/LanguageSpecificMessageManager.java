@@ -111,7 +111,8 @@ public class LanguageSpecificMessageManager {
 		UI("ui"),
 		ERROR("error"),
 		CHAT("chat"),
-		ITEMS("items");
+		ITEM_NAMES("item_names"),
+		ITEM_DESCS("item_descs");
 		
 		private String id;
 		

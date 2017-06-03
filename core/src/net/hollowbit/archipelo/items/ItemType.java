@@ -13,7 +13,7 @@ import com.badlogic.gdx.utils.reflect.ReflectionException;
 
 import net.hollowbit.archipelo.ArchipeloClient;
 import net.hollowbit.archipelo.items.ItemUseAnimation.IllegalItemUseAnimationDataException;
-import net.hollowbit.archipelo.items.usetypes.*;
+import net.hollowbit.archipelo.items.usetypes.BasicWeaponUseType;
 import net.hollowbit.archipelo.tools.AssetManager;
 import net.hollowbit.archipelo.tools.LM;
 import net.hollowbit.archipeloshared.Direction;
@@ -35,7 +35,12 @@ public enum ItemType {
 	ASSISTANT_GENERAL("assistant_general", new BasicWeaponUseType()),
 	SOUL_DISRUPTOR("soul_disruptor", new BasicWeaponUseType()),
 	SPIRIT_DISRUPTOR("spirit_disruptor", new BasicWeaponUseType()),
-	DEMONS_TONGUE("demons_tongue", new BasicWeaponUseType());
+	DEMONS_TONGUE("demons_tongue", new BasicWeaponUseType()),
+	FANN_KATANA("fann_katana", new BasicWeaponUseType()),
+	HYLIAN_BROADSWORD("hylian_broadsword", new BasicWeaponUseType()),
+	LITTLE_RED("little_red", new BasicWeaponUseType()),
+	SOUL_TRAPPER("soul_trapper", new BasicWeaponUseType()),
+	TRAINING_SWORD("training_sword", new BasicWeaponUseType());
 
 	public static final int NO_EQUIP_TYPE = -1;
 	public static final int EQUIP_INDEX_USABLE = 9;
@@ -264,11 +269,11 @@ public enum ItemType {
 	}
 	
 	public String getDisplayName () {
-		return LM.items(id + "Name");
+		return LM.itemNames(id);
 	}
 	
 	public String getDescription () {
-		return LM.items(id + "Desc");
+		return LM.itemDescs(id);
 	}
 	
 	public UseType getUseType () {

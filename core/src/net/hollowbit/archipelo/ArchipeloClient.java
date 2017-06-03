@@ -134,6 +134,7 @@ public class ArchipeloClient extends ApplicationAdapter {
 		assetManager.putTexture("exp-bar", "ui/statusbar/exp.png");
 		assetManager.putTexture("status-bar-overlay", "ui/statusbar/overlay.png");
 		assetManager.putTexture("status-bar-background", "ui/statusbar/background.png");
+		assetManager.putTexture("garbage", "ui/garbage.png");
 		
 		//Audio
 		musicManager = new MusicManager();

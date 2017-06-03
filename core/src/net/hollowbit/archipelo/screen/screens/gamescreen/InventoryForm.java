@@ -117,6 +117,9 @@ public class InventoryForm extends Form implements InventorySlotActionHandler {
 			}
 		}
 		inventorySlotCollections.put(MAIN_INVENTORY, mainInventorySlots);
+		mainInventoryTable.row();
+		
+		mainInventoryTable.add(new InventorySlot(null, 0, -1, this, ArchipeloClient.getGame().getAssetManager().getTexture("garbage"))).width(InventorySlot.SIZE).height(InventorySlot.SIZE).pad(1);;
 
 		//Equipped Inventory//
 		equippedInventorySlots = new InventorySlot[EQUIPPED_INVENTORY_SIZE];
@@ -243,41 +246,55 @@ public class InventoryForm extends Form implements InventorySlotActionHandler {
 			this.xOffset = xOffset;
 			this.yOffset = yOffset;
 		} else {
-			boolean valid = true;
-			if (slot != slotDown || inventoryNum != inventoryDown) {
-				if (inventoryNum == WEAPON_INVENTORY) {
-					if (itemInHand.getType().equipType != ItemType.EQUIP_INDEX_USABLE)
-						valid = false;
-				} else if (inventoryNum == AMMO_INVENTORY) {
-					if (!itemInHand.getType().ammo)
-						valid = false;
-				} else if (inventoryNum == BUFFS_INVENTORY) {
-					if (!itemInHand.getType().buff)
-						valid = false;
-				} else if (inventoryNum == CONSUMABLES_INVENTORY) {
-					if (!itemInHand.getType().consumable)
-						valid = false;
-				} else if (inventoryNum == EQUIPPED_INVENTORY || inventoryNum == COSMETIC_INVENTORY) {
-					if (itemInHand.getType().equipType != slot)
-						valid = false;
+			if (inventoryNum == -1) {
+				String command = "delete";
+				HashMap<String, String> data = new HashMap<String, String>();
+				data.put(KEY_FROM_SLOT, "" + slotDown);
+				data.put(KEY_FROM_INVENTORY, "" + inventoryDown);
+
+				ArchipeloClient.getGame().getNetworkManager().sendPacket(new FormInteractPacket(this.id, command, data));
+				
+				slotDown = -1;
+				inventoryDown = -1;
+				itemInHand = null;	
+			} else {
+				boolean valid = true;
+				if (slot != slotDown || inventoryNum != inventoryDown) {
+					if (inventoryNum == WEAPON_INVENTORY) {
+						if (itemInHand.getType().equipType != ItemType.EQUIP_INDEX_USABLE)
+							valid = false;
+					} else if (inventoryNum == AMMO_INVENTORY) {
+						if (!itemInHand.getType().ammo)
+							valid = false;
+					} else if (inventoryNum == BUFFS_INVENTORY) {
+						if (!itemInHand.getType().buff)
+							valid = false;
+					} else if (inventoryNum == CONSUMABLES_INVENTORY) {
+						if (!itemInHand.getType().consumable)
+							valid = false;
+					} else if (inventoryNum == EQUIPPED_INVENTORY || inventoryNum == COSMETIC_INVENTORY) {
+						if (itemInHand.getType().equipType != slot)
+							valid = false;
+					}
+					
+					if (valid) {
+						String command = "move";
+						HashMap<String, String> data = new HashMap<String, String>();
+						data.put(KEY_FROM_SLOT, "" + slotDown);
+						data.put(KEY_TO_SLOT, "" + slot);
+						data.put(KEY_FROM_INVENTORY, "" + inventoryDown);
+						data.put(KEY_TO_INVENTORY, "" + inventoryNum);
+	
+						ArchipeloClient.getGame().getNetworkManager().sendPacket(new FormInteractPacket(this.id, command, data));	
+					}
 				}
 				
 				if (valid) {
-					String command = "move";
-					HashMap<String, String> data = new HashMap<String, String>();
-					data.put(KEY_FROM_SLOT, "" + slotDown);
-					data.put(KEY_TO_SLOT, "" + slot);
-					data.put(KEY_FROM_INVENTORY, "" + inventoryDown);
-					data.put(KEY_TO_INVENTORY, "" + inventoryNum);
-
-					ArchipeloClient.getGame().getNetworkManager().sendPacket(new FormInteractPacket(this.id, command, data));	
+					inventorySlotCollections.get(inventoryNum)[slot].setItem(itemInHand);
+					slotDown = -1;
+					inventoryDown = -1;
+					itemInHand = null;
 				}
-			}
-			if (valid) {
-				inventorySlotCollections.get(inventoryNum)[slot].setItem(itemInHand);
-				slotDown = -1;
-				inventoryDown = -1;
-				itemInHand = null;
 			}
 		}
 	}

@@ -20,7 +20,7 @@ import net.hollowbit.archipelo.network.packets.EntityAddPacket;
 import net.hollowbit.archipelo.network.packets.EntityRemovePacket;
 import net.hollowbit.archipelo.network.packets.TeleportPacket;
 import net.hollowbit.archipelo.screen.screens.GameScreen;
-import net.hollowbit.archipelo.screen.screens.gamescreen.MapTagPopupText;
+import net.hollowbit.archipelo.screen.screens.gamescreen.popup.MapTagPopupText;
 import net.hollowbit.archipelo.tools.FlagsManager;
 import net.hollowbit.archipelo.tools.StaticTools;
 import net.hollowbit.archipeloshared.CollisionRect;

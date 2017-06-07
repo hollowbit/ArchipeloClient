@@ -6,6 +6,7 @@
 	useAnimData: [
 		{timings:[0.05, 0.05, 0.6], thrust: true}
 	],
+	knockback: 16,
 	minDamage: 111,
 	maxDamage: 111,
 	critMultiplier: 6,

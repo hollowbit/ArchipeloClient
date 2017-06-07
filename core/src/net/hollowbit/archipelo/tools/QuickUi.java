@@ -28,7 +28,7 @@ public class QuickUi {
 	public static final int ERROR_DIALOG_WRAP_WIDTH = 500;
 	
 	public static void addCloseButtonToWindow (final Window window) {
-		TextButton closeButton = new TextButton("X", ArchipeloClient.getGame().getUiSkin(), "small");
+		TextButton closeButton = new TextButton("x", ArchipeloClient.getGame().getUiSkin(), "small");
 		closeButton.addListener(new ClickListener () {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {

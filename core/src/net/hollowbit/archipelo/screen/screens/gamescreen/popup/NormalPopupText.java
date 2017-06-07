@@ -1,4 +1,4 @@
-package net.hollowbit.archipelo.screen.screens.gamescreen;
+package net.hollowbit.archipelo.screen.screens.gamescreen.popup;
 
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.BitmapFontCache;
@@ -11,17 +11,19 @@ import net.hollowbit.archipelo.tools.FontManager.Sizes;
 
 public class NormalPopupText extends PopupText {
 	
-	private static final int START_Y = 120;
+	private static final int START_Y = 150;
 	private static final float FADE_TIME = 1;//1 second
 	private static final float LIFE_TIME = 5;//5 seconds
 	private static final float SPACING = 3;//pixels
 	
 	private float timer;
 	private float width;
+	private BitmapFont font;
 	
 	public NormalPopupText (String text, PopupTextManager manager) {
 		super(text, 0, START_Y, manager);
-		GlyphLayout layout = new GlyphLayout(ArchipeloClient.getGame().getFontManager().getFont(Fonts.PIXELATED, Sizes.SMALL), text);
+		font = ArchipeloClient.getGame().getFontManager().getFont(Fonts.PIXELATED, Sizes.VERY_SMALL);
+		GlyphLayout layout = new GlyphLayout(font, text);
 		width = layout.width;
 		timer = 0;
 		for (PopupText popupText : manager.getPopupTexts()) {
@@ -40,7 +42,6 @@ public class NormalPopupText extends PopupText {
 
 	@Override
 	public void render (SpriteBatch batch) {
-		BitmapFont font = ArchipeloClient.getGame().getFontManager().getFont(Fonts.PIXELATED, Sizes.SMALL);
 		if (timer >= LIFE_TIME - FADE_TIME)
 			font.setColor(1, 1, 1, 1 - (1 / FADE_TIME) * (timer - (LIFE_TIME - FADE_TIME)));
 		else

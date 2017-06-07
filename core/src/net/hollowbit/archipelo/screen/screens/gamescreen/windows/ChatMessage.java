@@ -1,4 +1,4 @@
-package net.hollowbit.archipelo.screen.screens.gamescreen;
+package net.hollowbit.archipelo.screen.screens.gamescreen.windows;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -9,6 +9,7 @@ import com.badlogic.gdx.utils.Align;
 
 import net.hollowbit.archipelo.ArchipeloClient;
 import net.hollowbit.archipelo.entity.living.Player;
+import net.hollowbit.archipelo.screen.screens.gamescreen.ChatManager;
 import net.hollowbit.archipelo.tools.FontManager.Fonts;
 import net.hollowbit.archipelo.tools.FontManager.Sizes;
 import net.hollowbit.archipelo.tools.QuickUi;

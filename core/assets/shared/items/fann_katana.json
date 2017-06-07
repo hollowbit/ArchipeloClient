@@ -6,11 +6,12 @@
 	useAnimData: [
 		{runtime: 0.3}
 	],
+	knockback: 30,
 	minDamage: 24,
 	maxDamage: 32,
 	critMultiplier: 1.5,
 	critChance: 10,
-	hitRange: 20,
+	hitRange: 24,
 	sounds: [
 		["actions/hit"],
 	]

@@ -30,12 +30,12 @@ import net.hollowbit.archipelo.network.packets.PopupTextPacket;
 import net.hollowbit.archipelo.screen.Screen;
 import net.hollowbit.archipelo.screen.ScreenType;
 import net.hollowbit.archipelo.screen.screens.gamescreen.ChatManager;
-import net.hollowbit.archipelo.screen.screens.gamescreen.ChatMessage;
-import net.hollowbit.archipelo.screen.screens.gamescreen.ChatWindow;
 import net.hollowbit.archipelo.screen.screens.gamescreen.HealthBar;
-import net.hollowbit.archipelo.screen.screens.gamescreen.MainMenuWindow;
-import net.hollowbit.archipelo.screen.screens.gamescreen.NpcDialogBox;
-import net.hollowbit.archipelo.screen.screens.gamescreen.PopupTextManager;
+import net.hollowbit.archipelo.screen.screens.gamescreen.popup.PopupTextManager;
+import net.hollowbit.archipelo.screen.screens.gamescreen.windows.ChatMessage;
+import net.hollowbit.archipelo.screen.screens.gamescreen.windows.ChatWindow;
+import net.hollowbit.archipelo.screen.screens.gamescreen.windows.MainMenuWindow;
+import net.hollowbit.archipelo.screen.screens.gamescreen.windows.NpcDialogBox;
 import net.hollowbit.archipelo.tools.ControlsManager;
 import net.hollowbit.archipelo.tools.FontManager.Fonts;
 import net.hollowbit.archipelo.tools.FontManager.Sizes;
@@ -214,7 +214,7 @@ public class GameScreen extends Screen implements PacketHandler, InputProcessor 
 	public void renderUi(SpriteBatch batch, float width, float height) {
 		if (ArchipeloClient.DEBUGMODE) {
 			//Fps counter
-			BitmapFont font = ArchipeloClient.getGame().getFontManager().getFont(Fonts.PIXELATED, Sizes.SMALL);
+			BitmapFont font = ArchipeloClient.getGame().getFontManager().getFont(Fonts.PIXELATED, Sizes.VERY_SMALL);
 			GlyphLayout layoutFPS = new GlyphLayout(font, "FPS: " + Gdx.graphics.getFramesPerSecond());
 			font.draw(batch, layoutFPS, width / 2 - layoutFPS.width / 2, height - layoutFPS.height);
 			

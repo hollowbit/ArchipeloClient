@@ -7,8 +7,8 @@ import com.badlogic.gdx.utils.reflect.ClassReflection;
 import com.badlogic.gdx.utils.reflect.ReflectionException;
 
 import net.hollowbit.archipelo.screen.screens.GameScreen;
-import net.hollowbit.archipelo.screen.screens.gamescreen.InventoryForm;
-import net.hollowbit.archipelo.screen.screens.gamescreen.PlayerStatsForm;
+import net.hollowbit.archipelo.screen.screens.gamescreen.windows.InventoryForm;
+import net.hollowbit.archipelo.screen.screens.gamescreen.windows.PlayerStatsForm;
 import net.hollowbit.archipeloshared.FormData;
 
 @SuppressWarnings("rawtypes")

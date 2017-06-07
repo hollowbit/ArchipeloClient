@@ -1,6 +1,7 @@
 package net.hollowbit.archipelo.items;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 import net.hollowbit.archipelo.entity.living.CurrentPlayer;
 import net.hollowbit.archipeloshared.UseTypeSettings;
@@ -67,6 +68,13 @@ public class Item {
 	
 	public ItemType getType () {
 		return ItemType.getItemTypeByItem(this);
+	}
+	
+	public TextureRegion getIcon() {
+		if (this.getType() != null)
+			return this.getType().getIcon(style);
+		else
+			return ItemType.getInvalidIcon();
 	}
 	
 	/**

@@ -32,17 +32,10 @@ public abstract class MobileCompatibleWindow extends Window {
 	}
 	
 	public void resize (int width, int height) {
-		this.pack();
-	}
-	
-	@Override
-	public void pack() {
-		super.pack();
-		
 		if (ArchipeloClient.IS_MOBILE) {
 			//Screen inset is used to have a buffer between the window border and the screen border
-			float screenWidth = Gdx.graphics.getWidth() * inset;
-			float screenHeight = Gdx.graphics.getHeight() * inset;
+			float screenWidth = width * inset;
+			float screenHeight = height * inset;
 			
 			float ratioWidth = screenWidth / this.getWidth();
 			float ratioHeight =  screenHeight / this.getHeight();
@@ -55,6 +48,22 @@ public abstract class MobileCompatibleWindow extends Window {
 			centerOnScreen();
 			this.setMovable(false);
 		}
+	}
+	
+	@Override
+	public void setPosition(float x, float y) {
+		super.setPosition((int) x, (int) y);
+	}
+	
+	@Override
+	public void setBounds(float x, float y, float width, float height) {
+		super.setBounds((int) x, (int) y, (int) width, (int) height);
+	}
+	
+	@Override
+	public void pack() {
+		super.pack();
+		this.resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 	}
 	
 	/**

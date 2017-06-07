@@ -15,6 +15,7 @@ public class ItemTypeData {
 	public ItemUseAnimationData[] useAnimData = new ItemUseAnimationData[0];
 	
 	//Combat stats
+	public int knockback = DEFAULT_KNOCKBACK;
 	public int minDamage = DEFAULT_MIN_DAMAGE;
 	public int maxDamage = DEFAULT_MAX_DAMAGE;
 	public int defense = DEFAULT_DEFENSE;
@@ -24,7 +25,8 @@ public class ItemTypeData {
 	public float critMultiplier = DEFAULT_CRIT_MULTIPLIER;
 	public int critChance = DEFAULT_CRIT_CHANCE;
 	public int hitRange = 8;
-	
+
+	public static final int DEFAULT_KNOCKBACK = 0;
 	public static final int DEFAULT_MIN_DAMAGE = 0;
 	public static final int DEFAULT_MAX_DAMAGE = 0;
 	public static final int DEFAULT_DEFENSE = 0;

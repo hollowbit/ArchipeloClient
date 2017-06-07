@@ -24,7 +24,7 @@ public class ControlsManager {
 	private static final int IMAGE_OFF = 0;
 	private static final int IMAGE_ON = 1;
 	
-	private static final int[] KEYS_TO_CHECK = new int[] {Keys.UP, Keys.DOWN, Keys.LEFT, Keys.RIGHT, Keys.X, Keys.Z, Keys.CONTROL_LEFT};
+	public static int[] KEY_BINDINGS = new int[] {Keys.UP, Keys.LEFT, Keys.DOWN, Keys.RIGHT, Keys.X, Keys.Z, Keys.CONTROL_LEFT, Keys.TAB};
 	private static final int POINTERS_TO_CHECK = 5;
 	
 	public static final float UPDATE_RATE = 1 / 30f;
@@ -194,11 +194,11 @@ public class ControlsManager {
 		}
 		
 		//Look for keys to add
-		for (int key : KEYS_TO_CHECK) {
-			if (ignoreActionButtons && (key == Keys.Z || key == Keys.X))
+		for (int key : KEY_BINDINGS) {
+			if (ignoreActionButtons && (key == KEY_BINDINGS[Controls.ATTACK] || key == KEY_BINDINGS[Controls.ROLL]))
 				continue;
 			
-			if (!canPlayerMove && (key == Keys.UP || key == Keys.LEFT || key == Keys.DOWN || key == Keys.RIGHT))
+			if (!canPlayerMove && (key == KEY_BINDINGS[Controls.UP] || key == KEY_BINDINGS[Controls.LEFT] || key == KEY_BINDINGS[Controls.DOWN] || key == KEY_BINDINGS[Controls.RIGHT]))
 				continue;
 			
 			if (Gdx.input.isKeyJustPressed(key)) {
@@ -210,10 +210,10 @@ public class ControlsManager {
 		//Look for keys to remove
 		ArrayList<Integer> keysToRemove = new ArrayList<Integer>();
 		for (int key : keysDown) {
-			if (ignoreActionButtons && (key == Keys.Z || key == Keys.X))
+			if (ignoreActionButtons && (key == KEY_BINDINGS[Controls.ATTACK] || key == KEY_BINDINGS[Controls.ROLL]))
 				continue;
 			
-			if (!canPlayerMove && (key == Keys.UP || key == Keys.LEFT || key == Keys.DOWN || key == Keys.RIGHT))
+			if (!canPlayerMove && (key == KEY_BINDINGS[Controls.UP] || key == KEY_BINDINGS[Controls.LEFT] || key == KEY_BINDINGS[Controls.DOWN] || key == KEY_BINDINGS[Controls.RIGHT]))
 				continue;
 			
 			if (!Gdx.input.isKeyPressed(key)) {
@@ -272,7 +272,7 @@ public class ControlsManager {
 			
 			
 			//Draw lock
-			batch.draw(lockImages[(getControl(Controls.LOCK) ? IMAGE_ON : IMAGE_OFF)], lockX, lockY, lockSize, lockSize);
+			batch.draw(lockImages[(getControl(Controls.DIRECTION_LOCK) ? IMAGE_ON : IMAGE_OFF)], lockX, lockY, lockSize, lockSize);
 			
 			//Draw buttons
 			batch.draw(zImages[(getControl(Controls.ROLL) ? IMAGE_ON : IMAGE_OFF)], Gdx.graphics.getWidth() - zX, zY, buttonSize, buttonSize);
@@ -288,76 +288,62 @@ public class ControlsManager {
 	}
 	
 	//Controls handlers
-	public boolean keyDown (int keycode) {
+	public void keyDown (int keycode) {
 		if (!focused)
-			return false;
+			return;
 		
-		switch (keycode) {
-		case Keys.UP:
+		if (keycode == KEY_BINDINGS[Controls.UP]) {
 			if (ArchipeloClient.INVERT)
 				updateControls(Controls.DOWN, true);
 			else
 				updateControls(Controls.UP, true);	
-			break;
-		case Keys.LEFT:
+		} else if (keycode == KEY_BINDINGS[Controls.LEFT]) {
 			updateControls(Controls.LEFT, true);
-			break;
-		case Keys.DOWN:
+		} else if (keycode == KEY_BINDINGS[Controls.DOWN]) {
 			if (ArchipeloClient.INVERT)
 				updateControls(Controls.UP, true);
 			else
 				updateControls(Controls.DOWN, true);
-			break;
-		case Keys.RIGHT:
+		} else if (keycode == KEY_BINDINGS[Controls.RIGHT]) {
 			updateControls(Controls.RIGHT, true);
-			break;
-		case Keys.X:
+		} else if (keycode == KEY_BINDINGS[Controls.ATTACK]) {
 			updateControls(Controls.ATTACK, true);
-			break;
-		case Keys.Z:
+		} else if (keycode == KEY_BINDINGS[Controls.ROLL]) {
 			updateControls(Controls.ROLL, true);
-			break;
-		case Keys.CONTROL_LEFT:
-			updateControls(Controls.LOCK, true);
-			break;
+		} else if (keycode == KEY_BINDINGS[Controls.DIRECTION_LOCK]) {
+			updateControls(Controls.DIRECTION_LOCK, true);
+		} else if (keycode == KEY_BINDINGS[Controls.MOVEMENT_LOCK]) {
+			updateControls(Controls.MOVEMENT_LOCK, true);
 		}
-		return false;
 	}
 	
-	public boolean keyUp (int keycode) {
+	public void keyUp (int keycode) {
 		if (!focused)
-			return true;
+			return;
 		
-		switch (keycode) {
-		case Keys.UP:
+		if (keycode == KEY_BINDINGS[Controls.UP]) {
 			if (ArchipeloClient.INVERT)
 				updateControls(Controls.DOWN, false);
 			else
-				updateControls(Controls.UP, false);
-			break;
-		case Keys.LEFT:
+				updateControls(Controls.UP, false);	
+		} else if (keycode == KEY_BINDINGS[Controls.LEFT]) {
 			updateControls(Controls.LEFT, false);
-			break;
-		case Keys.DOWN:
+		} else if (keycode == KEY_BINDINGS[Controls.DOWN]) {
 			if (ArchipeloClient.INVERT)
 				updateControls(Controls.UP, false);
 			else
 				updateControls(Controls.DOWN, false);
-			break;
-		case Keys.RIGHT:
+		} else if (keycode == KEY_BINDINGS[Controls.RIGHT]) {
 			updateControls(Controls.RIGHT, false);
-			break;
-		case Keys.X:
+		} else if (keycode == KEY_BINDINGS[Controls.ATTACK]) {
 			updateControls(Controls.ATTACK, false);
-			break;
-		case Keys.Z:
+		} else if (keycode == KEY_BINDINGS[Controls.ROLL]) {
 			updateControls(Controls.ROLL, false);
-			break;
-		case Keys.CONTROL_LEFT:
-			updateControls(Controls.LOCK, false);
-			break;
+		} else if (keycode == KEY_BINDINGS[Controls.DIRECTION_LOCK]) {
+			updateControls(Controls.DIRECTION_LOCK, false);
+		} else if (keycode == KEY_BINDINGS[Controls.MOVEMENT_LOCK]) {
+			updateControls(Controls.MOVEMENT_LOCK, false);
 		}
-		return false;
 	}
 	
 	public void setFocused (boolean focused) {
@@ -366,7 +352,7 @@ public class ControlsManager {
 			controls = getBlankControls();
 		}
 	}
-
+	
 	public boolean touchDown(boolean ignoreAction, boolean canPlayerMove, int screenX, int screenY, int pointer) {
 		if (ArchipeloClient.IS_MOBILE) {
 			Vector2 input = new Vector2(screenX, Gdx.graphics.getHeight() - screenY);
@@ -503,7 +489,7 @@ public class ControlsManager {
 				buttonSelected = -1;
 				return true;
 			} else if (lockRect.contains(input.x, input.y)) {
-				updateControls(Controls.LOCK, !getControl(Controls.LOCK));
+				updateControls(Controls.DIRECTION_LOCK, !getControl(Controls.DIRECTION_LOCK));
 				return true;
 			}
 		}

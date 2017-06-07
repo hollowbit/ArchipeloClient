@@ -95,7 +95,7 @@ public class CurrentPlayer extends Player implements PacketHandler, RollableEnti
 			//batch.draw(ArchipeloClient.getGame().getAssetManager().getTexture("invalid"), location.getX(), location.getY(), ArchipeloClient.PLAYER_SIZE, ArchipeloClient.PLAYER_SIZE);
 	}
 	
-	public void addCommand (ControlsPacket packet) {
+	public synchronized void addCommand (ControlsPacket packet) {
 		movementLog.add(packet);
 		
 		//duplicate controls since they will be replaced
@@ -260,7 +260,7 @@ public class CurrentPlayer extends Player implements PacketHandler, RollableEnti
 	}
 	
 	private boolean isMoving(boolean[] controls) {
-		return (controls[Controls.UP] || controls[Controls.LEFT] || controls[Controls.DOWN] || controls[Controls.RIGHT]) && !animationManager.getAnimationId().equals("thrust");
+		return (controls[Controls.UP] || controls[Controls.LEFT] || controls[Controls.DOWN] || controls[Controls.RIGHT]) && !animationManager.getAnimationId().equals("thrust") && !controls[Controls.MOVEMENT_LOCK];
 	}
 	
 	public boolean isSprinting () {
@@ -272,7 +272,7 @@ public class CurrentPlayer extends Player implements PacketHandler, RollableEnti
 	}
 	
 	public boolean isDirectionLocked (boolean[] controls) {
-		return controls[Controls.LOCK];
+		return controls[Controls.DIRECTION_LOCK];
 	}
 	
 	@Override
@@ -334,7 +334,7 @@ public class CurrentPlayer extends Player implements PacketHandler, RollableEnti
 				animationManager.endCurrentAnimation();
 				Item item = clothesRenderer.getDisplayInventory()[Player.EQUIP_INDEX_USABLE];
 				
-				if (item != null)
+				if (item != null && item.getType() != null)
 					item.useHold(this, timeAttackHeld);
 			}
 			break;
@@ -386,7 +386,7 @@ public class CurrentPlayer extends Player implements PacketHandler, RollableEnti
 			if (isCurrentlyUsingAnItem()) {
 				Item item = clothesRenderer.getDisplayInventory()[Player.EQUIP_INDEX_USABLE];
 				
-				if (item != null)
+				if (item != null && item.getType() != null)
 					item.useDoubleTap(this, timeAttackHeld);
 			} else if (!isRolling()) {
 				ArrayList<Entity> entitiesOnMap = (ArrayList<Entity>) ArchipeloClient.getGame().getWorld().cloneEntitiesList();
@@ -411,7 +411,7 @@ public class CurrentPlayer extends Player implements PacketHandler, RollableEnti
 				if(useHitAnimation) {
 					Item item = clothesRenderer.getDisplayInventory()[Player.EQUIP_INDEX_USABLE];
 					
-					if (item != null) {
+					if (item != null && item.getType() != null) {
 						this.timeAttackHeld = 0;
 						UseTypeSettings settings = item.useTap(this);
 						if (settings != null)
@@ -478,7 +478,7 @@ public class CurrentPlayer extends Player implements PacketHandler, RollableEnti
 	}
 	
 	public float getSpeed () {
-		return isRolling() ? (entityType.getSpeed() * ROLLING_SPEED_SCALE) : (playerSpeed * (isSprinting() ? SPRINTING_SPEED_SCALE : 1));
+		return isRolling() ? (entityType.getSpeed() * ROLLING_SPEED_SCALE) : (playerSpeed * (isSprinting() && !isDirectionLocked() ? SPRINTING_SPEED_SCALE : 1));
 	}
 	
 	@Override
@@ -500,7 +500,7 @@ public class CurrentPlayer extends Player implements PacketHandler, RollableEnti
 	}
 
 	@Override
-	public boolean handlePacket(Packet packet) {
+	public synchronized boolean handlePacket(Packet packet) {
 		if (packet.packetType == PacketType.POSITION_CORRECTION) {
 			PositionCorrectionPacket posPacket = (PositionCorrectionPacket) packet;
 			

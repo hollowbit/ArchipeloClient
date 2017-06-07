@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import net.hollowbit.archipelo.ArchipeloClient;
 import net.hollowbit.archipelo.network.packets.ChatMessagePacket;
+import net.hollowbit.archipelo.screen.screens.gamescreen.windows.ChatMessage;
 
 public class ChatManager {
 	

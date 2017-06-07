@@ -1,4 +1,4 @@
-package net.hollowbit.archipelo.screen.screens.gamescreen;
+package net.hollowbit.archipelo.screen.screens.gamescreen.windows;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
@@ -14,6 +14,8 @@ import com.badlogic.gdx.utils.Align;
 
 import net.hollowbit.archipelo.ArchipeloClient;
 import net.hollowbit.archipelo.form.MobileCompatibleWindow;
+import net.hollowbit.archipelo.screen.screens.gamescreen.ChatListener;
+import net.hollowbit.archipelo.screen.screens.gamescreen.ChatManager;
 import net.hollowbit.archipelo.tools.ControlsManager;
 import net.hollowbit.archipelo.tools.LM;
 import net.hollowbit.archipelo.tools.QuickUi;

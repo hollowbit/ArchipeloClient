@@ -1,4 +1,4 @@
-package net.hollowbit.archipelo.screen.screens.gamescreen;
+package net.hollowbit.archipelo.screen.screens.gamescreen.popup;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;

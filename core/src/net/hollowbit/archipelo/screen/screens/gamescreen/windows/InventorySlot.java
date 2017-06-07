@@ -1,4 +1,4 @@
-package net.hollowbit.archipelo.screen.screens.gamescreen;
+package net.hollowbit.archipelo.screen.screens.gamescreen.windows;
 
 import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.graphics.Color;
@@ -95,12 +95,11 @@ public class InventorySlot extends Widget {
 		patch.draw(batch, this.getX(), this.getY(), this.getWidth(), this.getHeight());
 		if (background != null)
 			batch.draw(background, this.getX() + OFFSET, this.getY() + OFFSET, this.getWidth() - OFFSET * 2, this.getHeight() - OFFSET * 2);
-			
 		if (_item != null) {
 			Color itemIconDrawColor = _item.getColor();
 			itemIconDrawColor.a = parentAlpha;
 			batch.setColor(itemIconDrawColor);
-			batch.draw(_item.getType().getIcon(_item.style), this.getX() + OFFSET, this.getY() + OFFSET, this.getWidth() - OFFSET * 2, this.getHeight() - OFFSET * 2);
+			batch.draw(_item.getIcon(), this.getX() + OFFSET, this.getY() + OFFSET, this.getWidth() - OFFSET * 2, this.getHeight() - OFFSET * 2);
 			batch.setColor(1, 1, 1, parentAlpha);
 			if (_item.quantity > 1) {
 				GlyphLayout quantityLayout = new GlyphLayout(skin.getFont("chat-font"), "" + _item.quantity);

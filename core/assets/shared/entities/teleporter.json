@@ -4,7 +4,8 @@
 	"hittable":false,
 	"imgWidth":16,
 	"imgHeight":32,
-	"collisionRects":[{}],
+	"drawOrderOffsetY":14,
+	"collisionRects":[{height: 14}],
 	"animations":[
 				{"id":"default", "totalRuntime":1.2, "looping":true}
 				],

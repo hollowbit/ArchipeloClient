@@ -63,7 +63,8 @@ public enum ItemType {
 	public int numOfStyles;
 	public String[][] sounds;
 	public ItemUseAnimationData[] useableAnimationData;
-	
+
+	public int knockback;
 	public int minDamage;
 	public int maxDamage;
 	public int defense;
@@ -99,6 +100,7 @@ public enum ItemType {
 		
 		this.id = id;
 		this.iconSize = data.iconSize;
+		this.knockback = data.knockback;
 		this.minDamage = data.minDamage;
 		this.maxDamage = data.maxDamage;
 		this.defense = data.defense;
@@ -137,8 +139,10 @@ public enum ItemType {
 	
 	private void loadImages () {
 		FileHandle iconFile = Gdx.files.internal("items/" + id + "/icon.png");
-		if (iconFile.exists())
-			this.icon = TextureRegion.split(new Texture(iconFile), iconSize, iconSize)[0];
+		if (iconFile.exists()) {
+			Texture texture = new Texture(iconFile);
+			this.icon = TextureRegion.split(texture, iconSize, iconSize)[0]; 
+		}
 		
 		if (invalidIconTexture == null)
 			invalidIconTexture = new TextureRegion(ArchipeloClient.getGame().getAssetManager().getTexture("invalid"));
@@ -261,6 +265,10 @@ public enum ItemType {
 			return invalidIconTexture;
 		else
 			return icon[style % numOfStyles];
+	}
+	
+	public static TextureRegion getInvalidIcon () {
+		return invalidIconTexture;
 	}
 	
 	@Override

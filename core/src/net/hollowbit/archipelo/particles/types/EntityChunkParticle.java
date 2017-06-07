@@ -14,10 +14,14 @@ import net.hollowbit.archipeloshared.Direction;
 
 public class EntityChunkParticle extends Particle {
 	
+	private static final float DIAGONAL_VEOLCITY_PENALTY = (float) Math.sqrt(2);
+	
 	private static final int MIN_SIZE = 2;
 	private static final int MAX_SIZE = 4;
 	private static final int MIN_VELOCITY = 30;
 	private static final int MAX_VELOCITY = 50;
+	private static final int MIN_OFFSET_VELOCITY = 8;
+	private static final int MAX_OFFSET_VELOCITY = 16;
 	private static final float LIFE_TIME = 1;
 	private static final float DECELERATION_TIME = 0.8f;
 	
@@ -35,14 +39,65 @@ public class EntityChunkParticle extends Particle {
 		String[] metaSplit = meta.split(";");
 		EntityType entityType = EntityType.getById(metaSplit[0]);
 		image = entityType.getAnimationFrame(entityType.getDefaultAnimationId(), Direction.DOWN, 0, Integer.parseInt(metaSplit[1]));
+		Direction direction = Direction.values()[Integer.parseInt(metaSplit[2])];
 		
 		Random random = new Random(wildcard);
 		
 		this.size = random.nextInt(MAX_SIZE - MIN_SIZE) + MIN_SIZE;
-		this.velocityX = random.nextInt(MAX_VELOCITY - MIN_VELOCITY) + MIN_VELOCITY * (random.nextInt(2) - 1);
-		this.velocityY = random.nextInt(MAX_VELOCITY - MIN_VELOCITY) + MIN_VELOCITY * (random.nextInt(2) - 1);
+		
+		switch(direction) {
+		case UP:
+			this.velocityX = getVelocityOffset(random);
+			this.velocityY = getVelocity(random);
+			break;
+		case LEFT:
+			this.velocityX = -getVelocity(random);
+			this.velocityY = getVelocityOffset(random);
+			break;
+		case DOWN:
+			this.velocityX = getVelocityOffset(random);
+			this.velocityY = -getVelocity(random);
+			break;
+		case RIGHT:
+			this.velocityX = getVelocity(random);
+			this.velocityY = getVelocityOffset(random);
+			break;
+		case UP_LEFT:
+			this.velocityX = -getVelocityDiagonal(random);
+			this.velocityY = getVelocityDiagonal(random);
+			break;
+		case UP_RIGHT:
+			this.velocityX = getVelocityDiagonal(random);
+			this.velocityY = getVelocityDiagonal(random);
+			break;
+		case DOWN_LEFT:
+			this.velocityX = -getVelocityDiagonal(random);
+			this.velocityY = -getVelocityDiagonal(random);
+			break;
+		case DOWN_RIGHT:
+			this.velocityX = getVelocityDiagonal(random);
+			this.velocityY = -getVelocityDiagonal(random);
+			break;
+		}
+		
 		this.decelerationX = velocityX / DECELERATION_TIME;
 		this.decelerationY = velocityY / DECELERATION_TIME;
+	}
+	
+	private float getVelocity(Random random) {
+		return random.nextInt(MAX_VELOCITY - MIN_VELOCITY) + MIN_VELOCITY;
+	}
+	
+	private float getVelocityDiagonal(Random random) {
+		return (random.nextInt(MAX_VELOCITY - MIN_VELOCITY) + MIN_VELOCITY) / DIAGONAL_VEOLCITY_PENALTY;
+	}
+	
+	private float getVelocityOffset(Random random) {
+		return (random.nextInt(MAX_OFFSET_VELOCITY - MIN_OFFSET_VELOCITY) + MIN_OFFSET_VELOCITY) * (random.nextInt(2) - 1) + getVelocityOffsetDiagonal(random);
+	}
+	
+	private float getVelocityOffsetDiagonal(Random random) {
+		return (random.nextInt(MAX_OFFSET_VELOCITY - MIN_OFFSET_VELOCITY) + MIN_OFFSET_VELOCITY) * (random.nextInt(2) - 1) / DIAGONAL_VEOLCITY_PENALTY;
 	}
 	
 	@Override

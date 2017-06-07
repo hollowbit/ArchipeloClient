@@ -89,7 +89,7 @@ public class ClothesRenderEntityComponent extends EntityComponent {
 			else if (i == Player.EQUIP_INDEX_PANTS) 
 				displayItem = displayInventory[Player.EQUIP_INDEX_BOOTS];
 			
-			if (displayItem == null)//Don't draw null clothes
+			if (displayItem == null || displayItem.getType() == null)//Don't draw null clothes
 				continue;
 			
 			if (i == Player.EQUIP_INDEX_FACE) {//Change color of different face elements such as for hair, iris, etc.

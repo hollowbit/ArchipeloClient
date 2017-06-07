@@ -6,6 +6,7 @@
 	useAnimData: [
 		{runtime: 0.15}
 	],
+	knockback: 10,
 	minDamage: 16,
 	maxDamage: 22,
 	critMultiplier: 1.5,

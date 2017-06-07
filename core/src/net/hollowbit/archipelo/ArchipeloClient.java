@@ -60,7 +60,7 @@ public class ArchipeloClient extends ApplicationAdapter {
 	
 	public static float DELTA_TIME = 0;
 	public static float STATE_TIME = 0;//this is for looping animations where it doesn't matter where it starts.
-	public static boolean DEBUGMODE = true;
+	public static boolean DEBUGMODE = false;
 	public static boolean INVERT = false;
 	public static boolean PLACEHOLDER_ART_MODE = DEBUGMODE;
 	public static boolean CINEMATIC_MODE = false;
@@ -103,11 +103,6 @@ public class ArchipeloClient extends ApplicationAdapter {
 		shaderManager = new ShaderManager();
 		
 		skin = new Skin(Gdx.files.internal("ui/uiskin.json"));
-		//Scale skin fonts
-		skin.getFont("default-font").getData().setScale(2);
-		skin.getFont("medium-font").getData().setScale(3);
-		skin.getFont("chat-font").getData().setScale(1);
-		skin.getFont("large-font").getData().setScale(4);
 		
 		//Enable color markup on skin fonts
 		skin.getFont("default-font").getData().markupEnabled = true;

@@ -118,7 +118,7 @@ public class CurrentPlayer extends Player implements PacketHandler, RollableEnti
 			}
 		}
 		
-		applyCommand(packet);
+		applyCommand(controls);
 		packet.x = location.getX();
 		packet.y = location.getY();
 	}
@@ -137,13 +137,12 @@ public class CurrentPlayer extends Player implements PacketHandler, RollableEnti
 	}
 	
 	@SuppressWarnings("incomplete-switch")
-	protected void applyCommand (ControlsPacket packet) {
+	protected void applyCommand (boolean[] controls) {
+		this.controls = controls;
 		float deltaTime = ControlsManager.UPDATE_RATE;
 		if (!(ArchipeloClient.getGame().getScreenManager().getScreen() instanceof GameScreen))
 			return;
 		GameScreen gameScreen = (GameScreen) ArchipeloClient.getGame().getScreenManager().getScreen();
-		
-		this.controls = packet.parse();
 		
 		Direction direction = getMovementDirection();
 		if (!isDirectionLocked() && direction != null)
@@ -227,6 +226,10 @@ public class CurrentPlayer extends Player implements PacketHandler, RollableEnti
 				gameScreen.playerMoved();
 			}
 		}
+	}
+	
+	protected void applyCommand (ControlsPacket packet) {
+		this.applyCommand(packet.parse());
 	}
 	
 	@Override

@@ -22,25 +22,36 @@ import net.hollowbit.archipeloshared.ItemUseAnimationData;
 
 public enum ItemType {
 	
-	BODY("body"),
-	PANTS_BASIC("pants_basic"),
-	BOOTS_BASIC("boots_basic"),
-	SHIRT_BASIC("shirt_basic"),
-	/*GLOVES_BASIC("gloves_basic"),
-	SHOULDERPADS_BASIC("shoulderpads_basic"),*/
-	HAIR1("hair1"),
-	FACE1("face1"),
-	BLOBBY_ASHES("blobby_ashes"),
-	SPEAR_BASIC("spear_basic", new BasicWeaponUseType()),
-	ASSISTANT_GENERAL("assistant_general", new BasicWeaponUseType()),
-	SOUL_DISRUPTOR("soul_disruptor", new BasicWeaponUseType()),
-	SPIRIT_DISRUPTOR("spirit_disruptor", new BasicWeaponUseType()),
-	DEMONS_TONGUE("demons_tongue", new BasicWeaponUseType()),
-	FANN_KATANA("fann_katana", new BasicWeaponUseType()),
-	HYLIAN_BROADSWORD("hylian_broadsword", new BasicWeaponUseType()),
-	LITTLE_RED("little_red", new BasicWeaponUseType()),
-	SOUL_TRAPPER("soul_trapper", new BasicWeaponUseType()),
-	TRAINING_SWORD("training_sword", new BasicWeaponUseType());
+	BODY,
+	PANTS_BASIC,
+	BOOTS_BASIC,
+	SHIRT_BASIC,
+	/*GLOVES_BASIC,
+	SHOULDERPADS_BASIC,*/
+	HAIR1,
+	FACE1,
+	BLOBBY_ASHES,
+	SPEAR_BASIC(new BasicWeaponUseType()),
+	ASSISTANT_GENERAL(new BasicWeaponUseType()),
+	SOUL_DISRUPTOR(new BasicWeaponUseType()),
+	SPIRIT_DISRUPTOR(new BasicWeaponUseType()),
+	DEMONS_TONGUE(new BasicWeaponUseType()),
+	FANN_KATANA(new BasicWeaponUseType()),
+	HYLIAN_BROADSWORD(new BasicWeaponUseType()),
+	LITTLE_RED(new BasicWeaponUseType()),
+	FALLEN_ANGEL_BLADE(new BasicWeaponUseType()),
+	TRAINING_SWORD(new BasicWeaponUseType()),
+	ANGEL_BLADE(new BasicWeaponUseType()),
+	ANGELIC_CLAYMORE(new BasicWeaponUseType()),
+	BEAST_FURY(new BasicWeaponUseType()),
+	DESERT_RAPIER(new BasicWeaponUseType()),
+	DRAGONS_BREATH(new BasicWeaponUseType()),
+	IRON_BULDGE(new BasicWeaponUseType()),
+	IRON_HATCHET(new BasicWeaponUseType()),
+	IRON_SCEPTER(new BasicWeaponUseType()),
+	MIGHTY_HAMMER(new BasicWeaponUseType()),
+	THE_FAIRY_MAN(new BasicWeaponUseType()),
+	WORLD_BREAKER(new BasicWeaponUseType());
 
 	public static final int NO_EQUIP_TYPE = -1;
 	public static final int EQUIP_INDEX_USABLE = 9;
@@ -85,12 +96,13 @@ public enum ItemType {
 	
 	private UseType useType;
 	
-	private ItemType (String id) {
-		this(id, null);
+	private ItemType () {
+		this(null);
 	}
 
 	@SuppressWarnings("unchecked")
-	private ItemType (String id, UseType useType) {
+	private ItemType (UseType useType) {
+		this.id = this.name().toLowerCase();
 		Json json = new Json();
 		ItemTypeData data = null;
 		try {
@@ -98,7 +110,6 @@ public enum ItemType {
 		} catch (ReflectionException e) {
 		}
 		
-		this.id = id;
 		this.iconSize = data.iconSize;
 		this.knockback = data.knockback;
 		this.minDamage = data.minDamage;

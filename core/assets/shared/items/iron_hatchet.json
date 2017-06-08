@@ -1,0 +1,18 @@
+{
+	iconSize: 24,
+	durability: 200,
+	equipType: 9,
+	numOfStyles: 1,
+	useAnimData: [
+		{runtime: 0.15}
+	],
+	knockback: 12,
+	minDamage: 8,
+	maxDamage: 12,
+	critMultiplier: 1.75,
+	critChance: 10,
+	hitRange: 20,
+	sounds: [
+		["actions/hit"],
+	]
+}

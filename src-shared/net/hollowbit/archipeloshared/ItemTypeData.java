@@ -33,7 +33,7 @@ public class ItemTypeData {
 	public static final float DEFAULT_DAMAGE_MULTIPLIER = 1;
 	public static final float DEFAULT_DEFENSE_MULTIPLIER = 1;
 	public static final float DEFAULT_SPEED_MULTIPLIER = 1;
-	public static final float DEFAULT_CRIT_MULTIPLIER = 1.5f;
-	public static final int DEFAULT_CRIT_CHANCE = 20;
+	public static final float DEFAULT_CRIT_MULTIPLIER = 1f;
+	public static final int DEFAULT_CRIT_CHANCE = 0;
 	
 }

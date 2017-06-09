@@ -103,7 +103,7 @@ public class InventorySlot extends Widget {
 			batch.setColor(1, 1, 1, parentAlpha);
 			if (_item.quantity > 1) {
 				GlyphLayout quantityLayout = new GlyphLayout(skin.getFont("chat-font"), "" + _item.quantity);
-				skin.getFont("chat-font").draw(batch, quantityLayout, this.getX() + this.getWidth() - OFFSET - quantityLayout.width, this.getY() + quantityLayout.height + OFFSET);
+				skin.getFont("chat-font").draw(batch, quantityLayout, this.getX() + this.getWidth() - quantityLayout.width + 6, this.getY() + quantityLayout.height - 2);
 			}
 		}
 		batch.setColor(1, 1, 1, 1);

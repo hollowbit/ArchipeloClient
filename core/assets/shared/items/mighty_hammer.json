@@ -4,7 +4,7 @@
 	equipType: 9,
 	numOfStyles: 1,
 	useAnimData: [
-		{timings:[0.02, 0.02, 0.02, 0.8], thrust: true}
+		{timings: [0.09, 0.01, 0.01, 0.2], thrust: true}
 	],
 	knockback: 50,
 	minDamage: 18,

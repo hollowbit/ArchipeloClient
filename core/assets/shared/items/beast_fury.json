@@ -4,11 +4,11 @@
 	equipType: 9,
 	numOfStyles: 1,
 	useAnimData: [
-		{runtime: 0.15}
+		{timings: [0.1, 0.2, 0.2, 0.2]}
 	],
 	knockback: 20,
-	minDamage: 14,
-	maxDamage: 24,
+	minDamage: 44,
+	maxDamage: 54,
 	critMultiplier: 1.2,
 	critChance: 50,
 	hitRange: 28,

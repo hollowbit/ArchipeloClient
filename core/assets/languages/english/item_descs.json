@@ -1,5 +1,16 @@
 {
 messages:{
+	golden_band: "Made of pure gold.",
+	silver_band: "Shiny!",
+	ruby_ring: "Golden Ring with a Ruby in it.",
+	sapphire_ring: "Golden Ring with a Sapphire in it.",
+	emerald_ring: "Golden Ring with an Emerald in it.",
+	ring_of_nature: "Containing the force of nature.",
+	ring_of_water: "Containing the flow of water.",
+	ring_of_hope: "Containing the power of hope.",
+	stone_of_mana: "Solidified mana.",
+	stone_of_life: "Solidified life.",
+	stone_of_treasure: "I hope this brings good luck.",
 	body: "Basic plain body to be colored.",
 	shirt_basic: "Just a basic shirt.",
 	boots_basic: "Just some basic boots.",

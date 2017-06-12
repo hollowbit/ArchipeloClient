@@ -22,6 +22,17 @@ import net.hollowbit.archipeloshared.ItemUseAnimationData;
 
 public enum ItemType {
 	
+	GOLDEN_BAND,
+	SILVER_BAND,
+	RUBY_RING,
+	SAPPHIRE_RING,
+	EMERALD_RING,
+	RING_OF_NATURE,
+	RING_OF_WATER,
+	RING_OF_HOPE,
+	STONE_OF_MANA,
+	STONE_OF_LIFE,
+	STONE_OF_TREASURE,
 	BODY,
 	PANTS_BASIC,
 	BOOTS_BASIC,

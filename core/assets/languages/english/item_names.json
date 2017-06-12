@@ -1,5 +1,16 @@
 {
 messages:{
+	golden_band: "Golden Band",
+	silver_band: "Silver Band",
+	ruby_ring: "Ruby Ring",
+	sapphire_ring: "Sapphire Ring",
+	emerald_ring: "Emerald Ring",
+	ring_of_nature: "Ring of Nature",
+	ring_of_water: "Ring of Water",
+	ring_of_hope: "Ring of Hope",
+	stone_of_mana: "Stone of Mana",
+	stone_of_life: "Stone of Life",
+	stone_of_treasure: "Stone of Treasure",
 	body: "Body",
 	shirt_basic: "Basic Shirt",
 	boots_basic: "Basic Boots",

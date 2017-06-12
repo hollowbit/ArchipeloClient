@@ -1,0 +1,6 @@
+{
+	iconSize: 16,
+	buff: true,
+	equipType: -1,
+	defense: 2
+}

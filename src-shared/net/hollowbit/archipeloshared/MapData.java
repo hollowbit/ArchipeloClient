@@ -4,16 +4,14 @@ import java.util.ArrayList;
 
 public class MapData {
 	
+	public String name = "";
 	public String displayName = "";
-	public int type = 0;
-	public int climat = 0;
 	public boolean naturalLighting = false;
 	public String music;
-	public String[][] tileData = new String[1][1];
-	public String[][] elementData = new String[1][1];
-	public ArrayList<EntitySnapshot> entitySnapshots = new ArrayList<EntitySnapshot>();
+	public boolean canSave = false;
+	public ArrayList<ChunkLocation> chunks = new ArrayList<ChunkLocation>();
 	
-	public MapData () {}
+	/*public MapData () {}*/
 	
 	/*public MapData (Map map) {
 		this.displayName = map.getDisplayName();

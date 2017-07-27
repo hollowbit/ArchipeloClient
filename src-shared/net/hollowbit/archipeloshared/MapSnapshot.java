@@ -7,8 +7,6 @@ public class MapSnapshot {
 	
 	public String name;
 	public String displayName;
-	public String[][] tileData;
-	public String[][] elementData;
 	public LinkedList<SoundPlayData> sounds = new LinkedList<SoundPlayData>();
 	public LinkedList<ParticlesData> particles = new LinkedList<ParticlesData>();
 	public HashMap<String, String> properties;
@@ -20,14 +18,6 @@ public class MapSnapshot {
 		this.displayName = displayName;
 		properties = new HashMap<String, String>();
 		sounds = new LinkedList<SoundPlayData>();
-	}
-	
-	public void setTileData (String[][] tileData) {
-		this.tileData = tileData;
-	}
-	
-	public void setElementData (String[][] elementData) {
-		this.elementData = elementData;
 	}
 	
 	public void putFloat (String key, float value) {
@@ -90,8 +80,6 @@ public class MapSnapshot {
 		properties.clear();
 		particles.clear();
 		sounds.clear();
-		tileData = null;
-		elementData = null;
 	}
 	
 	public void addSound(String sound, int tileX, int tileY) {

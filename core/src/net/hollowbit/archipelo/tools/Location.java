@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Vector2;
 import net.hollowbit.archipelo.ArchipeloClient;
 import net.hollowbit.archipelo.world.Map;
 import net.hollowbit.archipelo.world.World;
+import net.hollowbit.archipeloshared.ChunkData;
 import net.hollowbit.archipeloshared.Direction;
 
 public class Location {
@@ -42,6 +43,14 @@ public class Location {
 	
 	public int getTileY () {
 		return (int) (pos.y / ArchipeloClient.TILE_SIZE);
+	}
+	
+	public int getChunkX() {
+		return (int) Math.floor((float) pos.x / ArchipeloClient.TILE_SIZE / ChunkData.SIZE);
+	}
+	
+	public int getChunkY() {
+		return (int) Math.floor((float) pos.y / ArchipeloClient.TILE_SIZE / ChunkData.SIZE);
 	}
 	
 	public void setX (float x) {

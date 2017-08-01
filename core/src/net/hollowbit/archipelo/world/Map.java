@@ -2,16 +2,21 @@ package net.hollowbit.archipelo.world;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.TreeMap;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import net.hollowbit.archipelo.ArchipeloClient;
 import net.hollowbit.archipelo.audio.MapAudioManager;
 import net.hollowbit.archipelo.entity.Entity;
+import net.hollowbit.archipelo.network.packets.WorldSnapshotPacket;
 import net.hollowbit.archipelo.particles.Particle;
 import net.hollowbit.archipelo.particles.ParticleManager;
 import net.hollowbit.archipelo.tools.rendering.RenderableGameWorldObject;
 import net.hollowbit.archipelo.tools.rendering.RenderableGameWorldObjectComparator;
+import net.hollowbit.archipelo.world.map.Chunk;
+import net.hollowbit.archipelo.world.map.ChunkRow;
+import net.hollowbit.archipeloshared.ChunkData;
 import net.hollowbit.archipeloshared.CollisionRect;
 import net.hollowbit.archipeloshared.MapSnapshot;
 import net.hollowbit.archipeloshared.TileData;
@@ -21,65 +26,31 @@ public class Map {
 	private String name;
 	private String displayName;
 	private String islandName;
-	private String[][] tileData;
-	private String[][] elementData;
 	private String music;
 	private MapAudioManager audioManager;
 	private ParticleManager particleManager;
+	private TreeMap<Integer, ChunkRow> chunkRows;
 	
-	boolean[][] collisionMap;
 	World world;
 	
-	public Map (MapSnapshot fullSnapshot, World world) {
+	public Map (MapSnapshot fullSnapshot, ChunkData[] chunks, World world) {
 		this.name = fullSnapshot.name;
 		this.world = world;
 		this.displayName = fullSnapshot.getString("display-name", name);
 		this.music = fullSnapshot.getString("music", "main-theme");//Default song is main theme
-		this.islandName = fullSnapshot.getString("island-name", "Archipelo");
-		tileData = fullSnapshot.tileData;
-		elementData = fullSnapshot.elementData;
 		audioManager = new MapAudioManager(this);
 		particleManager = new ParticleManager();
-		generateCollisionMap();
-	}
-	
-	private void generateCollisionMap () {
-		collisionMap = new boolean[tileData.length * TileData.COLLISION_MAP_SCALE][tileData[0].length * TileData.COLLISION_MAP_SCALE];
-		for (int row = 0; row < tileData.length; row++) {
-			for (int col = 0; col < tileData[0].length; col++) {
-				//Apply tile collision map
-				Tile tile = ArchipeloClient.getGame().getMapElementManager().getTile(tileData[row][col]);
-				for (int tileRow = 0; tileRow < tile.getCollisionTable().length; tileRow++) {
-					for (int tileCol = 0; tileCol < tile.getCollisionTable()[0].length; tileCol++) {
-						int x = col * TileData.COLLISION_MAP_SCALE + tileCol;
-						int y = row * TileData.COLLISION_MAP_SCALE + tileRow;
-						
-						//if it is out of bounds, don't apply it.
-						if (y < 0 || y >= collisionMap.length || x < 0 || x >= collisionMap[0].length)
-							continue;
-						
-						collisionMap[y][x] = (tile.getCollisionTable()[tileRow][tileCol] ? true: collisionMap[y][x]);
-					}
-				}
-				
-				
-				MapElement element = ArchipeloClient.getGame().getMapElementManager().getElement(elementData[row][col]);
-				
-				if (element != null) {
-					for (int elementRow = 0; elementRow < element.getCollisionTable().length; elementRow++) {
-						for (int elementCol = 0; elementCol < element.getCollisionTable()[0].length; elementCol++) {
-							int x = col * TileData.COLLISION_MAP_SCALE + elementCol + element.offsetX;
-							int y = row * TileData.COLLISION_MAP_SCALE + elementRow + element.offsetY - (element.getCollisionTable().length - 1) + 1;
-							
-							//If it is out of bounds, don't apply it.
-							if (y < 0 || y >= collisionMap.length || x < 0 || x >= collisionMap[0].length)
-								continue;
-							
-							collisionMap[y][x] = (element.getCollisionTable()[elementRow][elementCol] ? true: collisionMap[y][x]);
-						}
-					}
-				}
+		chunkRows = new TreeMap<Integer, ChunkRow>();
+		
+		//Add all chunks to map
+		for (ChunkData chunk : chunks) {
+			ChunkRow row = chunkRows.get(chunk.y);
+			if (row == null) {
+				row = new ChunkRow(chunk.y);
+				chunkRows.put(chunk.y, row);
 			}
+			
+			row.getChunks().put(chunk.x, new Chunk(chunk, this));
 		}
 	}
 	
@@ -205,18 +176,130 @@ public class Map {
 		displayName = snapshot.getString("display-name", displayName);
 		audioManager.applyChangesSnapshot(snapshot);
 		particleManager.applyChangesSnapshot(snapshot);
-		if (snapshot.tileData != null)
-			tileData = snapshot.tileData;
-		
-		if (snapshot.elementData != null)
-			elementData = snapshot.elementData;
 	}
 	
-	public Tile getTileTypeAtLocation (int x, int y) {
-		if (x < 0 || x >= tileData[0].length || y < 0 || y >= tileData.length)
+	public void applyFullSnapshot (ChunkData[] chunkDatas) {
+		boolean isNewX = true;
+		int newX = 0;
+		boolean isNewY = true;
+		int newY = 0;
+		
+		boolean set = false;
+		
+		for (int i = 0; i < chunkDatas.length; i++) {
+			ChunkData chunkData = chunkDatas[i];
+			if (chunkData != null) {
+				if (set) {
+					if (chunkData.x != newX)
+						isNewX = false;
+					if (chunkData.y != newY)
+						isNewY = false;
+				} else {
+					newX = chunkData.x;
+					newY = chunkData.y;
+					set = true;
+				}
+			}
+		}
+		
+
+		int minX = 0;
+		int maxX = 0;
+		
+		for (ChunkRow row : chunkRows.values()) {
+			minX = row.getChunks().firstKey();
+			maxX = row.getChunks().lastKey();
+		}
+		
+		int minY = chunkRows.firstKey();
+		int maxY = chunkRows.lastKey();
+		
+		//Determine if new chunk row or column was added
+		if (isNewX) {
+			//Determine which end a new column was added
+			if (newX > maxX) {
+				for (int y = minY; y <= maxY; y++) {
+					world.unloadEntitiesInChunk(getChunk(minX, y));
+					
+					ChunkRow row = chunkRows.get(y);
+					row.getChunks().remove(minX);
+
+					//Look for an add chunk at newX and y
+					for (ChunkData chunk : chunkDatas) {
+						if (chunk != null && chunk.x == newX && chunk.y == y) {
+							row.getChunks().put(newX, new Chunk(chunk, this));
+							break;
+						}
+					}
+				}
+			} else if (newX < minX) {
+				for (int y = minY; y <= maxY; y++) {
+					world.unloadEntitiesInChunk(getChunk(maxX, y));
+					
+					ChunkRow row = chunkRows.get(y);
+					row.getChunks().remove(minX);
+
+					//Look for an add chunk at newX and y
+					for (ChunkData chunk : chunkDatas) {
+						if (chunk != null && chunk.x == newX && chunk.y == y) {
+							row.getChunks().put(newX, new Chunk(chunk, this));
+							break;
+						}
+					}
+				}
+			}
+		} else if (isNewY) {
+			//Determine which end a new row was added
+			ChunkRow newRow = new ChunkRow(newY);
+			chunkRows.put(newY, newRow);
+			if (newY > maxY) {
+				
+				for (int x = minX; x <= maxX; x++) {
+					world.unloadEntitiesInChunk(getChunk(x, minY));
+
+					//Look for an add chunk at x and newY
+					for (ChunkData chunk : chunkDatas) {
+						if (chunk != null && chunk.x == x && chunk.y == newY) {
+							newRow.getChunks().put(x, new Chunk(chunk, this));
+							break;
+						}
+					}
+				}
+				
+				chunkRows.remove(minY);
+			} else if (newY < minY) {
+				for (int x = minX; x <= maxX; x++) {
+					world.unloadEntitiesInChunk(getChunk(x, maxY));
+					
+					//Look for an add chunk at x and newY
+					for (ChunkData chunk : chunkDatas) {
+						if (chunk != null && chunk.x == x && chunk.y == newY) {
+							newRow.getChunks().put(x, new Chunk(chunk, this));
+							break;
+						}
+					}
+				}
+					
+				chunkRows.remove(maxY);
+			}
+		}
+	}
+	
+	public Chunk getChunk(int x, int y) {
+		ChunkRow row = chunkRows.get(y);
+		if (row == null)
 			return null;
 		
-		return ArchipeloClient.getGame().getMapElementManager().getTile(tileData[tileData.length - y - 1][x]);
+		return row.getChunks().get(x);
+	}
+	
+	public Tile getTileTypeAtLocation (int tileX, int tileY) {
+		//TODO Rewrite
+		/*if (tileX < 0 || tileX >= tileData[0].length || tileY < 0 || tileY >= tileData.length)
+			return null;
+		
+		return ArchipeloClient.getGame().getMapElementManager().getTile(tileData[tileData.length - tileY - 1][tileX]);*/
+		return null;
 	}
 	
 	public String getDisplayName () {
@@ -231,12 +314,20 @@ public class Map {
 		return world;
 	}
 	
+	/**
+	 * Same as height
+	 * @return
+	 */
 	public int getWidth () {
-		return tileData[0].length;
+		return WorldSnapshotPacket.NUM_OF_CHUNKS_WIDE * ChunkData.SIZE;
 	}
 	
+	/**
+	 * Same as width.
+	 * @return
+	 */
 	public int getHeight () {
-		return tileData.length;
+		return WorldSnapshotPacket.NUM_OF_CHUNKS_WIDE * ChunkData.SIZE;
 	}
 	
 	public int getPixelWidth () {

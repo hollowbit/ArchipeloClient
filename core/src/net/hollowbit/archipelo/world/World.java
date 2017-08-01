@@ -19,10 +19,13 @@ import net.hollowbit.archipelo.network.PacketType;
 import net.hollowbit.archipelo.network.packets.EntityAddPacket;
 import net.hollowbit.archipelo.network.packets.EntityRemovePacket;
 import net.hollowbit.archipelo.network.packets.TeleportPacket;
+import net.hollowbit.archipelo.network.packets.WorldSnapshotPacket;
 import net.hollowbit.archipelo.screen.screens.GameScreen;
 import net.hollowbit.archipelo.screen.screens.gamescreen.popup.MapTagPopupText;
 import net.hollowbit.archipelo.tools.FlagsManager;
 import net.hollowbit.archipelo.tools.StaticTools;
+import net.hollowbit.archipelo.world.map.Chunk;
+import net.hollowbit.archipeloshared.ChunkData;
 import net.hollowbit.archipeloshared.CollisionRect;
 import net.hollowbit.archipeloshared.Direction;
 import net.hollowbit.archipeloshared.EntitySnapshot;
@@ -41,7 +44,7 @@ public class World implements PacketHandler {
 	private ArrayList<Entity> entities;
 	private Map map;
 	private MapSnapshot nextMapSnapshot;
-	private HashMap<String, EntitySnapshot> nextEntitySnapshots;
+	private ChunkData[] nextChunkData;
 	private TeleportPacket teleportPacket;
 	private CurrentPlayer player;
 	private Color fadeColor;
@@ -139,9 +142,17 @@ public class World implements PacketHandler {
 		if (teleportPacket != null)//Don't bother apply interp if client is teleporting
 			return;
 		
+		HashMap<String, EntitySnapshot> snapshots1 = new HashMap<String, EntitySnapshot>();
+		HashMap<String, EntitySnapshot> snapshots2 = new HashMap<String, EntitySnapshot>();
+		
+		for (int i = 0; i < WorldSnapshotPacket.NUM_OF_CHUNKS; i++) {
+			snapshots1.putAll(snapshot1.chunks[i].entities);
+			snapshots2.putAll(snapshot2.chunks[i].entities);
+		}
+		
 		for (Entity entity : cloneEntitiesList()) {
-			EntitySnapshot entitySnapshot1 = snapshot1.entitySnapshots.get(entity.getName());
-			EntitySnapshot entitySnapshot2 = snapshot2.entitySnapshots.get(entity.getName());
+			EntitySnapshot entitySnapshot1 = snapshots1.get(entity.getName());
+			EntitySnapshot entitySnapshot2 = snapshots2.get(entity.getName());
 			
 			if (entitySnapshot1 != null && entitySnapshot2 != null)
 				entity.interpolate(timeStamp, entitySnapshot1, entitySnapshot2, fraction);
@@ -154,47 +165,93 @@ public class World implements PacketHandler {
 		
 		map.applyChangesSnapshot(snapshot.mapSnapshot);
 		
-		for (Entity entity : cloneEntitiesList()) {
-			EntitySnapshot entitySnapshot = snapshot.entitySnapshots.get(entity.getName());
-			if (entitySnapshot != null)
-				entity.applyChangesSnapshot(entitySnapshot);
+		ArrayList<Entity> entitiesToProcess = cloneEntitiesList();
+		for (int i = 0; i < snapshot.chunks.length; i++) {
+			ChunkData chunk = snapshot.chunks[i];
+			if (chunk == null)
+				continue;
+			
+			ArrayList<Entity> entitiesFound = new ArrayList<Entity>();
+			for (Entity entity : entitiesToProcess) {
+				EntitySnapshot entitySnapshot = chunk.entities.get(entity.getName());
+				if (entitySnapshot != null) {
+					entity.applyChangesSnapshot(entitySnapshot);
+					entitiesFound.add(entity);
+				}
+			}
+			
+			entitiesToProcess.removeAll(entitiesFound);
+			
 		}
 	}
 	
-	//Full world snapshots mean that the player is on a new map
-	public void applyFullWorldSnapshot (WorldSnapshot snapshot) {	
-		this.fadeColor = getFadeColor(snapshot.mapSnapshot.getInt("fade-color", FADE_COLOR_BLACK));
-		this.nextMapSnapshot = snapshot.mapSnapshot;
-		this.nextEntitySnapshots = snapshot.entitySnapshots;
+	//Does not necessarily mean the player is on a new map
+	public void applyFullWorldSnapshot (WorldSnapshot snapshot) {
+		boolean allChunksNew = true;
+		//If there is a null chunk, then not all chunks are new
+		//In fact there should be 3 null chunks
+		for (int i = 0; i < WorldSnapshotPacket.NUM_OF_CHUNKS; i++) {
+			if (snapshot.chunks[i] == null) {
+				allChunksNew = false;
+				break;
+			}
+		}
+		boolean useFadeAnimation = firstTimeLoading || snapshot.newMap || allChunksNew;
 		
-		if (firstTimeLoading)
-			fadeTimer = -0.0001f;
-		else
-			fadeTimer = -FADE_TIME;
+		if (useFadeAnimation) {
+			this.fadeColor = getFadeColor(snapshot.mapSnapshot.getInt("fade-color", FADE_COLOR_BLACK));
+			this.nextMapSnapshot = snapshot.mapSnapshot;
+			this.nextChunkData = snapshot.chunks;
+			
+			if (firstTimeLoading)
+				fadeTimer = -0.0001f;
+			else
+				fadeTimer = -FADE_TIME;
+		} else {
+			map.applyFullSnapshot(snapshot.chunks);
+		}
 	}
 	
 	private synchronized void loadMap () {
-		map = new Map(nextMapSnapshot, this);
+		map = new Map(nextMapSnapshot, nextChunkData, this);
 		for (Entity entity : entities)
 			entity.unload();
 		entities.clear();
 		
-		for (Entry<String, EntitySnapshot> entitySnapshot : nextEntitySnapshots.entrySet()) {
-			Entity entity = null;
-			
-			//If it is the current player, use a custom creator, else use the default one
-			if (entitySnapshot.getValue().name.equals(ArchipeloClient.getGame().getPlayerInfoManager().getName())) {
-				player = new CurrentPlayer();
-				player.create(entitySnapshot.getValue(), map, EntityType.PLAYER);
-				ArchipeloClient.getGame().getCamera().focusOnEntityFast(player);
-				entity = player;
-			} else
-				entity = EntityType.createEntityBySnapshot(entitySnapshot.getValue(), map);
-			entity.load();
-			entities.add(entity);
+		for (ChunkData chunk : nextChunkData) {
+			for (Entry<String, EntitySnapshot> entitySnapshot : chunk.entities.entrySet()) {
+				Entity entity = null;
+				
+				//If it is the current player, use a custom creator, else use the default one
+				if (entitySnapshot.getValue().name.equals(ArchipeloClient.getGame().getPlayerInfoManager().getName())) {
+					player = new CurrentPlayer();
+					player.create(entitySnapshot.getValue(), map, EntityType.PLAYER);
+					ArchipeloClient.getGame().getCamera().focusOnEntityFast(player);
+					entity = player;
+				} else
+					entity = EntityType.createEntityBySnapshot(entitySnapshot.getValue(), map);
+				entity.load();
+				entities.add(entity);
+			}
 		}
 		nextMapSnapshot = null;
-		nextEntitySnapshots = null;
+		nextChunkData = null;
+	}
+	
+	public void unloadEntitiesInChunk(Chunk chunk) {
+		ArrayList<Entity> entitiesToRemove = new ArrayList<Entity>();
+		for (Entity entity : cloneEntitiesList()) {
+			if (entity.getLocation().getChunkX() == chunk.getX() && entity.getLocation().getChunkY() == chunk.getY()) {
+				entity.unload();
+				entitiesToRemove.add(entity);
+			}
+		}
+		
+		removeAllEntities(entitiesToRemove);
+	}
+	
+	public synchronized void removeAllEntities(ArrayList<Entity> entitiesToRemove) {
+		entities.remove(entitiesToRemove);
 	}
 	
 	public CurrentPlayer getPlayer () {

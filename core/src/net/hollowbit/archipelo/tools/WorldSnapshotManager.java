@@ -1,8 +1,6 @@
 package net.hollowbit.archipelo.tools;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map.Entry;
 
 import com.badlogic.gdx.utils.Json;
 
@@ -13,7 +11,7 @@ import net.hollowbit.archipelo.network.PacketType;
 import net.hollowbit.archipelo.network.packets.WorldSnapshotPacket;
 import net.hollowbit.archipelo.world.World;
 import net.hollowbit.archipelo.world.WorldSnapshot;
-import net.hollowbit.archipeloshared.EntitySnapshot;
+import net.hollowbit.archipeloshared.ChunkData;
 import net.hollowbit.archipeloshared.MapSnapshot;
 
 public class WorldSnapshotManager implements PacketHandler {
@@ -24,12 +22,15 @@ public class WorldSnapshotManager implements PacketHandler {
 	//The reason for this is to prevent decoding of packets that won't be used.
 	private ArrayList<WorldSnapshot> worldInterpSnapshotPackets;
 	private ArrayList<WorldSnapshot> worldChangesSnapshotPackets;
+	private ArrayList<WorldSnapshot> worldFullSnapshotPackets;
 	private World world;
+	private Json json;
 	
 	public WorldSnapshotManager (World world) {
 		this.world = world;
 		this.worldInterpSnapshotPackets = new ArrayList<WorldSnapshot>();
 		this.worldChangesSnapshotPackets = new ArrayList<WorldSnapshot>();
+		this.json = new Json();
 		ArchipeloClient.getGame().getNetworkManager().addPacketHandler(this);
 	}
 	
@@ -39,8 +40,8 @@ public class WorldSnapshotManager implements PacketHandler {
 	 */
 	public void update (float delta) {
 		double timeOfPacket = System.currentTimeMillis() - DELAY;
-		updateInterp(timeOfPacket);
 		updateChange(timeOfPacket);
+		updateInterp(timeOfPacket);
 	}
 	
 	private synchronized void updateInterp (double timeOfPacket) {
@@ -67,16 +68,25 @@ public class WorldSnapshotManager implements PacketHandler {
 		world.interpolate((long) timeOfPacket, packet1, packet2, (float) fraction);
 	}
 	
-	private synchronized void updateChange (double timeOfPacket) {
+	private void updateChange (double timeOfPacket) {
 		//Apply all changes packets to world that are at proper time
 		ArrayList<WorldSnapshot> packetsToApply = getPacketsFromBeforeMillis(timeOfPacket, worldChangesSnapshotPackets);
 		for (WorldSnapshot packet : packetsToApply) {
 			world.applyChangesWorldSnapshot(packet);
 		}
-		worldChangesSnapshotPackets.removeAll(packetsToApply);
+		this.removeFromCollection(worldChangesSnapshotPackets, packetsToApply);
+		
+		ArrayList<WorldSnapshot> packetsToApplyFull = getPacketsFromBeforeMillis(timeOfPacket, worldFullSnapshotPackets);
+		for (WorldSnapshot packet : packetsToApplyFull)
+			world.applyFullWorldSnapshot(packet);
+		this.removeFromCollection(worldFullSnapshotPackets, packetsToApplyFull);
 	}
 	
-	private ArrayList<WorldSnapshot> getPacketsFromBeforeMillis (double millis, ArrayList<WorldSnapshot> packetList) {
+	private synchronized void removeFromCollection(ArrayList<WorldSnapshot> collection, ArrayList<WorldSnapshot> itemsToRemove) {
+		collection.removeAll(itemsToRemove);
+	}
+	
+	private synchronized ArrayList<WorldSnapshot> getPacketsFromBeforeMillis (double millis, ArrayList<WorldSnapshot> packetList) {
 		if (packetList.isEmpty())
 			return new ArrayList<WorldSnapshot>();
 		
@@ -100,20 +110,13 @@ public class WorldSnapshotManager implements PacketHandler {
 	}
 	
 	private WorldSnapshot decode (WorldSnapshotPacket packet) {
-		Json json = new Json();
-		double timeCreatedMillis = packet.timeCreatedMillis;
-		int time = packet.time;
-		int type = packet.type;
-		HashMap<String, EntitySnapshot> entitySnapshots = new HashMap<String, EntitySnapshot>();
-		if (packet.entitySnapshots != null) {//Possibility of being null if there were no entity changes (on server) in that tick.
-			for (Entry<String, String> entry : packet.entitySnapshots.entrySet()) {
-				entitySnapshots.put(entry.getKey(), json.fromJson(EntitySnapshot.class, entry.getValue()));
-			}
-		}
+		ChunkData[] chunks = new ChunkData[WorldSnapshotPacket.NUM_OF_CHUNKS];
+		for (int i = 0; i < chunks.length; i++)
+			chunks[i] = json.fromJson(ChunkData.class, packet.chunks[i]);
 		
 		MapSnapshot mapSnapshot = json.fromJson(MapSnapshot.class, packet.mapSnapshot);
 		
-		return new WorldSnapshot(timeCreatedMillis, time, type, entitySnapshots, mapSnapshot);
+		return new WorldSnapshot(packet.timeCreatedMillis, packet.newMap, packet.time, packet.type, chunks, mapSnapshot);
 	}
 
 	@Override
@@ -122,31 +125,29 @@ public class WorldSnapshotManager implements PacketHandler {
 			WorldSnapshotPacket worldSnapshotPacket = (WorldSnapshotPacket) packet;
 			switch (worldSnapshotPacket.type) {
 			case WorldSnapshot.TYPE_INTERP:
-				addInterpSnapshot(worldSnapshotPacket);
+				addInterpSnapshot(decode(worldSnapshotPacket));
 				return true;
 			case WorldSnapshot.TYPE_CHANGES:
-				addChangesSnapshot(worldSnapshotPacket);
+				addChangesSnapshot(decode(worldSnapshotPacket));
 				return true;
 			case WorldSnapshot.TYPE_FULL:
-				world.applyFullWorldSnapshot(decode(worldSnapshotPacket));
-				clearLists();
+				addFullSnapshot(decode(worldSnapshotPacket));
 				return true;
 			}
 		}
 		return false;
 	}
 	
-	private synchronized void addInterpSnapshot (WorldSnapshotPacket packet) {
-		worldInterpSnapshotPackets.add(decode(packet));
+	private synchronized void addInterpSnapshot (WorldSnapshot packet) {
+		worldInterpSnapshotPackets.add(packet);
 	}
 	
-	private synchronized void addChangesSnapshot (WorldSnapshotPacket packet) {
-		worldChangesSnapshotPackets.add(decode(packet));
+	private synchronized void addChangesSnapshot (WorldSnapshot packet) {
+		worldChangesSnapshotPackets.add(packet);
 	}
 	
-	private synchronized void clearLists () {
-		worldInterpSnapshotPackets.clear();
-		worldChangesSnapshotPackets.clear();
+	private synchronized void addFullSnapshot (WorldSnapshot packet) {
+		worldFullSnapshotPackets.add(packet);
 	}
 	
 	public void dispose () {

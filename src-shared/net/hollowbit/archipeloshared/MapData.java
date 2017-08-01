@@ -9,6 +9,7 @@ public class MapData {
 	public boolean naturalLighting = false;
 	public String music;
 	public boolean canSave = false;
+	public int width, height, minTileX, minTileY, maxTileX, maxTileY;
 	public ArrayList<ChunkLocation> chunks = new ArrayList<ChunkLocation>();
 	
 	/*public MapData () {}*/

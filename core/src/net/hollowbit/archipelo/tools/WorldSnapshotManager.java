@@ -30,6 +30,7 @@ public class WorldSnapshotManager implements PacketHandler {
 		this.world = world;
 		this.worldInterpSnapshotPackets = new ArrayList<WorldSnapshot>();
 		this.worldChangesSnapshotPackets = new ArrayList<WorldSnapshot>();
+		this.worldFullSnapshotPackets = new ArrayList<WorldSnapshot>();
 		this.json = new Json();
 		ArchipeloClient.getGame().getNetworkManager().addPacketHandler(this);
 	}
@@ -111,10 +112,16 @@ public class WorldSnapshotManager implements PacketHandler {
 	
 	private WorldSnapshot decode (WorldSnapshotPacket packet) {
 		ChunkData[] chunks = new ChunkData[WorldSnapshotPacket.NUM_OF_CHUNKS];
-		for (int i = 0; i < chunks.length; i++)
-			chunks[i] = json.fromJson(ChunkData.class, packet.chunks[i]);
+		for (int i = 0; i < chunks.length; i++) {
+			try {
+				chunks[i] = json.fromJson(ChunkData.class, packet.chunks[i]);
+			} catch(NullPointerException e){}//Ignore null pointer exceptions on empty chunk data
+		}
 		
-		MapSnapshot mapSnapshot = json.fromJson(MapSnapshot.class, packet.mapSnapshot);
+		MapSnapshot mapSnapshot = null;
+		try {
+			mapSnapshot = json.fromJson(MapSnapshot.class, packet.mapSnapshot);
+		} catch(NullPointerException e){}//Ignore null pointer exceptions on empty map data
 		
 		return new WorldSnapshot(packet.timeCreatedMillis, packet.newMap, packet.time, packet.type, chunks, mapSnapshot);
 	}

@@ -71,6 +71,7 @@ public class World implements PacketHandler {
 		
 		for (Entity entity : cloneEntitiesList()) {
 			entity.update(deltaTime);
+			System.out.println("World.java  " + entity.getName());
 		}
 		
 		//Fade map in
@@ -146,8 +147,10 @@ public class World implements PacketHandler {
 		HashMap<String, EntitySnapshot> snapshots2 = new HashMap<String, EntitySnapshot>();
 		
 		for (int i = 0; i < WorldSnapshotPacket.NUM_OF_CHUNKS; i++) {
-			snapshots1.putAll(snapshot1.chunks[i].entities);
-			snapshots2.putAll(snapshot2.chunks[i].entities);
+			if (snapshot1.chunks[i] != null && snapshot2.chunks[i] != null) {
+				snapshots1.putAll(snapshot1.chunks[i].entities);
+				snapshots2.putAll(snapshot2.chunks[i].entities);
+			}
 		}
 		
 		for (Entity entity : cloneEntitiesList()) {
@@ -213,26 +216,14 @@ public class World implements PacketHandler {
 	}
 	
 	private synchronized void loadMap () {
+		System.out.println("World.java  load map");
 		map = new Map(nextMapSnapshot, nextChunkData, this);
 		for (Entity entity : entities)
 			entity.unload();
 		entities.clear();
 		
 		for (ChunkData chunk : nextChunkData) {
-			for (Entry<String, EntitySnapshot> entitySnapshot : chunk.entities.entrySet()) {
-				Entity entity = null;
-				
-				//If it is the current player, use a custom creator, else use the default one
-				if (entitySnapshot.getValue().name.equals(ArchipeloClient.getGame().getPlayerInfoManager().getName())) {
-					player = new CurrentPlayer();
-					player.create(entitySnapshot.getValue(), map, EntityType.PLAYER);
-					ArchipeloClient.getGame().getCamera().focusOnEntityFast(player);
-					entity = player;
-				} else
-					entity = EntityType.createEntityBySnapshot(entitySnapshot.getValue(), map);
-				entity.load();
-				entities.add(entity);
-			}
+			addEntitiesInChunkData(chunk);
 		}
 		nextMapSnapshot = null;
 		nextChunkData = null;
@@ -248,6 +239,23 @@ public class World implements PacketHandler {
 		}
 		
 		removeAllEntities(entitiesToRemove);
+	}
+	
+	public void addEntitiesInChunkData(ChunkData chunk) {
+		for (Entry<String, EntitySnapshot> entitySnapshot : chunk.entities.entrySet()) {
+			Entity entity = null;
+			
+			//If it is the current player, use a custom creator, else use the default one
+			if (entitySnapshot.getValue().name.equals(ArchipeloClient.getGame().getPlayerInfoManager().getName())) {
+				player = new CurrentPlayer();
+				player.create(entitySnapshot.getValue(), map, EntityType.PLAYER);
+				ArchipeloClient.getGame().getCamera().focusOnEntityFast(player);
+				entity = player;
+			} else
+				entity = EntityType.createEntityBySnapshot(entitySnapshot.getValue(), map);
+			entity.load();
+			entities.add(entity);
+		}
 	}
 	
 	public synchronized void removeAllEntities(ArrayList<Entity> entitiesToRemove) {

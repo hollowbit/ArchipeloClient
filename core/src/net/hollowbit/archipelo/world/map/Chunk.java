@@ -1,11 +1,6 @@
 package net.hollowbit.archipelo.world.map;
 
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-
-import net.hollowbit.archipelo.ArchipeloClient;
 import net.hollowbit.archipelo.world.Map;
-import net.hollowbit.archipelo.world.MapElement;
-import net.hollowbit.archipelo.world.Tile;
 import net.hollowbit.archipeloshared.ChunkData;
 
 public class Chunk {
@@ -53,21 +48,13 @@ public class Chunk {
 	public boolean[][] getCollisionMap() {
 		return collisionMap;
 	}
-	
-	public void renderTiles(SpriteBatch batch) {
-		for (int r = 0; r < tiles.length; r++) {
-			for (int c  = 0; c < tiles[0].length; c++) {
-				@SuppressWarnings("unused")
-				Tile tile = ArchipeloClient.getGame().getMapElementManager().getTile(tiles[r][c]);
-			}
-		}
+
+	public String[][] getTiles() {
+		return tiles;
 	}
-	
-	public void renderElements(SpriteBatch batch, int row) {
-		for (int c  = 0; c < tiles[0].length; c++) {
-			@SuppressWarnings("unused")
-			MapElement element = ArchipeloClient.getGame().getMapElementManager().getElement(elements[row][c]);
-		}
+
+	public String[][] getElements() {
+		return elements;
 	}
 	
 }

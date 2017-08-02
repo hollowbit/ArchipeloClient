@@ -1,7 +1,9 @@
 package net.hollowbit.archipelo.world.map;
 
+import net.hollowbit.archipelo.ArchipeloClient;
 import net.hollowbit.archipelo.world.Map;
 import net.hollowbit.archipeloshared.ChunkData;
+import net.hollowbit.archipeloshared.TileData;
 
 public class Chunk {
 	
@@ -19,7 +21,7 @@ public class Chunk {
 		
 		//Deserialize collision data
 		char[] bytes = data.collisionData.toCharArray();
-		
+		this.collisionMap = new boolean[ChunkData.SIZE * TileData.COLLISION_MAP_SCALE][ChunkData.SIZE * TileData.COLLISION_MAP_SCALE];
 		int i = 0;
         for (int r = 0; r < collisionMap.length; r++) {
             for (int c = 0; c < collisionMap[0].length; c++) {
@@ -39,6 +41,14 @@ public class Chunk {
 	
 	public int getY() {
 		return y;
+	}
+	
+	public int getPixelX() {
+		return x * ChunkData.SIZE * ArchipeloClient.TILE_SIZE;
+	}
+	
+	public int getPixelY() {
+		return y * ChunkData.SIZE * ArchipeloClient.TILE_SIZE;
 	}
 	
 	public Map getMap() {

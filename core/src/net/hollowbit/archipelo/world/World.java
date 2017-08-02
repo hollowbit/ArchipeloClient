@@ -71,7 +71,6 @@ public class World implements PacketHandler {
 		
 		for (Entity entity : cloneEntitiesList()) {
 			entity.update(deltaTime);
-			System.out.println("World.java  " + entity.getName());
 		}
 		
 		//Fade map in
@@ -216,7 +215,6 @@ public class World implements PacketHandler {
 	}
 	
 	private synchronized void loadMap () {
-		System.out.println("World.java  load map");
 		map = new Map(nextMapSnapshot, nextChunkData, this);
 		for (Entity entity : entities)
 			entity.unload();

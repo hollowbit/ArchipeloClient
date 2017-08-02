@@ -48,8 +48,7 @@ public class WorldSnapshotManager implements PacketHandler {
 	private synchronized void updateInterp (double timeOfPacket) {
 		if (worldInterpSnapshotPackets.isEmpty())
 			return;
-		
-		ArrayList<WorldSnapshot> oldPackets = getPacketsFromBeforeMillis(timeOfPacket, worldInterpSnapshotPackets);
+		ArrayList<WorldSnapshot> oldPackets = getInterpPacketsAtMillis(timeOfPacket, worldInterpSnapshotPackets);
 		worldInterpSnapshotPackets.removeAll(oldPackets);
 		
 		if (worldInterpSnapshotPackets.size() < 2)
@@ -87,7 +86,20 @@ public class WorldSnapshotManager implements PacketHandler {
 		collection.removeAll(itemsToRemove);
 	}
 	
-	private synchronized ArrayList<WorldSnapshot> getPacketsFromBeforeMillis (double millis, ArrayList<WorldSnapshot> packetList) {
+	private synchronized ArrayList<WorldSnapshot> getPacketsFromBeforeMillis(double millis, ArrayList<WorldSnapshot> packetList) {
+		if (packetList.isEmpty())
+			return new ArrayList<WorldSnapshot>();
+		
+		ArrayList<WorldSnapshot> snapshotsBeforeMillis = new ArrayList<WorldSnapshot>();
+		for (WorldSnapshot snapshot : packetList) {
+			if (snapshot.timeCreatedMillis <= millis)
+				snapshotsBeforeMillis.add(snapshot);
+		}
+		
+		return snapshotsBeforeMillis;
+	}
+	
+	private synchronized ArrayList<WorldSnapshot> getInterpPacketsAtMillis (double millis, ArrayList<WorldSnapshot> packetList) {
 		if (packetList.isEmpty())
 			return new ArrayList<WorldSnapshot>();
 		

@@ -114,12 +114,12 @@ public class Map {
 		
 		//Render tiles
 		//Find minimum amount of tiles to draw to save processing power
-		int tileY = getHeight() - (int) ((cameraViewRect.yWithOffset() + cameraViewRect.height) / ArchipeloClient.TILE_SIZE) - 1;
+		int tileY = (int) ((cameraViewRect.yWithOffset() + cameraViewRect.height) / ArchipeloClient.TILE_SIZE);
 		tileY = tileY < 0 ? 0 : tileY;
 		int tileX = (int) (cameraViewRect.xWithOffset() / ArchipeloClient.TILE_SIZE);
 		tileX = tileX < 0 ? 0 : tileX;
 		
-		int tileY2 = getHeight() - (int) ((cameraViewRect.yWithOffset()) / ArchipeloClient.TILE_SIZE);
+		int tileY2 = (int) ((cameraViewRect.yWithOffset()) / ArchipeloClient.TILE_SIZE);
 		tileY2 = tileY2 > getHeight() ? getHeight() : tileY2;
 		int tileX2 = (int) ((cameraViewRect.xWithOffset() + cameraViewRect.width) / ArchipeloClient.TILE_SIZE) + 1;
 		tileX2 = tileX2 > getWidth() ? getWidth() : tileX2;
@@ -129,8 +129,10 @@ public class Map {
 		int chunkY2 = (int) Math.floor((float) tileY2 / ChunkData.SIZE);
 		int chunkX2 = (int) Math.floor((float) tileX2 / ChunkData.SIZE);
 		
-		for (int chunkY = chunkY1; chunkY < chunkY2; chunkY++) {
+		System.out.println("Map.java  " + chunkY1 + "," + chunkX1 + " : " + chunkY2 + "," + chunkX2);
+		for (int chunkY = chunkY1; chunkY <= chunkY2; chunkY++) {
 			for (int chunkX = chunkX1; chunkX <= chunkX2; chunkX++) {
+				System.out.println("Map.java " + chunkY + "," + chunkX + "    " + chunkRows.firstKey());
 				ChunkRow row = chunkRows.get(chunkY);
 				if (row == null)
 					continue;
@@ -165,9 +167,12 @@ public class Map {
 							tileRenderX2 = ChunkData.SIZE - tileRenderX2;
 					}
 					
-					for (int r = tileRenderY1; r < tileRenderY2; r++) {
-						for (int c = tileRenderX1; c < tileRenderX2; c++)
-							ArchipeloClient.getGame().getMapElementManager().getTile(chunk.getTiles()[r][c]).draw(batch, c * ArchipeloClient.TILE_SIZE, r * ArchipeloClient.TILE_SIZE);
+					System.out.println("Map.java   " + tileRenderY1 + "," + tileRenderX1 + "  :  " + tileRenderY2 + "," + tileRenderX2);
+					for (int r = tileRenderY1; r >= tileRenderY2; r--) {
+						for (int c = tileRenderX1; c < tileRenderX2; c++) {
+							ArchipeloClient.getGame().getMapElementManager().getTile(chunk.getTiles()[r][c]).draw(batch, c * ArchipeloClient.TILE_SIZE + chunk.getPixelX(), r * ArchipeloClient.TILE_SIZE + chunk.getPixelY());
+							System.out.println("Map.java   rendering  " + chunk.getTiles()[r][c] + "  at " + (c * ArchipeloClient.TILE_SIZE + chunk.getPixelX()) + " , " + (r * ArchipeloClient.TILE_SIZE + chunk.getPixelY()));
+						}
 					}
 				}
 				

@@ -115,63 +115,89 @@ public class Map {
 		//Render tiles
 		//Find minimum amount of tiles to draw to save processing power
 		int tileY = (int) ((cameraViewRect.yWithOffset() + cameraViewRect.height) / ArchipeloClient.TILE_SIZE);
-		tileY = tileY < 0 ? 0 : tileY;
+		//tileY = tileY < 0 ? 0 : tileY;
 		int tileX = (int) (cameraViewRect.xWithOffset() / ArchipeloClient.TILE_SIZE);
-		tileX = tileX < 0 ? 0 : tileX;
+		//tileX = tileX < 0 ? 0 : tileX;
 		
 		int tileY2 = (int) ((cameraViewRect.yWithOffset()) / ArchipeloClient.TILE_SIZE);
-		tileY2 = tileY2 > getHeight() ? getHeight() : tileY2;
+		//tileY2 = tileY2 > getHeight() ? getHeight() : tileY2;
 		int tileX2 = (int) ((cameraViewRect.xWithOffset() + cameraViewRect.width) / ArchipeloClient.TILE_SIZE) + 1;
-		tileX2 = tileX2 > getWidth() ? getWidth() : tileX2;
+		//tileX2 = tileX2 > getWidth() ? getWidth() : tileX2;
 		
-		int chunkY1 = (int) Math.floor((float) tileY / ChunkData.SIZE);
-		int chunkX1 = (int) Math.floor((float) tileX / ChunkData.SIZE);
-		int chunkY2 = (int) Math.floor((float) tileY2 / ChunkData.SIZE);
+		int chunkY1 = (int) Math.floor((float) tileY / ChunkData.SIZE) + 1;
+		int chunkX1 = (int) Math.floor((float) tileX / ChunkData.SIZE) - 1;
+		int chunkY2 = (int) Math.floor((float) tileY2 / ChunkData.SIZE) - 1;
 		int chunkX2 = (int) Math.floor((float) tileX2 / ChunkData.SIZE);
 		
-		System.out.println("Map.java  " + chunkY1 + "," + chunkX1 + " : " + chunkY2 + "," + chunkX2);
-		for (int chunkY = chunkY1; chunkY <= chunkY2; chunkY++) {
+		//System.out.println("Map.java  " + chunkY1 + "," + chunkX1 + " : " + chunkY2 + "," + chunkX2);
+		for (int chunkY = chunkY1; chunkY >= chunkY2; chunkY--) {
 			for (int chunkX = chunkX1; chunkX <= chunkX2; chunkX++) {
-				System.out.println("Map.java " + chunkY + "," + chunkX + "    " + chunkRows.firstKey());
 				ChunkRow row = chunkRows.get(chunkY);
 				if (row == null)
 					continue;
+				//System.out.println("Map.java  " + chunkX + "," + chunkY);
 				
 				Chunk chunk = row.getChunks().get(chunkX);
 				if (chunk != null) {
-					int tileRenderY1 = 0;
+					//Define inter-tile rendering limits
+					int tileRenderY1 = ChunkData.SIZE;
 					if (chunkY == chunkY1) {
-						tileRenderY1 = Math.abs(tileY) % ChunkData.SIZE;
-						if (tileY < 0)
-							tileRenderY1 = ChunkData.SIZE - tileRenderY1;
+						if (tileY >= 0)
+							tileRenderY1 = tileY % ChunkData.SIZE;
+						else
+							tileRenderY1 = ChunkData.SIZE - (Math.abs(tileY) % (ChunkData.SIZE + 1));
+					}
+					
+					int tileRenderY2 = 0;
+					if (chunkY == chunkY2) {
+						if (tileY2 >= 0)
+							tileRenderY2 = tileY2 % ChunkData.SIZE;
+						else
+							tileRenderY2 = ChunkData.SIZE - (Math.abs(tileY2) % (ChunkData.SIZE + 1));
 					}
 					
 					int tileRenderX1 = 0;
 					if (chunkX == chunkX1) {
-						tileRenderX1 = Math.abs(tileX) % ChunkData.SIZE;
-						if (tileX < 0)
-							tileRenderX1 = ChunkData.SIZE - tileRenderX1;
-					}
-					
-					int tileRenderY2 = ChunkData.SIZE;
-					if (chunkY == chunkY2) {
-						tileRenderY2 = Math.abs(tileY2) % ChunkData.SIZE;
-						if (tileY2 < 0)
-							tileRenderY2 = ChunkData.SIZE - tileRenderY2;
+						if (tileX >= 0)
+							tileRenderX1 = tileX % ChunkData.SIZE;
+						else
+							tileRenderX1 = ChunkData.SIZE - (Math.abs(tileX) % (ChunkData.SIZE + 1));
 					}
 					
 					int tileRenderX2 = ChunkData.SIZE;
 					if (chunkX == chunkX2) {
-						tileRenderX2 = Math.abs(tileX2) % ChunkData.SIZE;
-						if (tileX2 < 0)
-							tileRenderX2 = ChunkData.SIZE - tileRenderX2;
+						if (tileX2 >= 0)
+							tileRenderX2 = tileX2 % ChunkData.SIZE;
+						else
+							tileRenderX2 = ChunkData.SIZE - (Math.abs(tileX2) % (ChunkData.SIZE + 1));
 					}
 					
-					System.out.println("Map.java   " + tileRenderY1 + "," + tileRenderX1 + "  :  " + tileRenderY2 + "," + tileRenderX2);
-					for (int r = tileRenderY1; r >= tileRenderY2; r--) {
+					//Make sure y is descending
+					if (tileRenderY1 < tileRenderY2) {
+						//Swap if in wrong order
+						tileRenderY1 += tileRenderY2;
+						tileRenderY2 = tileRenderY1 - tileRenderY2;
+						tileRenderY1 = tileRenderY1 - tileRenderY2;
+					}
+					
+					//Make sure x is ascending
+					if (tileRenderX1 > tileRenderX2) {
+						//Swap if in wrong order
+						tileRenderX1 += tileRenderX2;
+						tileRenderX2 = tileRenderX1 - tileRenderX2;
+						tileRenderX1 = tileRenderX1 - tileRenderX2;
+					}
+					
+					//System.out.println("Map.java   " + tileRenderX1 + "," + tileRenderX2 + "  :  " + tileRenderY1 + "," + tileRenderY2);
+					for (int r = tileRenderY1 - 1; r >= tileRenderY2; r--) {
+						int y = r * ArchipeloClient.TILE_SIZE + chunk.getPixelY();
+						//System.out.println("Map.java  " + y);
 						for (int c = tileRenderX1; c < tileRenderX2; c++) {
-							ArchipeloClient.getGame().getMapElementManager().getTile(chunk.getTiles()[r][c]).draw(batch, c * ArchipeloClient.TILE_SIZE + chunk.getPixelX(), r * ArchipeloClient.TILE_SIZE + chunk.getPixelY());
-							System.out.println("Map.java   rendering  " + chunk.getTiles()[r][c] + "  at " + (c * ArchipeloClient.TILE_SIZE + chunk.getPixelX()) + " , " + (r * ArchipeloClient.TILE_SIZE + chunk.getPixelY()));
+							/*if (r == tileRenderY1 - 1)
+								System.out.println("Map.java  " + c);*/
+							Tile tile = ArchipeloClient.getGame().getMapElementManager().getTile(chunk.getTiles()[r][c]);
+							if (tile != null)
+								tile.draw(batch, c * ArchipeloClient.TILE_SIZE + chunk.getPixelX(), y);
 						}
 					}
 				}
@@ -181,8 +207,8 @@ public class Map {
 		
 
 		
-		for (int chunkY = chunkY1; chunkY < chunkY2; chunkY++) {
-			for (int chunkX = chunkX1; chunkX <= chunkX2; chunkX++) {
+		for (int chunkY = chunkY1; chunkY >= chunkY2; chunkY--) {
+			for (int chunkX = chunkX1 - 1; chunkX <= chunkX2; chunkX++) {
 				ChunkRow row = chunkRows.get(chunkY);
 				if (row == null)
 					continue;
@@ -217,12 +243,12 @@ public class Map {
 							tileRenderX2 = ChunkData.SIZE - tileRenderX2;
 					}
 					
-					for (int r = tileRenderY1; r < tileRenderY2; r++) {
+					for (int r = tileRenderY1; (tileRenderY1 < tileRenderY2) ? (r < tileRenderY2) : r >= tileRenderY2; r += (tileRenderY1 < tileRenderY2) ? 1 : -1) {
 						for (int c = tileRenderX1; c < tileRenderX2; c++) {
-							MapElement element = ArchipeloClient.getGame().getMapElementManager().getElement(chunk.getElements()[r][c]);
+							MapElement element = ArchipeloClient.getGame().getMapElementManager().getElement(chunk.getElements()[ChunkData.SIZE - r - 1][c]);
 							if (element != null) {
-								float x = c * ArchipeloClient.TILE_SIZE;
-								float y = (getHeight() - r - 1) * ArchipeloClient.TILE_SIZE;
+								float x = c * ArchipeloClient.TILE_SIZE + chunk.getPixelX();
+								float y = (getHeight() - r - 1) * ArchipeloClient.TILE_SIZE + chunk.getPixelY();
 								if (cameraViewRect.collidesWith(element.getViewRect(x, y)))
 									element.draw(batch, x, y);
 							}

@@ -50,7 +50,8 @@ public class GameCamera {
 			}
 		}
 		
-		if (ArchipeloClient.getGame().getWorld() != null && ArchipeloClient.getGame().getWorld().getMap() != null) {
+		//TODO rewrite map limit code
+		/*if (ArchipeloClient.getGame().getWorld() != null && ArchipeloClient.getGame().getWorld().getMap() != null) {
 			//If map width is more than screen width
 			if (ArchipeloClient.getGame().getWorld().getMap().getWidth() > cam.viewportWidth / ArchipeloClient.TILE_SIZE) {
 				if (cam.position.x < cam.viewportWidth / 2)
@@ -68,7 +69,7 @@ public class GameCamera {
 				if (cam.position.y + cam.viewportHeight > ArchipeloClient.getGame().getWorld().getMap().getHeight() * ArchipeloClient.TILE_SIZE + cam.viewportHeight / 2)
 					cam.position.y = ArchipeloClient.getGame().getWorld().getMap().getHeight() * ArchipeloClient.TILE_SIZE - cam.viewportHeight + cam.viewportHeight / 2;
 			}
-		}
+		}*/
 		
 		cam.update();
 	}

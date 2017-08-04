@@ -99,7 +99,8 @@ public class CharacterPickerScreen extends Screen implements PacketHandler {
 				QuickUi.showErrorWindow(LM.getMsg(Cat.ERROR, "loginInvalidTitle"), LM.getMsg(Cat.ERROR, "loginInvalid"), stage);
 				break;
 			case PlayerListPacket.RESULT_SUCCESSFUL:
-				characterPickWindow.reloadList(playerListPacket);
+				if (characterPickWindow != null)
+					characterPickWindow.reloadList(playerListPacket);
 				break;
 			}
 			return true;

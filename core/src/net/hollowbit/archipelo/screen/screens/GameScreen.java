@@ -90,7 +90,7 @@ public class GameScreen extends Screen implements PacketHandler, InputProcessor 
 		chatManager = new ChatManager();
 		forms = new HashMap<String, Form>();
 		ArchipeloClient.getGame().getNetworkManager().addPacketHandler(this);
-		ArchipeloClient.getGame().getCamera().zoom(5);
+		ArchipeloClient.getGame().getCamera().zoom(1);
 		
 		healthBar = new HealthBar(world);
 		

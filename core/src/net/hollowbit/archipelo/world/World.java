@@ -221,7 +221,8 @@ public class World implements PacketHandler {
 		entities.clear();
 		
 		for (ChunkData chunk : nextChunkData) {
-			addEntitiesInChunkData(chunk);
+			if (chunk != null)
+				addEntitiesInChunkData(chunk);
 		}
 		nextMapSnapshot = null;
 		nextChunkData = null;

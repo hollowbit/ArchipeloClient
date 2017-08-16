@@ -25,9 +25,7 @@ public class Chunk {
 		int i = 0;
         for (int r = 0; r < collisionMap.length; r++) {
             for (int c = 0; c < collisionMap[0].length; c++) {
-            	byte val = (byte) bytes[i / Byte.SIZE];
-            	int pos = i % Byte.SIZE;
-            	collisionMap[r][c] = ((val >> pos) & 1) == 1;
+            	collisionMap[r][c] = bytes[i] == '1';
             	i++;
             }
         }

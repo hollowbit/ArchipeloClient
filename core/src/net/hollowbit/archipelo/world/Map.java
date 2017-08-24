@@ -18,6 +18,7 @@ import net.hollowbit.archipelo.world.map.Chunk;
 import net.hollowbit.archipelo.world.map.ChunkRow;
 import net.hollowbit.archipeloshared.ChunkData;
 import net.hollowbit.archipeloshared.CollisionRect;
+import net.hollowbit.archipeloshared.EntityData;
 import net.hollowbit.archipeloshared.MapSnapshot;
 import net.hollowbit.archipeloshared.TileData;
 
@@ -360,7 +361,7 @@ public class Map {
 		particleManager.applyChangesSnapshot(snapshot);
 	}
 	
-	public void applyFullSnapshot (ChunkData[] chunkDatas) {
+	public void applyFullSnapshot (ChunkData[] chunkDatas, EntityData[] entityDatas) {
 		boolean isNewX = true;
 		int newX = 0;
 		boolean isNewY = true;
@@ -407,10 +408,11 @@ public class Map {
 					row.getChunks().remove(minX);
 
 					//Look for an add chunk at newX and y
-					for (ChunkData chunk : chunkDatas) {
+					for (int i = 0; i < WorldSnapshotPacket.NUM_OF_CHUNKS; i++) {
+						ChunkData chunk = chunkDatas[i];
 						if (chunk != null && chunk.x == newX && chunk.y == y) {
 							row.getChunks().put(newX, new Chunk(chunk, this));
-							world.addEntitiesInChunkData(chunk);
+							world.addEntitiesFromChunk(entityDatas[i]);
 							break;
 						}
 					}
@@ -423,10 +425,11 @@ public class Map {
 					row.getChunks().remove(minX);
 
 					//Look for an add chunk at newX and y
-					for (ChunkData chunk : chunkDatas) {
+					for (int i = 0; i < WorldSnapshotPacket.NUM_OF_CHUNKS; i++) {
+						ChunkData chunk = chunkDatas[i];
 						if (chunk != null && chunk.x == newX && chunk.y == y) {
 							row.getChunks().put(newX, new Chunk(chunk, this));
-							world.addEntitiesInChunkData(chunk);
+							world.addEntitiesFromChunk(entityDatas[i]);
 							break;
 						}
 					}
@@ -442,10 +445,11 @@ public class Map {
 					world.unloadEntitiesInChunk(getChunk(x, minY));
 
 					//Look for an add chunk at x and newY
-					for (ChunkData chunk : chunkDatas) {
+					for (int i = 0; i < WorldSnapshotPacket.NUM_OF_CHUNKS; i++) {
+						ChunkData chunk = chunkDatas[i];
 						if (chunk != null && chunk.x == x && chunk.y == newY) {
 							newRow.getChunks().put(x, new Chunk(chunk, this));
-							world.addEntitiesInChunkData(chunk);
+							world.addEntitiesFromChunk(entityDatas[i]);
 							break;
 						}
 					}
@@ -455,12 +459,13 @@ public class Map {
 			} else if (newY < minY) {
 				for (int x = minX; x <= maxX; x++) {
 					world.unloadEntitiesInChunk(getChunk(x, maxY));
-					
+
 					//Look for an add chunk at x and newY
-					for (ChunkData chunk : chunkDatas) {
+					for (int i = 0; i < WorldSnapshotPacket.NUM_OF_CHUNKS; i++) {
+						ChunkData chunk = chunkDatas[i];
 						if (chunk != null && chunk.x == x && chunk.y == newY) {
 							newRow.getChunks().put(x, new Chunk(chunk, this));
-							world.addEntitiesInChunkData(chunk);
+							world.addEntitiesFromChunk(entityDatas[i]);
 							break;
 						}
 					}

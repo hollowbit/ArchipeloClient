@@ -2,7 +2,7 @@ package net.hollowbit.archipelo.world;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map.Entry;
+import java.util.HashSet;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -28,6 +28,7 @@ import net.hollowbit.archipelo.world.map.Chunk;
 import net.hollowbit.archipeloshared.ChunkData;
 import net.hollowbit.archipeloshared.CollisionRect;
 import net.hollowbit.archipeloshared.Direction;
+import net.hollowbit.archipeloshared.EntityData;
 import net.hollowbit.archipeloshared.EntitySnapshot;
 import net.hollowbit.archipeloshared.MapSnapshot;
 
@@ -41,10 +42,11 @@ public class World implements PacketHandler {
 	public static final int TIME_SPEED = 20;//Time moves at 20 ticks per second.
 	
 	private float time;
-	private ArrayList<Entity> entities;
+	private HashMap<String, Entity> entities;
 	private Map map;
 	private MapSnapshot nextMapSnapshot;
 	private ChunkData[] nextChunkData;
+	private ArrayList<EntityData> nextEntityData;
 	private TeleportPacket teleportPacket;
 	private CurrentPlayer player;
 	private Color fadeColor;
@@ -55,7 +57,7 @@ public class World implements PacketHandler {
 	
 	public World (GameScreen gameScreen) {
 		this.gameScreen = gameScreen;
-		entities = new ArrayList<Entity>();
+		entities = new HashMap<String, Entity>();
 		nextMapSnapshot = null;
 		time = 0;
 		fadeTimer = 0;
@@ -111,7 +113,7 @@ public class World implements PacketHandler {
 	 * Properly dispose of game world
 	 */
 	public void dispose () {
-		for (Entity entity : entities)
+		for (Entity entity : entities.values())
 			entity.unload();
 		this.flagsManager.dispose();
 		ArchipeloClient.getGame().getNetworkManager().removePacketHandler(this);
@@ -145,11 +147,14 @@ public class World implements PacketHandler {
 		HashMap<String, EntitySnapshot> snapshots1 = new HashMap<String, EntitySnapshot>();
 		HashMap<String, EntitySnapshot> snapshots2 = new HashMap<String, EntitySnapshot>();
 		
-		for (int i = 0; i < WorldSnapshotPacket.NUM_OF_CHUNKS; i++) {
-			if (snapshot1.chunks[i] != null && snapshot2.chunks[i] != null) {
-				snapshots1.putAll(snapshot1.chunks[i].entities);
-				snapshots2.putAll(snapshot2.chunks[i].entities);
-			}
+		for (EntityData data : snapshot1.entities) {
+			for (EntitySnapshot es : data.entities)
+				snapshots1.put(es.name, es);
+		}
+		
+		for (EntityData data : snapshot2.entities) {
+			for (EntitySnapshot es : data.entities)
+				snapshots2.put(es.name, es);
 		}
 		
 		for (Entity entity : cloneEntitiesList()) {
@@ -167,23 +172,20 @@ public class World implements PacketHandler {
 		
 		map.applyChangesSnapshot(snapshot.mapSnapshot);
 		
-		ArrayList<Entity> entitiesToProcess = cloneEntitiesList();
-		for (int i = 0; i < snapshot.chunks.length; i++) {
-			ChunkData chunk = snapshot.chunks[i];
-			if (chunk == null)
-				continue;
-			
-			ArrayList<Entity> entitiesFound = new ArrayList<Entity>();
-			for (Entity entity : entitiesToProcess) {
-				EntitySnapshot entitySnapshot = chunk.entities.get(entity.getName());
-				if (entitySnapshot != null) {
-					entity.applyChangesSnapshot(entitySnapshot);
-					entitiesFound.add(entity);
+		HashSet<String> entitiesProcessed = new HashSet<String>();
+		for (EntityData entityData : snapshot.entities) {
+			for (EntitySnapshot es : entityData.entities) {
+				Entity entity = entities.get(es.name);
+				if (entity != null) {
+					entity.applyChangesSnapshot(es);
+					entitiesProcessed.add(es.name);
 				}
 			}
-			
-			entitiesToProcess.removeAll(entitiesFound);
-			
+		}
+		
+		for (Entity entity : entities.values()) {
+			if (!entitiesProcessed.contains(entity.getName()))
+				entities.remove(entity);
 		}
 	}
 	
@@ -210,19 +212,18 @@ public class World implements PacketHandler {
 			else
 				fadeTimer = -FADE_TIME;
 		} else {
-			map.applyFullSnapshot(snapshot.chunks);
+			map.applyFullSnapshot(snapshot.chunks, snapshot.entities);
 		}
 	}
 	
 	private synchronized void loadMap () {
 		map = new Map(nextMapSnapshot, nextChunkData, this);
-		for (Entity entity : entities)
+		for (Entity entity : entities.values())
 			entity.unload();
 		entities.clear();
 		
-		for (ChunkData chunk : nextChunkData) {
-			if (chunk != null)
-				addEntitiesInChunkData(chunk);
+		for (EntityData data : nextEntityData) {
+			addEntitiesFromChunk(data);
 		}
 		nextMapSnapshot = null;
 		nextChunkData = null;
@@ -240,20 +241,20 @@ public class World implements PacketHandler {
 		removeAllEntities(entitiesToRemove);
 	}
 	
-	public void addEntitiesInChunkData(ChunkData chunk) {
-		for (Entry<String, EntitySnapshot> entitySnapshot : chunk.entities.entrySet()) {
+	public void addEntitiesFromChunk(EntityData data) {
+		for (EntitySnapshot entitySnapshot : data.entities) {
 			Entity entity = null;
 			
 			//If it is the current player, use a custom creator, else use the default one
-			if (entitySnapshot.getValue().name.equals(ArchipeloClient.getGame().getPlayerInfoManager().getName())) {
+			if (entitySnapshot.name.equals(ArchipeloClient.getGame().getPlayerInfoManager().getName())) {
 				player = new CurrentPlayer();
-				player.create(entitySnapshot.getValue(), map, EntityType.PLAYER);
+				player.create(entitySnapshot, map, EntityType.PLAYER);
 				ArchipeloClient.getGame().getCamera().focusOnEntityFast(player);
 				entity = player;
 			} else
-				entity = EntityType.createEntityBySnapshot(entitySnapshot.getValue(), map);
+				entity = EntityType.createEntityBySnapshot(entitySnapshot, map);
 			entity.load();
-			entities.add(entity);
+			entities.put(entity.getName(), entity);
 		}
 	}
 	
@@ -266,11 +267,13 @@ public class World implements PacketHandler {
 	}
 	
 	public Player getPlayer (String name) {
-		for (Entity entity : entities) {
-			if (entity.getName().equals(name) && entity.isPlayer())
-				return (Player) entity;
-		}
-		return null;
+		Entity entity = entities.get(name);
+		if (entity == null)
+			return null;
+		
+		if (!entity.isPlayer())
+			return null;
+		return (Player) entity;
 	}
 	
 	public Map getMap () {
@@ -278,11 +281,7 @@ public class World implements PacketHandler {
 	}
 	
 	private Entity getEntity (String name) {
-		for (Entity entity : entities) {
-			if (entity.getName().equals(name))
-				return entity;
-		}
-		return null;
+		return entities.get(name);
 	}
 	
 	public FlagsManager getFlagsManager () {
@@ -297,7 +296,7 @@ public class World implements PacketHandler {
 	public boolean collidesWithWorld (CollisionRect rect, Entity testEntity) {
 		boolean isPlayer = testEntity instanceof Player;
 		//Check collisions with entities
-		for (Entity entity : entities) {
+		for (Entity entity : entities.values()) {
 			if (entity == testEntity)
 				continue;
 			
@@ -318,16 +317,16 @@ public class World implements PacketHandler {
 	
 	public synchronized ArrayList<Entity> cloneEntitiesList() {
 		ArrayList<Entity> entitiesClone = new ArrayList<Entity>();
-		entitiesClone.addAll(entities);
+		entitiesClone.addAll(entities.values());
 		return entitiesClone;
 	}
 	
 	private synchronized void addEntity(Entity entity) {
-		entities.add(entity);
+		entities.put(entity.getName(), entity);
 	}
 	
 	private synchronized void removeEntity(Entity entity) {
-		entities.remove(entity);
+		entities.remove(entity.getName());
 	}
 
 	@Override

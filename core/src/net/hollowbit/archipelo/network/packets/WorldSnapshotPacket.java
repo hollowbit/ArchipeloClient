@@ -14,6 +14,7 @@ public class WorldSnapshotPacket extends Packet {
 	public int type = 0;
 	public String mapSnapshot;
 	public String[] chunks;
+	public String[] entities;
 	
 	public WorldSnapshotPacket () {
 		super(PacketType.WORLD_SNAPSHOT);

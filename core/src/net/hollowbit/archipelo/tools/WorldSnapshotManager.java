@@ -12,6 +12,7 @@ import net.hollowbit.archipelo.network.packets.WorldSnapshotPacket;
 import net.hollowbit.archipelo.world.World;
 import net.hollowbit.archipelo.world.WorldSnapshot;
 import net.hollowbit.archipeloshared.ChunkData;
+import net.hollowbit.archipeloshared.EntityData;
 import net.hollowbit.archipeloshared.MapSnapshot;
 
 public class WorldSnapshotManager implements PacketHandler {
@@ -135,7 +136,13 @@ public class WorldSnapshotManager implements PacketHandler {
 			mapSnapshot = json.fromJson(MapSnapshot.class, packet.mapSnapshot);
 		} catch(NullPointerException e){}//Ignore null pointer exceptions on empty map data
 		
-		return new WorldSnapshot(packet.timeCreatedMillis, packet.newMap, packet.time, packet.type, chunks, mapSnapshot);
+		EntityData[] entities = new EntityData[WorldSnapshotPacket.NUM_OF_CHUNKS];
+		for (int i = 0; i < WorldSnapshotPacket.NUM_OF_CHUNKS; i++) {
+			
+			entities[i] = json.fromJson(EntityData.class, packet.entities[i]);
+		}
+		
+		return new WorldSnapshot(packet.timeCreatedMillis, packet.newMap, packet.time, packet.type, chunks, mapSnapshot, entities);
 	}
 
 	@Override

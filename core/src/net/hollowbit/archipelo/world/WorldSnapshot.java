@@ -1,6 +1,7 @@
 package net.hollowbit.archipelo.world;
 
 import net.hollowbit.archipeloshared.ChunkData;
+import net.hollowbit.archipeloshared.EntityData;
 import net.hollowbit.archipeloshared.MapSnapshot;
 
 public class WorldSnapshot {
@@ -15,14 +16,16 @@ public class WorldSnapshot {
 	int type;
 	public ChunkData[] chunks;
 	public MapSnapshot mapSnapshot;
+	public EntityData[] entities;
 	
-	public WorldSnapshot (double timeCreatedMillis, boolean newMap, int time, int type, ChunkData[] chunks, MapSnapshot mapSnapshot) {
+	public WorldSnapshot (double timeCreatedMillis, boolean newMap, int time, int type, ChunkData[] chunks, MapSnapshot mapSnapshot, EntityData[] entities) {
 		this.timeCreatedMillis = timeCreatedMillis;
 		this.newMap = newMap;
 		this.time = time;
 		this.type = type;
 		this.chunks = chunks;
 		this.mapSnapshot = mapSnapshot;
+		this.entities = entities;
 	}
 	
 }

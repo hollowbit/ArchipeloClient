@@ -224,6 +224,9 @@ public class GameScreen extends Screen implements PacketHandler, InputProcessor 
 			if (world.getPlayer() != null) {
 				GlyphLayout layoutCoords = new GlyphLayout(font, "X: " + (int) world.getPlayer().getLocation().getX() + " Y: " + (int) world.getPlayer().getLocation().getY());
 				font.draw(batch, layoutCoords, width / 2 - layoutCoords.width / 2, height - layoutFPS.height - 3 - layoutPing.height - 3 - layoutCoords.height);
+				
+				GlyphLayout layoutChunk = new GlyphLayout(font, "cX: " + (int) world.getPlayer().getLocation().getChunkX() + " cY: " + (int) world.getPlayer().getLocation().getChunkY());
+				font.draw(batch, layoutChunk, width / 2 - layoutChunk.width / 2, height - layoutFPS.height - 3 - layoutPing.height - 3 - layoutCoords.height - 3 - layoutChunk.height);
 			}
 		}
 		

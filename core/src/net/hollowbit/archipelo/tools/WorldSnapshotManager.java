@@ -138,8 +138,9 @@ public class WorldSnapshotManager implements PacketHandler {
 		
 		EntityData[] entities = new EntityData[WorldSnapshotPacket.NUM_OF_CHUNKS];
 		for (int i = 0; i < WorldSnapshotPacket.NUM_OF_CHUNKS; i++) {
-			
-			entities[i] = json.fromJson(EntityData.class, packet.entities[i]);
+			if (packet.entities[i] != null) {
+				entities[i] = json.fromJson(EntityData.class, packet.entities[i]);
+			}
 		}
 		
 		return new WorldSnapshot(packet.timeCreatedMillis, packet.newMap, packet.time, packet.type, chunks, mapSnapshot, entities);

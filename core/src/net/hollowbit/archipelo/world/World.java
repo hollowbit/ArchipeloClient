@@ -46,7 +46,7 @@ public class World implements PacketHandler {
 	private Map map;
 	private MapSnapshot nextMapSnapshot;
 	private ChunkData[] nextChunkData;
-	private ArrayList<EntityData> nextEntityData;
+	private EntityData[] nextEntityData;
 	private TeleportPacket teleportPacket;
 	private CurrentPlayer player;
 	private Color fadeColor;
@@ -81,6 +81,7 @@ public class World implements PacketHandler {
 			
 			//When done, load map and get ready to fade out
 			if (fadeTimer > 0) {
+				System.out.println("World.java Testeringo");
 				loadMap();
 				fadeTimer = FADE_TIME * (firstTimeLoading ? 3 : 1);
 				if (teleportPacket != null) {
@@ -148,13 +149,17 @@ public class World implements PacketHandler {
 		HashMap<String, EntitySnapshot> snapshots2 = new HashMap<String, EntitySnapshot>();
 		
 		for (EntityData data : snapshot1.entities) {
-			for (EntitySnapshot es : data.entities)
-				snapshots1.put(es.name, es);
+			if (data != null) {
+				for (EntitySnapshot es : data.entities)
+					snapshots1.put(es.name, es);
+			}
 		}
 		
 		for (EntityData data : snapshot2.entities) {
-			for (EntitySnapshot es : data.entities)
-				snapshots2.put(es.name, es);
+			if (data != null) {
+				for (EntitySnapshot es : data.entities)
+					snapshots2.put(es.name, es);
+			}
 		}
 		
 		for (Entity entity : cloneEntitiesList()) {
@@ -174,6 +179,9 @@ public class World implements PacketHandler {
 		
 		HashSet<String> entitiesProcessed = new HashSet<String>();
 		for (EntityData entityData : snapshot.entities) {
+			if (entityData == null)
+				continue;
+			
 			for (EntitySnapshot es : entityData.entities) {
 				Entity entity = entities.get(es.name);
 				if (entity != null) {
@@ -206,6 +214,7 @@ public class World implements PacketHandler {
 			this.fadeColor = getFadeColor(snapshot.mapSnapshot.getInt("fade-color", FADE_COLOR_BLACK));
 			this.nextMapSnapshot = snapshot.mapSnapshot;
 			this.nextChunkData = snapshot.chunks;
+			this.nextEntityData = snapshot.entities;
 			
 			if (firstTimeLoading)
 				fadeTimer = -0.0001f;
@@ -223,13 +232,18 @@ public class World implements PacketHandler {
 		entities.clear();
 		
 		for (EntityData data : nextEntityData) {
-			addEntitiesFromChunk(data);
+			if (data != null)
+				addEntitiesFromChunk(data);
 		}
 		nextMapSnapshot = null;
 		nextChunkData = null;
+		nextEntityData = null;
 	}
 	
 	public void unloadEntitiesInChunk(Chunk chunk) {
+		if (chunk == null)
+			return;
+		
 		ArrayList<Entity> entitiesToRemove = new ArrayList<Entity>();
 		for (Entity entity : cloneEntitiesList()) {
 			if (entity.getLocation().getChunkX() == chunk.getX() && entity.getLocation().getChunkY() == chunk.getY()) {

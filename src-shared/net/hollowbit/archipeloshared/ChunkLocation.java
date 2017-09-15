@@ -16,4 +16,21 @@ public class ChunkLocation {
 		this.y = y;
 	}
 	
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof ChunkLocation))
+			return false;
+		
+		ChunkLocation loc = (ChunkLocation) obj;
+		return loc.x == this.x && loc.y == this.y;
+	}
+	
+	@Override
+	public int hashCode() {
+		int hash = 17;
+		hash = hash * 31 + x;
+		hash = hash * 31 + y;
+		return hash;
+	}
+	
 }

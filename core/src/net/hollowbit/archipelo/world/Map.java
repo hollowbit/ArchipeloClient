@@ -137,10 +137,10 @@ public class Map {
 				ChunkRow row = chunkRows.get(chunkY);
 				if (row == null)
 					continue;
-				//System.out.println("Map.java  " + chunkX + "," + chunkY);
 				
 				Chunk chunk = row.getChunks().get(chunkX);
 				if (chunk != null) {
+					System.out.println("Map.java  " + chunkX + "," + chunkY);
 					//Define inter-tile rendering limits
 					int tileRenderY1 = ChunkData.SIZE;
 					if (chunkY == chunkY1) {
@@ -362,6 +362,60 @@ public class Map {
 	}
 	
 	public void applyFullSnapshot (ChunkData[] chunkDatas, EntityData[] entityDatas) {
+		for (int i = 0; i < chunkDatas.length; i++) {
+			ChunkData data = chunkDatas[i];
+			if (data == null)
+				continue;
+			
+			Chunk chunk = getChunk(data.x, data.y);
+			if (chunk == null) {//Chunk not already loaded, so load it in using data
+				EntityData entityData = entityDatas[i];
+				
+				ChunkRow row = chunkRows.get(data.y);
+				if (row == null) {//Add chunk row if it doesn't exist
+					row = new ChunkRow(data.y);
+					chunkRows.put(data.y, row);
+				}
+				
+				//Load chunk and add it to row along with entities
+				row.getChunks().put(data.x, new Chunk(data, this));
+				world.addEntitiesFromChunk(entityData);
+			}
+		}
+		
+		//Find chunks to unload
+		ArrayList<Chunk> chunksToRemove = new ArrayList<Chunk>();
+		for (ChunkRow row : chunkRows.values()) {
+			for (Chunk chunk : row.getChunks().values()) {
+				boolean remove = true;
+				
+				//Loop through chunks adjacent to player
+				for (int r = -1 * (WorldSnapshotPacket.NUM_OF_CHUNKS_WIDE / 2); r <= WorldSnapshotPacket.NUM_OF_CHUNKS_WIDE / 2; r++) {
+					for (int c = -1 * (WorldSnapshotPacket.NUM_OF_CHUNKS_WIDE / 2); c <= WorldSnapshotPacket.NUM_OF_CHUNKS_WIDE / 2; c++) {
+						if (chunk.getX() == c + world.getPlayer().getLocation().getChunkX() && chunk.getY() == r + world.getPlayer().getLocation().getChunkY()) {
+							remove = false;
+							break;
+						}
+					}
+				}
+				
+				//if chunk is not adjacent, add it to list to remove
+				if (remove)
+					chunksToRemove.add(chunk);
+			}
+		}
+		
+		//Unload found unadjacent chunks
+		for (Chunk chunk : chunksToRemove) {
+			System.out.println("Map.java removing: " + chunk.getX() + "," + chunk.getY());
+			ChunkRow row = chunkRows.get(chunk.getY());
+			row.getChunks().remove(chunk.getX());
+			world.unloadEntitiesInChunk(chunk);
+			
+			if (row.getChunks().isEmpty())//Remove empty rows
+				chunkRows.remove(chunk.getY());
+		}
+		/*
 		boolean isNewX = true;
 		int newX = 0;
 		boolean isNewY = true;
@@ -473,7 +527,7 @@ public class Map {
 					
 				chunkRows.remove(maxY);
 			}
-		}
+		}*/
 	}
 	
 	public Chunk getChunk(int x, int y) {

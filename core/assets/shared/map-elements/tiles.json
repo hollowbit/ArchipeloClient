@@ -1,89 +1,119 @@
 {
 "tileList": [
 	{
+		"no": 0,
 		"id": "grass",
 		"name": "Grass",
+		"category": "grasslands",
 		"footstepSound": "grass"
 	},
 	{
+		"no": 1,
 		"id": "water",
 		"x": 1,
 		"name": "Water",
+		"category": "grasslands",
 		collisionTable: [[true, true],
 						[true, true]]
 	},
 	{
+		"no": 2,
 		"id": "dirt",
 		"x": 3,
 		"y": 1,
-		"name": "Dirt"
+		"name": "Dirt",
+		"category": "grasslands"
 	},
 	{
+		"no": 3,
 		"id": "dirt_grass_north_west",
 		"x": 2,
-		"name": "Dirt to Grass (North West)"
+		"name": "Dirt to Grass (North West)",
+		"category": "grasslands"
 	},
 	{
+		"no": 4,
 		"id": "dirt_grass_north",
 		"x": 3,
-		"name": "Dirt to Grass (North)"
+		"name": "Dirt to Grass (North)",
+		"category": "grasslands"
 	},
 	{
+		"no": 5,
 		"id": "dirt_grass_north_east",
 		"x": 4,
-		"name": "Dirt to Grass (North East)"
+		"name": "Dirt to Grass (North East)",
+		"category": "grasslands"
 	},
 	{
+		"no": 6,
 		"id": "dirt_grass_west",
 		"x": 2,
 		"y": 1,
-		"name": "Dirt to Grass (West)"
+		"name": "Dirt to Grass (West)",
+		"category": "grasslands"
 	},
 	{
+		"no": 7,
 		"id": "dirt_grass_south_west",
 		"x": 2,
 		"y": 2,
-		"name": "Dirt to Grass (South West)"
+		"name": "Dirt to Grass (South West)",
+		"category": "grasslands"
 	},
 	{
+		"no": 8,
 		"id": "dirt_grass_south",
 		"x": 3,
 		"y": 2,
-		"name": "Dirt to Grass (South)"
+		"name": "Dirt to Grass (South)",
+		"category": "grasslands"
 	},
 	{
+		"no": 9,
 		"id": "dirt_grass_south_east",
 		"x": 4,
 		"y": 2,
-		"name": "Dirt to Grass (South East)"
+		"name": "Dirt to Grass (South East)",
+		"category": "grasslands"
 	},
 	{
+		"no": 10,
 		"id": "dirt_grass_east",
 		"x": 4,
 		"y": 1,
-		"name": "Dirt to Grass (East)"
+		"name": "Dirt to Grass (East)",
+		"category": "grasslands"
 	},
 	{
+		"no": 11,
 		"id": "dirt_grass_inner_bottom_right",
 		"y": 1,
-		"name": "Dirt to Grass (Inner Bottom Right)"
+		"name": "Dirt to Grass (Inner Bottom Right)",
+		"category": "grasslands"
 	},
 	{
+		"no": 12,
 		"id": "dirt_grass_inner_bottom_left",
 		"x": 1,
 		"y": 1,
-		"name": "Dirt to Grass (Inner Bottom Left)"
+		"name": "Dirt to Grass (Inner Bottom Left)",
+		"category": "grasslands"
 	},
 	{
+		"no": 13,
 		"id": "dirt_grass_inner_top_right",
 		"y": 2,
-		"name": "Dirt to Grass (Inner Bottom Right)"
+		"name": "Dirt to Grass (Inner Bottom Right)",
+		"category": "grasslands"
 	},
 	{
+		"no": 14,
 		"id": "dirt_grass_inner_top_left",
 		"x": 1,
 		"y": 2,
-		"name": "Dirt to Grass (Inner Bottom Left)"
+		"name": "Dirt to Grass (Inner Bottom Left)",
+		"category": "grasslands"
 	}
 ]
 }

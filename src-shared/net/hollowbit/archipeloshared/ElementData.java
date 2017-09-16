@@ -2,7 +2,9 @@ package net.hollowbit.archipeloshared;
 
 public class ElementData {
 	
+	public short no = 0; 
 	public String id = "element";
+	public String category = "misc";
 	public int x = 0, y = 0;
 	public String name = "Element";
 	public boolean animated = false;

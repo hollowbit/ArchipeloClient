@@ -12,13 +12,13 @@ public class AnimatedTile extends Tile {
 
 	Animation animation;
 	
-	public AnimatedTile (TileData tileData) {
+	public AnimatedTile (TextureRegion[][] tileMap, TileData tileData) {
 		super(tileData.id, tileData.name, tileData.speedMultiplier, tileData.swimmable, tileData.collisionTable, tileData.flipX, tileData.flipY, tileData.rotation, tileData.footstepSound);
 		
 		//Get animation frames
 		TextureRegion[] frames = new TextureRegion[tileData.animationFrames];
 		for (int i = 0; i < frames.length; i++) {
-			frames[i] = ArchipeloClient.getGame().getAssetManager().getTextureMap("tiles")[tileData.y][tileData.x + i];
+			frames[i] = tileMap[tileData.y][tileData.x + i];
 		}
 		this.animation = new Animation(tileData.animationTime, frames);
 	}

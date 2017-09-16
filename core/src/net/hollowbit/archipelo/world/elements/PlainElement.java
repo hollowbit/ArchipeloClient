@@ -11,9 +11,9 @@ public class PlainElement extends MapElement {
 
 	TextureRegion image;
 	
-	public PlainElement (ElementData elementData) {
+	public PlainElement (TextureRegion texture, ElementData elementData) {
 		super(elementData.id, elementData.name, elementData.width, elementData.height, elementData.collisionTable, elementData.flipX, elementData.flipY, elementData.rotation, elementData.offsetX, elementData.offsetY);
-		this.image = new TextureRegion(ArchipeloClient.getGame().getAssetManager().getTexture("elements"), elementData.x * ArchipeloClient.TILE_SIZE, elementData.y * ArchipeloClient.TILE_SIZE, elementData.width * ArchipeloClient.TILE_SIZE, elementData.height * ArchipeloClient.TILE_SIZE);
+		this.image = new TextureRegion(texture, elementData.x * ArchipeloClient.TILE_SIZE, elementData.y * ArchipeloClient.TILE_SIZE, elementData.width * ArchipeloClient.TILE_SIZE, elementData.height * ArchipeloClient.TILE_SIZE);
 	}
 
 	@Override

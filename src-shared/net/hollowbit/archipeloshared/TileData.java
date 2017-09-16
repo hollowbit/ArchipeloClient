@@ -4,7 +4,9 @@ public class TileData {
 	
 	public static final int COLLISION_MAP_SCALE = 2;
 	
+	public short no = 0;
 	public String id = "tile";
+	public String category = "misc";
 	public int x = 0, y = 0;
 	public String name = "Tile";
 	public boolean animated = false;

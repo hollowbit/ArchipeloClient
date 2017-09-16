@@ -12,11 +12,11 @@ public class AnimatedElement extends MapElement {
 	
 	Animation animation;
 	
-	public AnimatedElement (ElementData elementData) {
+	public AnimatedElement (TextureRegion texture, ElementData elementData) {
 		super(elementData.id, elementData.name, elementData.width, elementData.height, elementData.collisionTable, elementData.flipX, elementData.flipY, elementData.rotation, elementData.offsetX, elementData.offsetY);
 		TextureRegion[] frames = new TextureRegion[elementData.animationFrames];
 		for (int i = 0; i < frames.length; i++) {
-			frames[i] = new TextureRegion(ArchipeloClient.getGame().getAssetManager().getTexture("elements"), elementData.x * ArchipeloClient.TILE_SIZE + i * elementData.width * ArchipeloClient.TILE_SIZE, elementData.y * ArchipeloClient.TILE_SIZE, elementData.width * ArchipeloClient.TILE_SIZE, elementData.height * ArchipeloClient.TILE_SIZE);
+			frames[i] = new TextureRegion(texture, elementData.x * ArchipeloClient.TILE_SIZE + i * elementData.width * ArchipeloClient.TILE_SIZE, elementData.y * ArchipeloClient.TILE_SIZE, elementData.width * ArchipeloClient.TILE_SIZE, elementData.height * ArchipeloClient.TILE_SIZE);
 			frames[i].flip(elementData.flipX,  elementData.flipY);
 		}
 		this.animation = new Animation(elementData.animationTime, frames);

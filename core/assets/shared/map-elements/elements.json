@@ -1,39 +1,49 @@
 {
 "elementList": [
 	{
+		"no": 0,
 		"id": "blank",
 		"name": "Eraser",
-		"x": 2
+		"x": 2,
+		"category": "grasslands"
 	},
 	{
+		"no": 1,
 		"id": "bush",
 		"name": "Bush",
 		"y": 4,
 		"width": 2,
+		"category": "grasslands",
 		"collisionTable": [[false, false, false, false],
 							[false, true, true, false]]
 	},
 	{
+		"no": 2,
 		"id": "double-bush",
 		"name": "Double Bush",
 		"y": 3,
 		"width": 2,
+		"category": "grasslands",
 		"collisionTable": [[true, true, false, false],
 							[false, false, true, true]]
 	},
 	{
+		"no": 3,
 		"id": "small-bush",
 		"name": "Small Bush",
 		"y": 5,
 		"x": 2,
+		"category": "grasslands",
 		"collisionTable": [[false, false],
 							[true, true]]
 	},
 	{
+		"no": 4,
 		"id": "tree",
 		"name": "Tree",
 		"width": 2,
 		"height": 3,
+		"category": "grasslands",
 		"collisionTable": [[false, false, false, false],
 							[false, false, false, false],
 							[false, false, false, false],
@@ -42,23 +52,27 @@
 							[false, true, true, false]]
 	},
 	{
+		"no": 5,
 		"id": "well",
 		"name": "Well",
 		"y": 5,
 		"width": 2,
 		"height": 2,
+		"category": "grasslands",
 		"collisionTable": [[false, false, false, false],
 							[false, false, false, false],
 							[false, false, false, false],
-							[false, true, true, false],]
+							[false, true, true, false]]
 	},
 	{
+		"no": 6,
 		"id": "smithy",
 		"name": "Smithy",
 		"x": 2,
 		"width": 6,
 		"height": 5,
 		"offsetX": -3,
+		"category": "grasslands",
 		"collisionTable": [[false, false, false, false, false, false, false, false, false, false, false, false],
 							[false, false, false, false, false, false, false, false, false, false, false, false],
 							[false, false, false, false, false, false, false, false, false, false, false, false],
@@ -71,12 +85,14 @@
 							[false, true, true, false, false, true, true, false, false, false, true, false]]
 	},
 	{
+		"no": 7,
 		"id": "hospital",
 		"name": "Hospital",
 		"x": 8,
 		"width": 4,
 		"height": 5,
 		"offsetX": -3,
+		"category": "grasslands",
 		"collisionTable": [[false, false, false, false, false, false, false, false],
 							[false, false, false, false, false, false, false, false],
 							[false, false, false, false, false, false, false, false],

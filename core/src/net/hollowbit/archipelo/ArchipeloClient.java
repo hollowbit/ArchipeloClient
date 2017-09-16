@@ -113,11 +113,11 @@ public class ArchipeloClient extends ApplicationAdapter {
 		//Temporary way to add assets
 		//Art
 		assetManager = new AssetManager();
-		assetManager.putTextureMap("tiles", "tiles.png", TILE_SIZE, TILE_SIZE);
+		//assetManager.putTextureMap("tiles", "tiles.png", TILE_SIZE, TILE_SIZE);
 		assetManager.putTextureMap("icons", "ui/icons.png", QuickUi.ICON_SIZE, QuickUi.ICON_SIZE, true);
 		assetManager.putTexture("blank", "blank.png");
 		assetManager.putTexture("blank-border", "blank_border.png");
-		assetManager.putTexture("elements", "map_elements.png");
+		//assetManager.putTexture("elements", "map_elements.png");
 		assetManager.putTexture("maptag", "maptag.png", true);
 		assetManager.putTexture("mainmenu-background", "mainmenu_background.png", true);
 		assetManager.putTexture("logo", "logo.png", true);

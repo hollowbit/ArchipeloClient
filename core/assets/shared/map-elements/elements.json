@@ -103,6 +103,21 @@
 							[false, true, true, true, true, true, true, false],
 							[false, true, true, false, false, true, true, false],
 							[false, true, true, false, false, true, true, false]]
+	},
+	{
+		"no": 8,
+		"id": "snowy_tree",
+		"name": "Snowy Tree",
+		"width": 2,
+		"height": 3,
+		"category": "winter",
+		"collisionTable": [[false, false, false, false],
+							[false, false, false, false],
+							[false, false, false, false],
+							[false, false, false, false],
+							[false, false, false, false],
+							[false, true, true, false]]
+		
 	}
 ]
 }

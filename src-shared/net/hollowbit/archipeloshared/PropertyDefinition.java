@@ -38,7 +38,6 @@ public class PropertyDefinition {
 		
 		typeMap.put("point", PropertyType.POINT);
 		typeMap.put("coord", PropertyType.POINT);
-		typeMap.put("location", PropertyType.POINT);
 		typeMap.put("coordinate", PropertyType.POINT);
 		
 		typeMap.put("loc", PropertyType.LOCATION);
@@ -64,6 +63,8 @@ public class PropertyDefinition {
 		typeMap.put("entity", PropertyType.ENTITY_SNAPSHOT);
 		
 		typeMap.put("style", PropertyType.STYLE);
+		
+		typeMap.put("item", PropertyType.ITEM);
 	}
 	
 	public static PropertyType getType (String type) {

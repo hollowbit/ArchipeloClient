@@ -1,11 +1,30 @@
 package net.hollowbit.archipeloshared;
 
+import java.util.HashMap;
+
 public enum Direction {
 	
 	UP, LEFT, DOWN, RIGHT, UP_LEFT, UP_RIGHT, DOWN_LEFT, DOWN_RIGHT;
 	
+	private static HashMap<String, Direction> directionMap;
+	
+	static {
+		directionMap = new HashMap<String, Direction>();
+		for (Direction d : Direction.values())
+			directionMap.put(d.name().replaceAll("_", ""), d);
+	}
+	
+	public static Direction getDirectionByName(String direction) {
+		//Clean direction string to allow for many possibilities
+		direction = direction.replaceAll("_", "");
+		direction = direction.replaceAll("-", "");
+		direction = direction.toUpperCase();
+		
+		return directionMap.get(direction);
+	}
+	
 	/**
-	 * i.e. Is not diagonal.
+	 * a.k.a. Is not diagonal.
 	 * @return
 	 */
 	public boolean isStraight() {

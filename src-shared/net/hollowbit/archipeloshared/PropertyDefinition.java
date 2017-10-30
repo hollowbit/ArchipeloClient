@@ -65,6 +65,10 @@ public class PropertyDefinition {
 		typeMap.put("style", PropertyType.STYLE);
 		
 		typeMap.put("item", PropertyType.ITEM);
+		
+		typeMap.put("health", PropertyType.HEALTH);
+		typeMap.put("life", PropertyType.HEALTH);
+		typeMap.put("hp", PropertyType.HEALTH);
 	}
 	
 	public static PropertyType getType (String type) {
@@ -88,7 +92,8 @@ public class PropertyDefinition {
 		JSON,
 		STYLE,
 		ITEM,
-		ENTITY_SNAPSHOT
+		ENTITY_SNAPSHOT,
+		HEALTH
 	}
 	
 }

@@ -35,7 +35,7 @@ public class EntityTypeData {
 			new PropertyDefinition("pos", "point", true),
 			new PropertyDefinition("style", "style", false),
 			new PropertyDefinition("direction", "direction", false),
-			new PropertyDefinition("health", "int", false),
+			new PropertyDefinition("health", "health", false),
 	};
 	public ArrayList<PropertyDefinition> properties = new ArrayList<PropertyDefinition>();
 	

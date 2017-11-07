@@ -52,6 +52,10 @@ public class EntitySnapshot {
 		properties.put(key, "" + value);
 	}
 	
+	public void putDouble (String key, double value) {
+		properties.put(key, "" + value);
+	}
+	
 	public void putString (String key, String value) {
 		properties.put(key, value);
 	}
@@ -73,6 +77,16 @@ public class EntitySnapshot {
 			return currentValue;
 		try {
 			return Float.parseFloat(properties.get(key));
+		} catch (Exception e) {
+			return currentValue;
+		}
+	}
+	
+	public double getDouble (String key, double currentValue) {
+		if (!properties.containsKey(key))
+			return currentValue;
+		try {
+			return Double.parseDouble(properties.get(key));
 		} catch (Exception e) {
 			return currentValue;
 		}

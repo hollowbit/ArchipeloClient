@@ -8,6 +8,7 @@ public class EntityTypeData {
 	public ArrayList<EntityAnimationData> animations = new ArrayList<EntityAnimationData>();
 	public int numberOfStyles = 1;
 	public boolean hittable = true;
+	public int maxDirections = 4;//Possible values are 1, 4 and 8
 	
 	public boolean showHealthBar = false;
 	public int maxHealth = 1;
@@ -33,6 +34,7 @@ public class EntityTypeData {
 	//Properties
 	public PropertyDefinition[] defaultProperties = new PropertyDefinition[]{
 			new PropertyDefinition("pos", "point", true),
+			new PropertyDefinition("anim", "string", false),
 			new PropertyDefinition("style", "style", false),
 			new PropertyDefinition("direction", "direction", false),
 			new PropertyDefinition("health", "health", false),

@@ -1,6 +1,7 @@
 {
 	"id": "computer",
 	"hittable":"false",
+	"maxDirections":1,
 	"imgWidth":16,
 	"imgHeight":34,
 	"drawOrderOffsetY":12,

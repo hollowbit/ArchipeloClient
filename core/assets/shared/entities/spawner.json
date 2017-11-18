@@ -1,6 +1,7 @@
 {
 	id:"spawner",
 	hittable:true,
+	"maxDirections":1,
 	"imgWidth":1,
 	"imgHeight":1,
 	animations:[

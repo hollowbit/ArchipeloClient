@@ -1,6 +1,7 @@
 {
 	"id": "blobby-grave",
 	"hittable":"false",
+	"maxDirections":1,
 	"imgWidth":16,
 	"imgHeight":16,
 	"collisionRects":[

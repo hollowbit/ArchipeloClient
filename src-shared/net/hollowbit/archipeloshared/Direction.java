@@ -46,6 +46,9 @@ public enum Direction {
 	public static final Direction[] DIAGONALS = {UP_LEFT, UP_RIGHT, DOWN_LEFT, DOWN_RIGHT};
 	public static final Direction[] STRAIGHTS = {UP, LEFT, DOWN, RIGHT};
 	
+	public static final Direction[] DIRECTIONS_FOR_ENTITY_MAX_1 = {DOWN};
+	public static final Direction[] DIRECTIONS_FOR_ENTITY_MAX_4 = {UP, LEFT, DOWN, RIGHT};
+	
 	public static Direction opposite(Direction direction) {
 		switch (direction) {
 		case DOWN:
@@ -66,6 +69,23 @@ public enum Direction {
 			return DOWN_LEFT;
 		}
 		return direction;
+	}
+	
+	/**
+	 * This is for when entities are only allowed to go in either 1, 4 or 8 directions.
+	 * 
+	 * This method will return a list of the allowed directions whether it is 1, 4 or 8.
+	 * Any invalid maxDirectionsAllowed will return the same value as with 4.
+	 * @param maxDirectionsAllowed
+	 * @return
+	 */
+	public static Direction[] getAllowedDirectionsEntityMax(int maxDirectionsAllowed) {
+		if (maxDirectionsAllowed == 1)
+			return DIRECTIONS_FOR_ENTITY_MAX_1;
+		else if (maxDirectionsAllowed == 8)
+			return Direction.values();
+		else//Includes the value if only 4 directions are allowed
+			return DIRECTIONS_FOR_ENTITY_MAX_4;
 	}
 
 }

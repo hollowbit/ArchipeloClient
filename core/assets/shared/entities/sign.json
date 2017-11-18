@@ -1,6 +1,7 @@
 {
 	"id":"sign",
 	"hittable":"false",
+	"maxDirections":1,
 	"imgWidth":18,
 	"imgHeight":18,
 	"collisionRects":[

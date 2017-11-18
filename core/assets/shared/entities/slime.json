@@ -1,6 +1,7 @@
 {
 	"id":"slime",
 	"hittable":true,
+	"maxDirections":4,
 	"speed":30,
 	"maxHealth":30,
 	"showHealthBar": true,

@@ -1,6 +1,7 @@
 {
 	"id":"teleporter",
 	"numberOfStyles":2,
+	"maxDirections":1,
 	"hittable":false,
 	"imgWidth":16,
 	"imgHeight":32,

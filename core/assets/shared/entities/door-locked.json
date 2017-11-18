@@ -1,6 +1,7 @@
 {
 	"id":"door",
 	"hittable":false,
+	"maxDirections":1,
 	"imgWidth":12,
 	"imgHeight":13,
 	"collisionRects":[

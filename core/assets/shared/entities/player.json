@@ -1,6 +1,7 @@
 {
 	"id":"player",
 	"hittable":true,
+	"maxDirections":8,
 	"speed":60,
 	"maxHealth":100,
 	"footstepSound": "player",

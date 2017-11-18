@@ -1,6 +1,7 @@
 {
 	"id":"wizard",
 	"hittable":false,
+	"maxDirections":4,
 	"speed":40,
 	"imgWidth":16,
 	"imgHeight":23,

@@ -15,12 +15,24 @@ public enum Direction {
 	}
 	
 	public static Direction getDirectionByName(String direction) {
-		//Clean direction string to allow for many possibilities
-		direction = direction.replaceAll("_", "");
-		direction = direction.replaceAll("-", "");
-		direction = direction.toUpperCase();
+		if (direction == null)
+			return null;
 		
-		return directionMap.get(direction);
+		try {
+			//Try to parse as an int, if it is not, get the direction by name
+			int ordinal = Integer.parseInt(direction);
+			if (ordinal < 0 || ordinal >= Direction.TOTAL)
+				return null;
+			
+			return values()[ordinal];
+		} catch (Exception e) {
+			//Clean direction string to allow for many possibilities
+			direction = direction.replaceAll("_", "");
+			direction = direction.replaceAll("-", "");
+			direction = direction.toUpperCase();
+			
+			return directionMap.get(direction);
+		}
 	}
 	
 	/**

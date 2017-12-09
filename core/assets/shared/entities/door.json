@@ -9,11 +9,11 @@
 					{"name":"top", "width":12, "height":8, "offsetY":5}
 					],
 	"animations":[
-				{"id":"open"},
-				{"id":"closed"}
+				{"id":"closed"},
+				{"id":"open"}
 				],
 	"properties":[
-				{"name":"teleports", "type":"boolean"},
+				{"name":"teleports", "type":"boolean", "required":true},
 				{"name":"teleportLocation", "type":"location", "required":false},
 				]
 }

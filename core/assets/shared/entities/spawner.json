@@ -8,9 +8,7 @@
 		{id:"default", totalRuntime:0}
 	],
 	properties:[
-		{name:"spawnWidth", type:"int"},
-		{name:"spawnHeight", type:"int"},
-		{name:"spawnAmount", type:"int"},
+		{name:"spawnRect", type:"rect"},
 		{name:"spawnRate", type:"float"},
 		{name:"spawnSnapshot", type:"entity"},
 	]

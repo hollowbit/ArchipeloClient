@@ -131,7 +131,6 @@ public class Map {
 		int chunkY2 = (int) Math.floor((float) tileY2 / ChunkData.SIZE) - 1;
 		int chunkX2 = (int) Math.floor((float) tileX2 / ChunkData.SIZE);
 		
-		//System.out.println("Map.java  " + chunkY1 + "," + chunkX1 + " : " + chunkY2 + "," + chunkX2);
 		for (int chunkY = chunkY1; chunkY >= chunkY2; chunkY--) {
 			for (int chunkX = chunkX1; chunkX <= chunkX2; chunkX++) {
 				ChunkRow row = chunkRows.get(chunkY);
@@ -140,7 +139,6 @@ public class Map {
 				
 				Chunk chunk = row.getChunks().get(chunkX);
 				if (chunk != null) {
-					System.out.println("Map.java  " + chunkX + "," + chunkY);
 					//Define inter-tile rendering limits
 					int tileRenderY1 = ChunkData.SIZE;
 					if (chunkY == chunkY1) {

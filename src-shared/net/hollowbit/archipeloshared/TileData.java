@@ -21,4 +21,9 @@ public class TileData {
 	public int rotation = 0;//0-3
 	public String footstepSound;
 	
+	//Used by map editor
+	public byte transitionCode = -1;//-1 to 11
+	public String transitionInner = "";
+	public String transitionOuter = "";
+	
 }

@@ -35,9 +35,6 @@ public class NetworkManager {
 	
 	private volatile boolean isConnected = false;
 	
-	private long lastPingSendTime = System.currentTimeMillis();
-	private int ping = 0;
-	
 	public NetworkManager () {
 		packetHandlers = new ArrayList<PacketHandler>();
 		packets = new ArrayList<PacketWrapper>();
@@ -160,16 +157,6 @@ public class NetworkManager {
             
 			@Override
             public boolean onMessage(final WebSocket webSocket, final String packetString) {
-            	if (packetString.equals("ping")) {
-            		socket.send("pong");
-            		lastPingSendTime = System.currentTimeMillis();
-            		return FULLY_HANDLED;
-            	}
-            	
-            	if (packetString.equals("pang")) {
-            		ping = (int) (System.currentTimeMillis() - lastPingSendTime);
-            		return FULLY_HANDLED;
-            	}
         		return NOT_HANDLED;
             }
             
@@ -181,9 +168,5 @@ public class NetworkManager {
             
         };
     }
-	
-	public int getPing() {
-		return ping;
-	}
 	
 }

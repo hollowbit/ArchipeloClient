@@ -218,7 +218,7 @@ public class GameScreen extends Screen implements PacketHandler, InputProcessor 
 			GlyphLayout layoutFPS = new GlyphLayout(font, "FPS: " + Gdx.graphics.getFramesPerSecond());
 			font.draw(batch, layoutFPS, width / 2 - layoutFPS.width / 2, height - layoutFPS.height);
 			
-			GlyphLayout layoutPing = new GlyphLayout(font, "Ping: " + ArchipeloClient.getGame().getNetworkManager().getPing());
+			GlyphLayout layoutPing = new GlyphLayout(font, "Ping: " + worldSnapshotManager.getPing());
 			font.draw(batch, layoutPing, width / 2 - layoutPing.width / 2, height - layoutPing.height - layoutFPS.height - 3);
 			
 			if (world.getPlayer() != null) {

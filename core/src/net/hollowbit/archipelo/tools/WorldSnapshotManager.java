@@ -26,6 +26,7 @@ public class WorldSnapshotManager implements PacketHandler {
 	private ArrayList<WorldSnapshot> worldFullSnapshotPackets;
 	private World world;
 	private Json json;
+	private int ping;
 	
 	public WorldSnapshotManager (World world) {
 		this.world = world;
@@ -41,7 +42,7 @@ public class WorldSnapshotManager implements PacketHandler {
 	 * @param delta
 	 */
 	public void update (float delta) {
-		double timeOfPacket = System.currentTimeMillis() - DELAY;
+		double timeOfPacket = System.currentTimeMillis() - DELAY - ping;
 		updateChange(timeOfPacket);
 		updateInterp(timeOfPacket);
 	}
@@ -152,6 +153,8 @@ public class WorldSnapshotManager implements PacketHandler {
 			WorldSnapshotPacket worldSnapshotPacket = (WorldSnapshotPacket) packet;
 			switch (worldSnapshotPacket.type) {
 			case WorldSnapshot.TYPE_INTERP:
+				ping = (int) (System.currentTimeMillis() - worldSnapshotPacket.timeCreatedMillis);
+				System.out.println("WorldSnapshotManager.java   " + ping);
 				addInterpSnapshot(decode(worldSnapshotPacket));
 				return true;
 			case WorldSnapshot.TYPE_CHANGES:
@@ -179,6 +182,10 @@ public class WorldSnapshotManager implements PacketHandler {
 	
 	public void dispose () {
 		
+	}
+	
+	public int getPing() {
+		return ping;
 	}
 	
 }

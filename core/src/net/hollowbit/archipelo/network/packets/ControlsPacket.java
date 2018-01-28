@@ -21,6 +21,7 @@ public class ControlsPacket extends Packet {
 			this.c += (controls[i] ? 1:0);
 		}
 		this.id = idNext++;
+		time = System.currentTimeMillis();
 	}
 	
 	public boolean[] parse() {

@@ -129,7 +129,7 @@ public class Map {
 		int chunkY1 = (int) Math.floor((float) tileY / ChunkData.SIZE) + 1;
 		int chunkX1 = (int) Math.floor((float) tileX / ChunkData.SIZE) - 1;
 		int chunkY2 = (int) Math.floor((float) tileY2 / ChunkData.SIZE) - 1;
-		int chunkX2 = (int) Math.floor((float) tileX2 / ChunkData.SIZE);
+		int chunkX2 = (int) Math.floor((float) tileX2 / ChunkData.SIZE) + 1;
 		
 		for (int chunkY = chunkY1; chunkY >= chunkY2; chunkY--) {
 			for (int chunkX = chunkX1; chunkX <= chunkX2; chunkX++) {
@@ -172,29 +172,9 @@ public class Map {
 							tileRenderX2 = ChunkData.SIZE - (Math.abs(tileX2) % (ChunkData.SIZE + 1));
 					}
 					
-					//Make sure y is descending
-					/*if (tileRenderY1 < tileRenderY2) {
-						//Swap if in wrong order
-						tileRenderY1 += tileRenderY2;
-						tileRenderY2 = tileRenderY1 - tileRenderY2;
-						tileRenderY1 = tileRenderY1 - tileRenderY2;
-					}
-					
-					//Make sure x is ascending
-					if (tileRenderX1 > tileRenderX2) {
-						//Swap if in wrong order
-						tileRenderX1 += tileRenderX2;
-						tileRenderX2 = tileRenderX1 - tileRenderX2;
-						tileRenderX1 = tileRenderX1 - tileRenderX2;
-					}*/
-					
-					//System.out.println("Map.java   " + tileRenderX1 + "," + tileRenderX2 + "  :  " + tileRenderY1 + "," + tileRenderY2);
 					for (int r = tileRenderY1 - 1; r >= tileRenderY2; r--) {
 						int y = r * ArchipeloClient.TILE_SIZE + chunk.getPixelY();
-						//System.out.println("Map.java  " + y);
 						for (int c = tileRenderX1; c < tileRenderX2; c++) {
-							/*if (r == tileRenderY1 - 1)
-								System.out.println("Map.java  " + c);*/
 							Tile tile = ArchipeloClient.getGame().getMapElementManager().getTile(chunk.getTiles()[r][c]);
 							if (tile != null)
 								tile.draw(batch, c * ArchipeloClient.TILE_SIZE + chunk.getPixelX(), y);
@@ -265,14 +245,22 @@ public class Map {
 						
 						//Add entities
 						for (Entity entity : entities) {
-							float y2 = entity.getRenderY();
-							if (y2 > (r - 1) * ArchipeloClient.TILE_SIZE + chunk.getPixelY() && y2 <= r * ArchipeloClient.TILE_SIZE + chunk.getPixelY()) {
-								objectsInThisTileRow.add(entity);
+							if (!cameraViewRect.collidesWith(entity.getViewRect()))
+								continue;
+							
+							if (entity.getLocation().getChunkX() == chunkX && entity.getLocation().getChunkY() == chunkY) {
+								float y2 = entity.getRenderY();
+								if (y2 > (r - 1) * ArchipeloClient.TILE_SIZE + chunk.getPixelY() && y2 <= r * ArchipeloClient.TILE_SIZE + chunk.getPixelY()) {
+									objectsInThisTileRow.add(entity);
+								}
 							}
 						}
 						
 						//Add particles
 						for (Particle particle : particleManager.getParticles()) {
+							if (!cameraViewRect.collidesWith(particle.getViewRect()))
+								continue;
+							
 							float y2 = particle.getRenderY();
 							if (y2 > (r - 1) * ArchipeloClient.TILE_SIZE + chunk.getPixelY() && y2 <= r * ArchipeloClient.TILE_SIZE + chunk.getPixelY()) {
 								objectsInThisTileRow.add(particle);
@@ -283,8 +271,7 @@ public class Map {
 						
 						//Render entities in tile row
 						for (RenderableGameWorldObject object : objectsInThisTileRow) {
-							if (cameraViewRect.collidesWith(object.getViewRect()))
-								object.renderObject(batch);
+							object.renderObject(batch);
 						}
 					}
 				}

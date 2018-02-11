@@ -155,7 +155,7 @@ public class AssetManager {
 	 * @param tr
 	 */
 	public static TextureRegion fixBleeding (TextureRegion tr) {
-	    /*float fix = 0.01f;
+	   /*float fix = 0.01f;
 	    float x = tr.getRegionX();
 	    float y = tr.getRegionY();
 	    float width = tr.getRegionWidth();

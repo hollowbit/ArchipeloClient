@@ -58,7 +58,7 @@ public class CurrentPlayer extends Player implements PacketHandler, RollableEnti
 		random = new Random(fullSnapshot.getInt("seed", 0));
 		
 		this.serverPos = new Vector2(location.pos);
-		this.components.add(new FootstepPlayerComponent(this, true, TileSoundType.GRASS));
+		this.components.add(new FootstepPlayerComponent(this, true, TileSoundType.GRASS, TileSoundType.STONE));
 		
 		ArchipeloClient.getGame().getNetworkManager().addPacketHandler(this);
 		overrideControls = true;
@@ -514,7 +514,7 @@ public class CurrentPlayer extends Player implements PacketHandler, RollableEnti
 			this.timeSinceLastCorrection = 0;
 			
 			//If the player is close enough to the server pos, don't correct
-			if (serverPos == null || posMatchingCommand == null || serverPos.epsilonEquals(posMatchingCommand.x, posMatchingCommand.y, 0.2f)) {
+			if (serverPos == null || posMatchingCommand == null || (serverPos.x == posMatchingCommand.x && serverPos.y == posMatchingCommand.y)) {
 				return true;
 			}
 

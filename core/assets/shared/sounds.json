@@ -3,5 +3,7 @@
 	"footsteps/player/grass-roll",
 	"footsteps/player/default-walk",
 	"footsteps/player/default-roll",
+	"footsteps/player/stone-walk",
+	"footsteps/player/stone-roll",
 	"actions/hit",
 ]

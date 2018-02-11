@@ -41,35 +41,16 @@ public class GameCamera {
 	
 	public void update (float deltatime) {
 		if (goal == null) {
-			if (entityToFocusOn != null)
+			if (entityToFocusOn != null) {
+				System.out.println("GameCamera   " + (entityToFocusOn.getLocation().getX() + entityToFocusOn.getViewRect().width / 2) + ", " + (entityToFocusOn.getLocation().getY() + entityToFocusOn.getViewRect().height / 2));
 				cam.position.set(new Vector3(entityToFocusOn.getLocation().getX() + entityToFocusOn.getViewRect().width / 2, entityToFocusOn.getLocation().getY() + entityToFocusOn.getViewRect().height / 2, 0f));
+			}
 		} else {
 			cam.position.lerp(new Vector3(goal.x, goal.y, 0), 0.2f);
-			if (cam.position.epsilonEquals(goal.x + ArchipeloClient.PLAYER_SIZE / 2, goal.y + ArchipeloClient.PLAYER_SIZE / 2, 0, 1f)) {
+			if (cam.position.epsilonEquals(goal.x, goal.y, 0, 1f)) {
 				goal = null;
 			}
 		}
-		
-		//TODO rewrite map limit code
-		/*if (ArchipeloClient.getGame().getWorld() != null && ArchipeloClient.getGame().getWorld().getMap() != null) {
-			//If map width is more than screen width
-			if (ArchipeloClient.getGame().getWorld().getMap().getWidth() > cam.viewportWidth / ArchipeloClient.TILE_SIZE) {
-				if (cam.position.x < cam.viewportWidth / 2)
-					cam.position.x =  cam.viewportWidth / 2;
-				
-				if (cam.position.x + cam.viewportWidth > ArchipeloClient.getGame().getWorld().getMap().getWidth() * ArchipeloClient.TILE_SIZE + cam.viewportWidth / 2)
-					cam.position.x = ArchipeloClient.getGame().getWorld().getMap().getWidth() * ArchipeloClient.TILE_SIZE - cam.viewportWidth + cam.viewportWidth / 2;
-			}
-			
-			//If map height is more than screen height
-			if (ArchipeloClient.getGame().getWorld().getMap().getHeight() > cam.viewportHeight / ArchipeloClient.TILE_SIZE) {
-				if (cam.position.y < cam.viewportHeight / 2 + ArchipeloClient.TILE_SIZE)
-					cam.position.y =  cam.viewportHeight / 2 + ArchipeloClient.TILE_SIZE;
-				
-				if (cam.position.y + cam.viewportHeight > ArchipeloClient.getGame().getWorld().getMap().getHeight() * ArchipeloClient.TILE_SIZE + cam.viewportHeight / 2)
-					cam.position.y = ArchipeloClient.getGame().getWorld().getMap().getHeight() * ArchipeloClient.TILE_SIZE - cam.viewportHeight + cam.viewportHeight / 2;
-			}
-		}*/
 		
 		cam.update();
 	}
@@ -127,7 +108,7 @@ public class GameCamera {
 	}
 	
 	public CollisionRect getViewRect () {
-		return new CollisionRect(cam.position.x - cam.viewportWidth * cam.zoom / 2, cam.position.y - cam.viewportHeight * cam.zoom / 2, 0, 0, cam.viewportWidth * cam.zoom, cam.viewportHeight * cam.zoom);
+		return new CollisionRect(cam.position.x - cam.viewportWidth * cam.zoom / 2, cam.position.y - cam.viewportHeight * cam.zoom / 2, cam.viewportWidth * cam.zoom, cam.viewportHeight * cam.zoom);
 	}
 	
 }

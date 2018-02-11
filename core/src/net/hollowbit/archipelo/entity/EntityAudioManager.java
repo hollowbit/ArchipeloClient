@@ -66,7 +66,6 @@ public class EntityAudioManager {
 	}
 	
 	public void playSound (String sound) {
-		System.out.println("EntityAudioManager  test!");
 		if (entity.getEntityType().hasSound(sound))
 			playUnsafeSound(entity.getEntityType().getSound(sound));
 	}

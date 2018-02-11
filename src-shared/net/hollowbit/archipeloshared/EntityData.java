@@ -6,4 +6,10 @@ public class EntityData {
 	
 	public ArrayList<EntitySnapshot> entities = new ArrayList<EntitySnapshot>();
 	
+	public void clear () {
+		for (EntitySnapshot snapshot: entities) {
+			snapshot.clear();
+		}
+	}
+	
 }

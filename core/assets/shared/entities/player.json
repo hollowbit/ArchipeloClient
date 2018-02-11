@@ -2,7 +2,7 @@
 	"id":"player",
 	"hittable":true,
 	"maxDirections":8,
-	"speed":60,
+	"speed":120,
 	"maxHealth":100,
 	"footstepSound": "player",
 	"imgWidth":90,

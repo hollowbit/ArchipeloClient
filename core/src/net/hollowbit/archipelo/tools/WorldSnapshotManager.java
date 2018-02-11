@@ -154,7 +154,6 @@ public class WorldSnapshotManager implements PacketHandler {
 			switch (worldSnapshotPacket.type) {
 			case WorldSnapshot.TYPE_INTERP:
 				ping = (int) (System.currentTimeMillis() - worldSnapshotPacket.timeCreatedMillis);
-				System.out.println("WorldSnapshotManager.java   " + ping);
 				addInterpSnapshot(decode(worldSnapshotPacket));
 				return true;
 			case WorldSnapshot.TYPE_CHANGES:

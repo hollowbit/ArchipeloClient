@@ -197,7 +197,7 @@ public abstract class Entity implements RenderableGameWorldObject {
 		health = snapshot.getFloat("health", health);
 		
 		//Do flash animation if property is there
-		if (snapshot.doesPropertyExist("flash") && this.flashTimer == 0) {
+		if (snapshot.doesPropertyExist("flash") && this.flashTimer <= 0) {
 			this.damageFlash = snapshot.getBoolean("flash", damageFlash);
 			this.flashTimer = DAMAGE_FLASH_DURATION;
 		}

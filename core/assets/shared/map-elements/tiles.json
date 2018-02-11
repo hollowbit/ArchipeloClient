@@ -22,7 +22,8 @@
 		"x": 3,
 		"y": 1,
 		"name": "Dirt",
-		"category": "grasslands"
+		"category": "grasslands",
+		"footstepSound": "stone"
 	},
 	{
 		"no": 3,
@@ -32,7 +33,8 @@
 		"category": "grasslands",
 		"transitionCode": 5,
 		"transitionInner": "dirt",
-		"transitionOuter": "grass"
+		"transitionOuter": "grass",
+		"footstepSound": "stone"
 	},
 	{
 		"no": 4,
@@ -42,7 +44,8 @@
 		"category": "grasslands",
 		"transitionCode": 1,
 		"transitionInner": "dirt",
-		"transitionOuter": "grass"
+		"transitionOuter": "grass",
+		"footstepSound": "stone"
 	},
 	{
 		"no": 5,
@@ -52,7 +55,8 @@
 		"category": "grasslands",
 		"transitionCode": 4,
 		"transitionInner": "dirt",
-		"transitionOuter": "grass"
+		"transitionOuter": "grass",
+		"footstepSound": "stone"
 	},
 	{
 		"no": 6,
@@ -63,7 +67,8 @@
 		"category": "grasslands",
 		"transitionCode": 0,
 		"transitionInner": "dirt",
-		"transitionOuter": "grass"
+		"transitionOuter": "grass",
+		"footstepSound": "stone"
 	},
 	{
 		"no": 7,
@@ -74,7 +79,8 @@
 		"category": "grasslands",
 		"transitionCode": 7,
 		"transitionInner": "dirt",
-		"transitionOuter": "grass"
+		"transitionOuter": "grass",
+		"footstepSound": "stone"
 	},
 	{
 		"no": 8,
@@ -85,7 +91,8 @@
 		"category": "grasslands",
 		"transitionCode": 2,
 		"transitionInner": "dirt",
-		"transitionOuter": "grass"
+		"transitionOuter": "grass",
+		"footstepSound": "stone"
 	},
 	{
 		"no": 9,
@@ -96,7 +103,8 @@
 		"category": "grasslands",
 		"transitionCode": 6,
 		"transitionInner": "dirt",
-		"transitionOuter": "grass"
+		"transitionOuter": "grass",
+		"footstepSound": "stone"
 	},
 	{
 		"no": 10,
@@ -107,7 +115,8 @@
 		"category": "grasslands",
 		"transitionCode": 3,
 		"transitionInner": "dirt",
-		"transitionOuter": "grass"
+		"transitionOuter": "grass",
+		"footstepSound": "stone"
 	},
 	{
 		"no": 11,
@@ -117,7 +126,8 @@
 		"category": "grasslands",
 		"transitionCode": 9,
 		"transitionInner": "dirt",
-		"transitionOuter": "grass"
+		"transitionOuter": "grass",
+		"footstepSound": "stone"
 	},
 	{
 		"no": 12,
@@ -128,7 +138,8 @@
 		"category": "grasslands",
 		"transitionCode": 8,
 		"transitionInner": "dirt",
-		"transitionOuter": "grass"
+		"transitionOuter": "grass",
+		"footstepSound": "stone"
 	},
 	{
 		"no": 13,
@@ -138,7 +149,8 @@
 		"category": "grasslands",
 		"transitionCode": 11,
 		"transitionInner": "dirt",
-		"transitionOuter": "grass"
+		"transitionOuter": "grass",
+		"footstepSound": "stone"
 	},
 	{
 		"no": 14,
@@ -149,7 +161,8 @@
 		"category": "grasslands",
 		"transitionCode": 10,
 		"transitionInner": "dirt",
-		"transitionOuter": "grass"
+		"transitionOuter": "grass",
+		"footstepSound": "stone"
 	}
 ]
 }

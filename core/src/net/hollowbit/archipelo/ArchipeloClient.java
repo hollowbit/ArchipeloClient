@@ -62,7 +62,7 @@ public class ArchipeloClient extends ApplicationAdapter {
 	public static float STATE_TIME = 0;//this is for looping animations where it doesn't matter where it starts.
 	public static boolean DEBUGMODE = false;
 	public static boolean INVERT = false;
-	public static boolean PLACEHOLDER_ART_MODE = DEBUGMODE = true;
+	public static boolean PLACEHOLDER_ART_MODE = DEBUGMODE || true;
 	public static boolean CINEMATIC_MODE = false;
 	public static boolean SHOW_COLLISION_RECTS = false;
 	
@@ -221,11 +221,12 @@ public class ArchipeloClient extends ApplicationAdapter {
 		
 		hollowBitServerConnectivity.update(DELTA_TIME);
 		
-		cameraGame.update(DELTA_TIME);
-		batch.setProjectionMatrix(cameraGame.combined());
-		batch.begin();
 		networkManager.update();
 		screenManager.update(DELTA_TIME);
+		cameraGame.update(DELTA_TIME);
+		
+		batch.setProjectionMatrix(cameraGame.combined());
+		batch.begin();
 		if (INVERT)
 			shaderManager.applyShader(batch, ShaderType.EXPERIMENTAL);
 		screenManager.render(batch, cameraGame.getWidth(), cameraGame.getHeight());
